@@ -3,9 +3,13 @@ package com.kgr.q25toolbox.service
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.KeyguardManager
+import android.content.BroadcastReceiver
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -16,6 +20,7 @@ import com.kgr.q25toolbox.inputfix.ComposerEnterKeyHandler
 import com.kgr.q25toolbox.modules.AppScalingController
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * The app's single accessibility service - the home for every feature that has
@@ -54,6 +59,18 @@ class Q25AccessibilityService : AccessibilityService() {
     }
 
     private val worker: ExecutorService = Executors.newSingleThreadExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val debounceForegroundRunnable = Runnable { checkForeground() }
+
+    // Resets resolution to native when the screen turns off (lock button).
+    private val screenOffReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            if (intent?.action == Intent.ACTION_SCREEN_OFF) {
+                foregroundPkg = null
+                reconcileScaling()
+            }
+        }
+    }
 
     // Ported physical-key fixes from nozerorma/q25-input-helper. Each inspects
     // the foreground app itself and no-ops outside its target apps.
@@ -66,6 +83,10 @@ class Q25AccessibilityService : AccessibilityService() {
     // Per-app display scaling: last global resolution we pushed via `wm size`,
     // as its encoded "WxH" key ("" = unknown, so the first reconcile applies).
     @Volatile private var currentScaleKey = ""
+    // True while a `wm size` command is still running on the worker thread;
+    // a second resolution change is skipped if one is already in-flight so we
+    // don't get stuck waiting on the single-thread executor.
+    private val resolvingScale = AtomicBoolean(false)
 
     @Volatile private var imeBlockApplied = false // last show_ime value we pushed (true = suppressed)
     @Volatile private var foregroundPkg: String? = null // last seen foreground app package
@@ -95,13 +116,12 @@ class Q25AccessibilityService : AccessibilityService() {
         }
 
         worker.execute {
-            // Seed imeBlockApplied from the live default IME, so a mid-session
-            // restart while the passthrough IME is active still gets reconciled
-            // (and restored) once the foreground app is known.
             val curIme = RootShell.run("settings get secure default_input_method")
                 .outString.trim()
             imeBlockApplied = (curIme == PASSTHRU_IME)
         }
+
+        registerReceiver(screenOffReceiver, IntentFilter(Intent.ACTION_SCREEN_OFF))
     }
 
     private fun pinInputEnabled() = prefs?.getBoolean(KEY_PIN_INPUT, true) ?: true
@@ -114,8 +134,16 @@ class Q25AccessibilityService : AccessibilityService() {
     // ------------------------------------------------------- Foreground tracking
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        val isLocked = isDeviceLocked()
-        val pkg = if (isLocked) null else foregroundAppPackage()
+        val pkg = foregroundAppPackage()
+        if (pkg != null && pkg != foregroundPkg) {
+            foregroundPkg = pkg
+            reconcileImeBlock()
+            reconcileScaling()
+        }
+    }
+
+    private fun checkForeground() {
+        val pkg = foregroundAppPackage()
         if (pkg != foregroundPkg) {
             foregroundPkg = pkg
             reconcileImeBlock()
@@ -157,15 +185,27 @@ class Q25AccessibilityService : AccessibilityService() {
             ?.let { AppScalingController.entries(this)[it] }
             ?: AppScalingController.NATIVE
         if (desired.encode() == currentScaleKey) return
+        if (!resolvingScale.compareAndSet(false, true)) return // already in-flight, skip
         currentScaleKey = desired.encode()
-        worker.execute { AppScalingController.applyResolution(desired) }
+        worker.execute {
+            try {
+                AppScalingController.applyResolution(desired)
+            } finally {
+                resolvingScale.set(false)
+            }
+        }
     }
 
     /** Restore the native resolution, run synchronously on teardown. */
     private fun restoreScaling() {
         if (currentScaleKey == AppScalingController.NATIVE.encode()) return
         currentScaleKey = AppScalingController.NATIVE.encode()
-        AppScalingController.applyResolution(AppScalingController.NATIVE)
+        resolvingScale.set(true)
+        try {
+            AppScalingController.applyResolution(AppScalingController.NATIVE)
+        } finally {
+            resolvingScale.set(false)
+        }
     }
 
     // --------------------------------------------------------------- IME Block
@@ -411,6 +451,7 @@ class Q25AccessibilityService : AccessibilityService() {
         restoreImeBlock()
         restoreScaling()
         prefs?.unregisterOnSharedPreferenceChangeListener(prefListener)
+        try { unregisterReceiver(screenOffReceiver) } catch (_: Exception) {}
         worker.shutdown()
         super.onDestroy()
     }

@@ -90,12 +90,17 @@ object AppScalingController {
             .apply()
     }
 
-    /** Applies a global resolution, or resets to physical for native. */
+    /** Applies a global resolution, or resets to physical for native.
+     *
+     * At 1000×1000 the smallest width exceeds 600dp (208 dpi × 1000px / 160 ≈ 769dp),
+     * which triggers Android's large-screen/tablet mode and shows the taskbar.
+     * We stash it explicitly to suppress that bar.
+     */
     fun applyResolution(res: Res) {
         if (res.isNative) {
-            RootShell.run("wm size reset")
+            RootShell.run("timeout 3 wm size reset ; settings delete secure taskbar_is_stashed")
         } else {
-            RootShell.run("wm size ${res.w}x${res.h}")
+            RootShell.run("timeout 3 wm size ${res.w}x${res.h} ; settings put secure taskbar_is_stashed 1")
         }
     }
 }
