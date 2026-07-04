@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Keep configured wearables dormant - Key2 Toolbox
+# Keep configured wearables dormant - Q25 Toolbox
 #
 # Re-disable the Play Services wearable connection at boot so an out-of-range
 # watch doesn't drain the battery with constant Bluetooth reconnect attempts.

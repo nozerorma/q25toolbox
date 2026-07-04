@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Key2Toolbox"
+rootProject.name = "Q25Toolbox"
 include(":app")

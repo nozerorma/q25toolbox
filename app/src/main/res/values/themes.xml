@@ -1,7 +1,7 @@
 <resources>
     <!-- DayNight so the window background and status-bar icons follow the system
          light/dark setting; all in-app coloring is Material You via Compose. -->
-    <style name="Theme.Key2Toolbox" parent="android:Theme.DeviceDefault.DayNight">
+    <style name="Theme.Q25Toolbox" parent="android:Theme.DeviceDefault.DayNight">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
     </style>

@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Key2 Toolbox</string>
-    <string name="accessibility_description">Enables Nav Lock (stops accidental Back/Home/Recents while typing), lockscreen PIN entry on the physical keyboard, and the system-wide audio EQ.</string>
+    <string name="app_name">Q25 Toolbox</string>
+    <string name="accessibility_description">Enables lockscreen PIN entry on the physical keyboard, per-app keyboard block, and adaptive keyboard backlight.</string>
 </resources>

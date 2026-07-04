@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.kgr.key2toolbox"
+    namespace = "com.kgr.q25toolbox"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.kgr.key2toolbox"
+        applicationId = "com.kgr.q25toolbox"
         minSdk = 28
         targetSdk = 34
-        versionCode = 2
-        versionName = "4.2-beta1"
+        versionCode = 4
+        versionName = "1.0-beta4"
     }
 
     // To produce a release build signed with your existing keystore, fill these

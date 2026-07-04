@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Auto-disable Bluetooth when idle - Key2 Toolbox
+# Auto-disable Bluetooth when idle - Q25 Toolbox
 #
 # Turns Bluetooth off after __TIMEOUT_MIN__ minutes with no device connected,
 # so an idle radio (bonded devices + GMS/Fast Pair scanning) can't hold
