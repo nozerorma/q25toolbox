@@ -114,8 +114,9 @@ class Q25AccessibilityService : AccessibilityService() {
     // ------------------------------------------------------- Foreground tracking
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        val pkg = foregroundAppPackage()
-        if (pkg != null && pkg != foregroundPkg) {
+        val isLocked = isDeviceLocked()
+        val pkg = if (isLocked) null else foregroundAppPackage()
+        if (pkg != foregroundPkg) {
             foregroundPkg = pkg
             reconcileImeBlock()
             reconcileScaling()
