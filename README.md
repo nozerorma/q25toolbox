@@ -43,13 +43,14 @@ the build script.
 ## How each module works
 
 ### Key Remapper (`KeyRemapController`)
-- Remaps any of the five main modifier keys to a curated set of keycodes
-  (Default / Ctrl / Shift / Alt / Meta / Tab), and lets the **currency key**
-  type a chosen symbol (` ` ` / $ / € / £ / ¥ / ₹ / ₩ / ¢).
-- The keys, by their `Generic.kl` scancode and default keycode (all confirmed
-  from the [pastiera](../pastiera) Q25 map + on-device): Left Alt `56`
-  (ALT_LEFT), Left Shift `42` (SHIFT_LEFT), Right Shift `54` (SHIFT_RIGHT),
-  Right SYM `100` (ALT_RIGHT), Currency `41` (GRAVE).
+- Remaps one of the currently supported source keys to Right Ctrl at the
+  hardware keylayout level: the **Currency key** (the firmware-miswired key
+  next to Space) or **Right Shift**.
+- The implementation currently targets the Q25's existing keyboard layout file
+  (`Q25_keyboard.kl`) by rewriting the relevant scancode entry and reloading
+  the i2c keyboard driver so the change applies live and persists across
+  reboots. The supported source-key choices are the Currency key (`41`,
+  `GRAVE`) and Right Shift (`54`, `SHIFT_RIGHT`).
 - The keyboard resolves its **layout** to `Generic.kl` and its **char map** to
   `Generic.kcm`, both under read-only `/system` (the `.kl` fallback was
   confirmed via `dumpsys input`). A generated boot script
