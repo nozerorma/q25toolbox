@@ -1,47 +1,46 @@
 package com.kgr.q25toolbox.modules
 
 import android.content.SharedPreferences
-import android.view.KeyEvent
+import android.util.Log
 import com.kgr.q25toolbox.core.RootShell
 
 /**
- * Maps a spare physical key to KEYCODE_CTRL_RIGHT.
+ * Hardware-level key remapping for the Q25 keyboard.
  *
- * Interception happens in Q25AccessibilityService.onKeyEvent(); injection is done
- * via `sendevent` into the keyboard device node, so all apps receive a real
- * hardware Ctrl event (correct modifier flags, correct source) rather than a
- * synthetic IME event that many apps ignore.
+ * It overrides the system's keylayout file `/system/usr/keylayout/Q25_keyboard.kl`
+ * using a bind mount from `/data/local/tmp/Q25_keyboard.kl` in the master mount
+ * namespace (`su -M`).
  *
- * Linux evdev code 97 = KEY_RIGHTCTRL, which the existing Q25_keyboard.kl
- * maps to KEYCODE_CTRL_RIGHT — so the injection goes through the normal kl
- * translation pipeline.
+ * Live reload is achieved by unbinding and rebinding the Q25_keyboard i2c driver.
+ * Persistence across boots is managed via `/data/adb/service.d/key_remap.sh`.
  */
 object KeyRemapController {
 
     const val KEY_REMAP_ENABLED = "key_remap_enabled"
     const val KEY_REMAP_SOURCE  = "key_remap_source"
 
-    /** Q25 hardware keyboard event device node (confirmed via getevent -p). */
-    private const val KB_DEV = "/dev/input/event2"
-
-    /** Linux evdev keycode for KEY_RIGHTCTRL (97 = 0x61). */
-    private const val LINUX_CTRL_RIGHT = 97
+    private const val BOOT_SCRIPT = "/data/adb/service.d/key_remap.sh"
+    private const val TMP_FILE = "/data/local/tmp/Q25_keyboard.kl"
+    private const val SYS_FILE = "/system/usr/keylayout/Q25_keyboard.kl"
 
     enum class SourceKey(
         val label: String,
         val description: String,
-        val androidKeycode: Int
+        val scancode: Int,
+        val originalKeycode: String
     ) {
         GRAVE(
             "Currency key",
             "The € / £ / $ key next to Space. Currently mismapped as backtick by the firmware — " +
             "remapping it to Ctrl doesn't affect normal typing.",
-            KeyEvent.KEYCODE_GRAVE
+            41,
+            "GRAVE"
         ),
         RSHIFT(
             "Right Shift",
             "The right-hand Shift key. Left Shift still works normally for uppercase.",
-            KeyEvent.KEYCODE_SHIFT_RIGHT
+            54,
+            "SHIFT_RIGHT"
         )
     }
 
@@ -59,16 +58,66 @@ object KeyRemapController {
     fun setSourceKey(prefs: SharedPreferences, key: SourceKey) =
         prefs.edit().putString(KEY_REMAP_SOURCE, key.name).apply()
 
-    /**
-     * Inject a KEY_RIGHTCTRL hardware event into the keyboard device node.
-     * [action]: 1 = key down, 0 = key up.
-     *
-     * Must be called from a worker thread — RootShell.run() blocks until done.
-     */
-    fun injectCtrlRight(action: Int) {
-        RootShell.run(
-            "sendevent $KB_DEV 1 $LINUX_CTRL_RIGHT $action" +
-            " ; sendevent $KB_DEV 0 0 0"
-        )
+    /** Apply the remapping settings live and update the boot script. */
+    fun applySettings(prefs: SharedPreferences) {
+        val enabled = isEnabled(prefs)
+        val source = getSourceKey(prefs)
+
+        if (enabled) {
+            val script = generateBootScript(source)
+            // Write script to /data/adb/service.d/
+            RootShell.run("cat << 'EOF' > $BOOT_SCRIPT\n$script\nEOF\nchmod 755 $BOOT_SCRIPT")
+            // Execute the script live using mount-master namespace
+            RootShell.run("su -M -c '$BOOT_SCRIPT'")
+            Log.d("KeyRemapController", "Applied remap for ${source.name} and saved boot script")
+        } else {
+            // Delete boot script
+            RootShell.run("rm -f $BOOT_SCRIPT")
+            // Clean up the mount and reload the driver to restore defaults
+            RootShell.run(
+                "su -M -c 'echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/unbind" +
+                " ; sleep 1" +
+                " ; umount -l $SYS_FILE" +
+                " ; echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/bind" +
+                " ; rm -f $TMP_FILE'"
+            )
+            Log.d("KeyRemapController", "Cleared remaps and restored defaults")
+        }
+    }
+
+    private fun generateBootScript(source: SourceKey): String {
+        val sedCommand = "sed \"s/key ${source.scancode}    ${source.originalKeycode}/key ${source.scancode}    CTRL_RIGHT/\" $SYS_FILE > $TMP_FILE.tmp"
+        return """
+#!/system/bin/sh
+# Wait for the system partition layout file to be available
+while [ ! -f $SYS_FILE ]; do
+  sleep 1
+done
+
+# Force unmount any stale mounts from previous boots/sessions
+umount -l $SYS_FILE 2>/dev/null
+
+# Clean up tmp and copy original
+rm -f $TMP_FILE
+cp $SYS_FILE $TMP_FILE
+
+# Remap the target key
+$sedCommand
+cat $TMP_FILE.tmp > $TMP_FILE
+rm -f $TMP_FILE.tmp
+
+# Set the SELinux label to system_file so system_server/EventHub can read it
+chcon u:object_r:system_file:s0 $TMP_FILE
+
+# Bind mount the modified keylayout system-wide
+mount --bind $TMP_FILE $SYS_FILE
+
+# Reload the driver if we are already booted (handles live apply)
+if [ -d /sys/bus/i2c/drivers/Q25_keyboard ]; then
+  echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/unbind
+  sleep 1
+  echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/bind
+fi
+        """.trimIndent()
     }
 }

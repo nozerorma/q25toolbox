@@ -106,4 +106,12 @@
     <string name="a11y_banner_needed">This feature needs the accessibility service enabled.</string>
     <string name="a11y_banner_btn">Open Accessibility Settings</string>
 
+    <!-- Key Remap Screen -->
+    <string name="key_remap_desc">Intercepts a spare physical key at the hardware driver level and remaps it to Right Ctrl. Because this runs at the OS input layout level, it works everywhere — including terminal emulators, SSH clients, games, and text editors. Re-binds the keyboard driver on apply so changes take effect immediately.</string>
+    <string name="key_remap_source_title">Source Key</string>
+    <string name="key_remap_currency_label">Currency key</string>
+    <string name="key_remap_currency_desc">The € / £ / $ key next to Space. Currently mismapped as backtick by the firmware — remapping it to Ctrl doesn\'t affect normal typing.</string>
+    <string name="key_remap_rshift_label">Right Shift</string>
+    <string name="key_remap_rshift_desc">The right-hand Shift key. Left Shift still works normally for uppercase.</string>
+    <string name="key_remap_enabled_label">Enabled</string>
 </resources>

@@ -1,0 +1,115 @@
+<resources>
+    <string name="app_name">Q25 Toolbox</string>
+    <string name="accessibility_description">Ermöglicht die Eingabe der Sperrbildschirm-PIN über die physische Tastatur, die Tastatursperre pro App und eine adaptive Tastaturhintergrundbeleuchtung.</string>
+
+    <!-- App Tabs -->
+    <string name="tab_info">Info</string>
+    <string name="tab_keyboard">Tastatur</string>
+    <string name="tab_system">System</string>
+    <string name="tab_network">Netzwerk</string>
+
+    <!-- Screen Titles -->
+    <string name="title_wireless_adb">Dauerhaftes Wireless ADB</string>
+    <string name="title_dt2w">Doppeltippen zum Aufwecken</string>
+    <string name="title_pin_keyboard">Sperrbildschirm-PIN auf Tastatur</string>
+    <string name="title_ime_block">Tastatursperre pro App</string>
+    <string name="title_chat_composer">Eingabetaste zum Senden in Chats</string>
+    <string name="title_calculator_input">Taschenrechnertasten</string>
+    <string name="title_bt_idle">Bluetooth bei Inaktivität deaktivieren</string>
+    <string name="title_telemetry">Globale Telemetrieblockierung</string>
+    <string name="title_extra_dim">Extra Dimmung</string>
+    <string name="title_app_scaling">Bildschirmskalierung pro App</string>
+    <string name="title_key_remap">Tastenbelegung</string>
+
+    <!-- Screen Subtitles -->
+    <string name="subtitle_wireless_adb">Statischer Port, übersteht Neustart</string>
+    <string name="subtitle_dt2w">Weckt den Bildschirm mit einem Doppeltippen auf</string>
+    <string name="subtitle_pin_keyboard">Geben Sie Ihre PIN über die Hardwaretasten ein</string>
+    <string name="subtitle_ime_block">Sendet Tastendrücke direkt an die gewählten Apps</string>
+    <string name="subtitle_chat_composer">Eingabe sendet, Alt+Eingabe neue Zeile in Chat-Apps</string>
+    <string name="subtitle_calculator_input">Leitet Zahlen- und Operatortasten an den Taschenrechner weiter</string>
+    <string name="subtitle_bt_idle">Schaltet Bluetooth bei Inaktivität aus</string>
+    <string name="subtitle_telemetry">Deaktiviert Firebase Crashlytics systemweit</string>
+    <string name="subtitle_extra_dim">Reduziert die Helligkeit unter das Systemminimum</string>
+    <string name="subtitle_app_scaling">Erzwingt Telefon-Layout bei inkompatiblen Apps</string>
+    <string name="subtitle_key_remap">Belegt eine freie Taste als rechte Strg-Taste</string>
+
+    <!-- Info Screen -->
+    <string name="info_access">Zugriff</string>
+    <string name="info_root_access">Root-Zugriff</string>
+    <string name="info_root_checking">Überprüfung…</string>
+    <string name="info_root_granted">Erteilt</string>
+    <string name="info_root_not_granted">Nicht erteilt</string>
+    <string name="info_a11y_service">Barrierefreiheitsdienst</string>
+    <string name="info_enabled">Aktiviert</string>
+    <string name="info_disabled">Deaktiviert</string>
+    <string name="info_device">Gerät</string>
+    <string name="info_battery">Batterie</string>
+    <string name="info_model">Modell</string>
+    <string name="info_android">Android</string>
+    <string name="info_lineageos">LineageOS</string>
+    <string name="info_build">Build</string>
+    <string name="info_security_patch">Sicherheitspatch</string>
+    <string name="info_kernel">Kernel</string>
+    <string name="info_battery_charging">Wird geladen</string>
+    <string name="info_battery_discharging">Entlädt sich</string>
+    <string name="info_battery_full">Voll</string>
+    <string name="info_battery_not_charging">Lädt nicht</string>
+    <string name="info_battery_unknown">Unbekannt</string>
+    <string name="info_battery_health_good">Gut</string>
+    <string name="info_battery_health_overheat">Überhitzung</string>
+    <string name="info_battery_health_dead">Defekt</string>
+    <string name="info_battery_health_over_voltage">Überspannung</string>
+    <string name="info_battery_health_cold">Kalt</string>
+    <string name="info_battery_level">Ladestand</string>
+    <string name="info_battery_health">Zustand</string>
+    <string name="info_battery_temp">Temperatur</string>
+    <string name="info_battery_volt">Spannung</string>
+    <string name="info_battery_tech">Technologie</string>
+    <string name="info_battery_capacity">Kapazität</string>
+    <string name="info_battery_cycles">Ladezyklen</string>
+
+    <!-- Wireless ADB Screen -->
+    <string name="wadb_wlan_ip">WLAN-IP: %1$s</string>
+    <string name="wadb_not_connected">nicht verbunden</string>
+    <string name="wadb_live_port">Aktueller Live-Port: %1$s</string>
+    <string name="wadb_not_set">nicht festgelegt</string>
+    <string name="wadb_persisted">Dauerhaft: %1$s</string>
+    <string name="wadb_yes">Ja</string>
+    <string name="wadb_no">Nein</string>
+    <string name="wadb_port_label">Port</string>
+    <string name="wadb_btn_apply">Aktivieren / Anwenden</string>
+    <string name="wadb_btn_disable">Deaktivieren</string>
+    <string name="wadb_status_enabled">Wireless ADB auf Port %1$d aktiviert. Dauerhaft: %2$s.</string>
+    <string name="wadb_status_disabled">Wireless ADB deaktiviert.</string>
+    <string name="wadb_persisted_yes">ja</string>
+    <string name="wadb_persisted_no">NEIN - Schreibtische für service.d überprüfen</string>
+
+    <!-- DT2W Screen -->
+    <string name="dt2w_desc">Wecken Sie das Gerät durch Doppeltippen auf den Bildschirm auf, wenn er ausgeschaltet ist. Das Q25 verfügt über keine Hardware-Gestenaktivierung, daher läuft ein kleiner Hintergrund-Wächter, der den Touchscreen überwacht und bei einem Doppeltippen ein Aufweck-Event sendet.</string>
+    <string name="dt2w_state">Status: %1$s</string>
+    <string name="dt2w_on">Ein</string>
+    <string name="dt2w_off">Aus</string>
+    <string name="dt2w_boot_notice"> (aktiviert beim nächsten Systemstart)</string>
+    <string name="dt2w_enabled_label">Aktiviert</string>
+    <string name="dt2w_status_on">DT2W aktiv. Doppeltippen Sie auf den ausgeschalteten Bildschirm, um das Gerät aufzuwecken.</string>
+    <string name="dt2w_status_off">DT2W deaktiviert.</string>
+
+    <!-- PIN Keyboard Screen -->
+    <string name="pin_desc">Geben Sie Ihre Sperrbildschirm-PIN über die physische Tastatur ein. Die Zahlen sind im Stil eines Telefontastenfelds angeordnet: W E R = 1 2 3, S D F = 4 5 6, Z X C = 7 8 9, Q = 0. Eingabe bestätigt, Rückschritttaste löscht. Kein Root erforderlich - nutzt ausschließlich den Barrierefreiheitsdienst.</string>
+    <string name="generic_enabled">Aktiviert</string>
+
+    <!-- Accessibility Service Banner -->
+    <string name="a11y_banner_enabled">Barrierefreiheitsdienst: aktiviert</string>
+    <string name="a11y_banner_needed">Diese Funktion erfordert die Aktivierung des Barrierefreiheitsdienstes.</string>
+    <string name="a11y_banner_btn">Barrierefreiheitseinstellungen öffnen</string>
+
+    <!-- Key Remap Screen -->
+    <string name="key_remap_desc">Fängt eine freie physische Taste auf Treiber-Ebene ab und ordnet sie der rechten Strg-Taste zu. Da dies direkt in der Betriebssystem-Eingabelayout-Ebene läuft, funktioniert es überall — einschließlich Terminal-Emulatoren, SSH-Clients, Spielen und Editoren. Lädt den Tastaturtreiber bei der Anwendung neu, damit Änderungen sofort wirksam werden.</string>
+    <string name="key_remap_source_title">Ausgangstaste</string>
+    <string name="key_remap_currency_label">Währungstaste</string>
+    <string name="key_remap_currency_desc">Die € / £ / $-Taste neben der Leertaste. Die Firmware belegt diese fälschlicherweise als Backtick/Gravis-Zeichen — die Neubelegung als Strg beeinträchtigt das normale Schreiben nicht.</string>
+    <string name="key_remap_rshift_label">Rechte Umschalttaste</string>
+    <string name="key_remap_rshift_desc">Die rechte Umschalttaste. Die linke Umschalttaste funktioniert weiterhin normal zur Großschreibung.</string>
+    <string name="key_remap_enabled_label">Aktiviert</string>
+</resources>

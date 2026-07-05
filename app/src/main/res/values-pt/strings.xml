@@ -1,0 +1,115 @@
+<resources>
+    <string name="app_name">Q25 Toolbox</string>
+    <string name="accessibility_description">Permite introduzir o PIN na tela de bloqueio com o teclado físico, bloquear o teclado por aplicativo e retroiluminação adaptativa.</string>
+
+    <!-- App Tabs -->
+    <string name="tab_info">Info</string>
+    <string name="tab_keyboard">Teclado</string>
+    <string name="tab_system">Sistema</string>
+    <string name="tab_network">Rede</string>
+
+    <!-- Screen Titles -->
+    <string name="title_wireless_adb">ADB Sem Fio Persistente</string>
+    <string name="title_dt2w">Toque duplo para despertar</string>
+    <string name="title_pin_keyboard">PIN no teclado de bloqueio</string>
+    <string name="title_ime_block">Bloqueio de teclado por app</string>
+    <string name="title_chat_composer">Enter para enviar no chat</string>
+    <string name="title_calculator_input">Teclas da calculadora</string>
+    <string name="title_bt_idle">Desativar Bluetooth ocioso</string>
+    <string name="title_telemetry">Bloqueio global de telemetria</string>
+    <string name="title_extra_dim">Atenuação extra</string>
+    <string name="title_app_scaling">Escalonamento de tela por app</string>
+    <string name="title_key_remap">Mapear tecla</string>
+
+    <!-- Screen Subtitles -->
+    <string name="subtitle_wireless_adb">Porta estática, sobrevive ao reinício</string>
+    <string name="subtitle_dt2w">Desperta a tela com um toque duplo</string>
+    <string name="subtitle_pin_keyboard">Digite seu PIN nas teclas de hardware</string>
+    <string name="subtitle_ime_block">Envia as teclas diretamente para os apps escolhidos</string>
+    <string name="subtitle_chat_composer">Enter envia, Alt+Enter nova linha nos chats</string>
+    <string name="subtitle_calculator_input">Envia números e operadores para a calculadora</string>
+    <string name="subtitle_bt_idle">Desliga o Bluetooth quando estiver ocioso</string>
+    <string name="subtitle_telemetry">Desativa o Firebase Crashlytics em todo o sistema</string>
+    <string name="subtitle_extra_dim">Reduz o brilho abaixo do mínimo do sistema</string>
+    <string name="subtitle_app_scaling">Força o layout de celular em apps incompatíveis</string>
+    <string name="subtitle_key_remap">Atribui uma tecla livre ao Ctrl Direito</string>
+
+    <!-- Info Screen -->
+    <string name="info_access">Acesso</string>
+    <string name="info_root_access">Acesso root</string>
+    <string name="info_root_checking">Verificando…</string>
+    <string name="info_root_granted">Concedido</string>
+    <string name="info_root_not_granted">Não concedido</string>
+    <string name="info_a11y_service">Serviço de acessibilidade</string>
+    <string name="info_enabled">Ativado</string>
+    <string name="info_disabled">Desativado</string>
+    <string name="info_device">Dispositivo</string>
+    <string name="info_battery">Bateria</string>
+    <string name="info_model">Modelo</string>
+    <string name="info_android">Android</string>
+    <string name="info_lineageos">LineageOS</string>
+    <string name="info_build">Compilação</string>
+    <string name="info_security_patch">Patch de segurança</string>
+    <string name="info_kernel">Núcleo (Kernel)</string>
+    <string name="info_battery_charging">Carregando</string>
+    <string name="info_battery_discharging">Descarregando</string>
+    <string name="info_battery_full">Cheia</string>
+    <string name="info_battery_not_charging">Não carregando</string>
+    <string name="info_battery_unknown">Desconhecido</string>
+    <string name="info_battery_health_good">Bom</string>
+    <string name="info_battery_health_overheat">Superaquecimento</string>
+    <string name="info_battery_health_dead">Defeituosa</string>
+    <string name="info_battery_health_over_voltage">Sobretensão</string>
+    <string name="info_battery_health_cold">Fria</string>
+    <string name="info_battery_level">Nível</string>
+    <string name="info_battery_health">Saúde</string>
+    <string name="info_battery_temp">Temperatura</string>
+    <string name="info_battery_volt">Voltagem</string>
+    <string name="info_battery_tech">Tecnologia</string>
+    <string name="info_battery_capacity">Capacidade</string>
+    <string name="info_battery_cycles">Ciclos de carga</string>
+
+    <!-- Wireless ADB Screen -->
+    <string name="wadb_wlan_ip">IP WLAN: %1$s</string>
+    <string name="wadb_not_connected">não conectado</string>
+    <string name="wadb_live_port">Porta ativa atual: %1$s</string>
+    <string name="wadb_not_set">não configurada</string>
+    <string name="wadb_persisted">Persistido: %1$s</string>
+    <string name="wadb_yes">Sim</string>
+    <string name="wadb_no">Não</string>
+    <string name="wadb_port_label">Porta</string>
+    <string name="wadb_btn_apply">Ativar / Aplicar</string>
+    <string name="wadb_btn_disable">Desativar</string>
+    <string name="wadb_status_enabled">ADB sem fio ativado na porta %1$d. Persistido: %2$s.</string>
+    <string name="wadb_status_disabled">ADB sem fio desativado.</string>
+    <string name="wadb_persisted_yes">sim</string>
+    <string name="wadb_persisted_no">NÃO - verifique as permissões de escrita de service.d</string>
+
+    <!-- DT2W Screen -->
+    <string name="dt2w_desc">Desperta o dispositivo tocando duas vezes na tela quando estiver apagada. O Q25 não possui despertar por gestos de hardware, então isso executa um pequeno daemon em segundo plano que monitora a tela sensível ao toque e acorda ao detectar um toque duplo.</string>
+    <string name="dt2w_state">Estado: %1$s</string>
+    <string name="dt2w_on">Ligado</string>
+    <string name="dt2w_off">Desligado</string>
+    <string name="dt2w_boot_notice"> (ativa no próximo início)</string>
+    <string name="dt2w_enabled_label">Ativado</string>
+    <string name="dt2w_status_on">DT2W ativado. Toque duas vezes na tela apagada para despertar.</string>
+    <string name="dt2w_status_off">DT2W desativado.</string>
+
+    <!-- PIN Keyboard Screen -->
+    <string name="pin_desc">Digite o PIN da sua tela de bloqueio no teclado físico. Os números são mapeados ao estilo de discagem telefônica: W E R = 1 2 3, S D F = 4 5 6, Z X C = 7 8 9, Q = 0. Enter confirma, Backspace apaga. Não requer root - usa apenas o serviço de acessibilidade.</string>
+    <string name="generic_enabled">Ativado</string>
+
+    <!-- Accessibility Service Banner -->
+    <string name="a11y_banner_enabled">Serviço de acessibilidade: ativado</string>
+    <string name="a11y_banner_needed">Este recurso requer a ativação do serviço de acessibilidade.</string>
+    <string name="a11y_banner_btn">Abrir Ajustes de Acessibilidade</string>
+
+    <!-- Key Remap Screen -->
+    <string name="key_remap_desc">Intercepta uma tecla física livre no nível do driver de hardware e a remapeia para o Ctrl Direito. Como roda no nível do layout de entrada do sistema operacional, funciona em todos os lugares (emuladores de terminal, clientes SSH, jogos e editores de texto). Recarrega o driver do teclado ao aplicar para que tenha efeito imediato.</string>
+    <string name="key_remap_source_title">Tecla de origem</string>
+    <string name="key_remap_currency_label">Tecla de moeda</string>
+    <string name="key_remap_currency_desc">A tecla € / £ / $ ao lado do Espaço. O firmware mapeia incorretamente como acento grave — remapeá-la para Ctrl não afeta a digitação normal.</string>
+    <string name="key_remap_rshift_label">Shift Direito</string>
+    <string name="key_remap_rshift_desc">A tecla Shift direita. O Shift Esquerdo continua funcionando normalmente para as maiúsculas.</string>
+    <string name="key_remap_enabled_label">Ativado</string>
+</resources>

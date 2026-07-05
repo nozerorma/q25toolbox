@@ -1,0 +1,115 @@
+<resources>
+    <string name="app_name">Q25 Toolbox</string>
+    <string name="accessibility_description">Permet introduir el PIN a la pantalla de bloqueig amb el teclat físic, bloquejar el teclat per aplicació i retroil·luminació adaptativa.</string>
+
+    <!-- App Tabs -->
+    <string name="tab_info">Info</string>
+    <string name="tab_keyboard">Teclat</string>
+    <string name="tab_system">Sistema</string>
+    <string name="tab_network">Xarxa</string>
+
+    <!-- Screen Titles -->
+    <string name="title_wireless_adb">ADB Inalàmbric Persistent</string>
+    <string name="title_dt2w">Doble toc per despertar</string>
+    <string name="title_pin_keyboard">PIN en teclat de bloqueig</string>
+    <string name="title_ime_block">Bloqueig de teclat per aplicació</string>
+    <string name="title_chat_composer">Enter per enviar al xat</string>
+    <string name="title_calculator_input">Tecles de calculadora</string>
+    <string name="title_bt_idle">Desactivar Bluetooth inactiu</string>
+    <string name="title_telemetry">Bloqueig global de telemetria</string>
+    <string name="title_extra_dim">Atenuació extra</string>
+    <string name="title_app_scaling">Escalat de pantalla per app</string>
+    <string name="title_key_remap">Reassignar tecla</string>
+
+    <!-- Screen Subtitles -->
+    <string name="subtitle_wireless_adb">Port estàtic, sobreviu al reinici</string>
+    <string name="subtitle_dt2w">Desperta la pantalla amb un doble toc</string>
+    <string name="subtitle_pin_keyboard">Escriu el teu PIN a les tecles de maquinari</string>
+    <string name="subtitle_ime_block">Envia les tecles directament a les apps triades</string>
+    <string name="subtitle_chat_composer">Enter envia, Alt+Enter nova línia als xats</string>
+    <string name="subtitle_calculator_input">Envia números i operadors a la calculadora</string>
+    <string name="subtitle_bt_idle">Apaga el Bluetooth quan estigui inactiu</string>
+    <string name="subtitle_telemetry">Desactiva Firebase Crashlytics a tot el sistema</string>
+    <string name="subtitle_extra_dim">Redueix la brillantor per sota del mínim del sistema</string>
+    <string name="subtitle_app_scaling">Força el disseny de telèfon en apps incompatibles</string>
+    <string name="subtitle_key_remap">Assigna una tecla lliure a Ctrl Dret</string>
+
+    <!-- Info Screen -->
+    <string name="info_access">Accés</string>
+    <string name="info_root_access">Accés root</string>
+    <string name="info_root_checking">Comprovant…</string>
+    <string name="info_root_granted">Concedit</string>
+    <string name="info_root_not_granted">No concedit</string>
+    <string name="info_a11y_service">Servei d’accessibilitat</string>
+    <string name="info_enabled">Habilitat</string>
+    <string name="info_disabled">Deshabilitat</string>
+    <string name="info_device">Dispositiu</string>
+    <string name="info_battery">Bateria</string>
+    <string name="info_model">Model</string>
+    <string name="info_android">Android</string>
+    <string name="info_lineageos">LineageOS</string>
+    <string name="info_build">Compilació</string>
+    <string name="info_security_patch">Parxe de seguretat</string>
+    <string name="info_kernel">Nucli (Kernel)</string>
+    <string name="info_battery_charging">Carregant</string>
+    <string name="info_battery_discharging">Descarregant</string>
+    <string name="info_battery_full">Plena</string>
+    <string name="info_battery_not_charging">No carregant</string>
+    <string name="info_battery_unknown">Desconegut</string>
+    <string name="info_battery_health_good">Bo</string>
+    <string name="info_battery_health_overheat">Sobrecalentament</string>
+    <string name="info_battery_health_dead">Defectuosa</string>
+    <string name="info_battery_health_over_voltage">Sobretensió</string>
+    <string name="info_battery_health_cold">Freda</string>
+    <string name="info_battery_level">Nivell</string>
+    <string name="info_battery_health">Salut</string>
+    <string name="info_battery_temp">Temperatura</string>
+    <string name="info_battery_volt">Voltatge</string>
+    <string name="info_battery_tech">Tecnologia</string>
+    <string name="info_battery_capacity">Capacitat</string>
+    <string name="info_battery_cycles">Cicles de càrrega</string>
+
+    <!-- Wireless ADB Screen -->
+    <string name="wadb_wlan_ip">IP WLAN: %1$s</string>
+    <string name="wadb_not_connected">no connectat</string>
+    <string name="wadb_live_port">Port actiu actual: %1$s</string>
+    <string name="wadb_not_set">no establert</string>
+    <string name="wadb_persisted">Persistit: %1$s</string>
+    <string name="wadb_yes">Sí</string>
+    <string name="wadb_no">No</string>
+    <string name="wadb_port_label">Port</string>
+    <string name="wadb_btn_apply">Habilitar / Aplicar</string>
+    <string name="wadb_btn_disable">Deshabilitar</string>
+    <string name="wadb_status_enabled">ADB inalàmbric habilitat al port %1$d. Persistit: %2$s.</string>
+    <string name="wadb_status_disabled">ADB inalàmbric deshabilitat.</string>
+    <string name="wadb_persisted_yes">sí</string>
+    <string name="wadb_persisted_no">NO - comprova els permisos d’escriptura de service.d</string>
+
+    <!-- DT2W Screen -->
+    <string name="dt2w_desc">Desperta el dispositiu tocant dues vegades la pantalla quan estigui apagada. El Q25 no té despertar per gestos de maquinari, de manera que això executa un petit daemon en segon pla que vigila la pantalla tàctil i desperta en detectar un doble toc.</string>
+    <string name="dt2w_state">Estat: %1$s</string>
+    <string name="dt2w_on">Encès</string>
+    <string name="dt2w_off">Apagat</string>
+    <string name="dt2w_boot_notice"> (s’activa en el proper inici)</string>
+    <string name="dt2w_enabled_label">Habilitat</string>
+    <string name="dt2w_status_on">DT2W encès. Toca dues vegades la pantalla apagada per despertar.</string>
+    <string name="dt2w_status_off">DT2W apagada.</string>
+
+    <!-- PIN Keyboard Screen -->
+    <string name="pin_desc">Escriu el PIN de la pantalla de bloqueig al teclat físic. Els números s’assignen a l’estil de marcatge telefònic: W E R = 1 2 3, S D F = 4 5 6, Z X C = 7 8 9, Q = 0. Enter confirma, Backspace esborra. No requereix root - només utilitza el servei d’accessibilitat.</string>
+    <string name="generic_enabled">Habilitat</string>
+
+    <!-- Accessibility Service Banner -->
+    <string name="a11y_banner_enabled">Servei d’accessibilitat: habilitat</string>
+    <string name="a11y_banner_needed">Aquesta funció requereix habilitar el servei d’accessibilitat.</string>
+    <string name="a11y_banner_btn">Obrir Ajustos d’Accessibilitat</string>
+
+    <!-- Key Remap Screen -->
+    <string name="key_remap_desc">Onderschept o intercepta una tecla física lliure al controlador de maquinari i la reassigna a Ctrl Dret. Com que funciona a nivell de distribució d’entrada del sistema operatiu, funciona a tot arreu (emuladors de terminal, clients SSH, jocs i editors de text). Torna a carregar el controlador del teclat en aplicar perquè tingui efecte immediat.</string>
+    <string name="key_remap_source_title">Tecla origen</string>
+    <string name="key_remap_currency_label">Tecla de moneda</string>
+    <string name="key_remap_currency_desc">La tecla € / £ / $ al costat d’Espai. El microprogramari la mapeja incorrectament com a accent greu — reassignar-la a Ctrl no afecta l’escriptura normal.</string>
+    <string name="key_remap_rshift_label">Shift Dret</string>
+    <string name="key_remap_rshift_desc">La tecla Shift dreta. Shift Esquerre segueix funcionant amb normalitat per a les majúscules.</string>
+    <string name="key_remap_enabled_label">Habilitat</string>
+</resources>

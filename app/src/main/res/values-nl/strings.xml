@@ -106,4 +106,12 @@
     <string name="a11y_banner_needed">Deze functie vereist dat de toegankelijkheidsservice is ingeschakeld.</string>
     <string name="a11y_banner_btn">Open toegankelijkheidsinstellingen</string>
 
+    <!-- Key Remap Screen -->
+    <string name="key_remap_desc">Onderschept een reserve fysieke toets op hardware-stuurprogrammaniveau en koppelt deze aan Rechter Ctrl. Omdat dit op het OS-invoerlay-outniveau draait, werkt het overal — inclusief terminal-emulators, SSH-clients, games en teksteditors. Koppelt het toetsenbordstuurprogramma opnieuw bij toepassing, zodat wijzigingen onmiddellijk van kracht worden.</string>
+    <string name="key_remap_source_title">Brontoets</string>
+    <string name="key_remap_currency_label">Valutatoets</string>
+    <string name="key_remap_currency_desc">De € / £ / $-toets naast de spatiebalk. Momenteel door de firmware verkeerd toegewezen als backtick — toewijzing aan Ctrl heeft geen invloed op normaal typen.</string>
+    <string name="key_remap_rshift_label">Rechter Shift</string>
+    <string name="key_remap_rshift_desc">De rechter Shift-toets. Linker Shift werkt nog steeds normaal voor hoofdletters.</string>
+    <string name="key_remap_enabled_label">Ingeschakeld</string>
 </resources>
