@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.service.Q25AccessibilityService
 import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
 
@@ -32,19 +34,16 @@ fun PinKeyboardScreen(onBack: () -> Unit) {
         serviceEnabled = isQ25AccessibilityServiceEnabled(context)
     }
 
-    ScreenScaffold(title = Screen.PinKeyboard.title, onBack = onBack) {
+    ScreenScaffold(title = stringResource(Screen.PinKeyboard.titleRes), onBack = onBack) {
         AccessibilityServiceBanner(serviceEnabled)
 
         Text(
-            "Type your lockscreen PIN on the physical keyboard. Digits map " +
-                "phone-dialpad style: W E R = 1 2 3, S D F = 4 5 6, Z X C = 7 8 9, " +
-                "Q = 0. Enter confirms, Backspace deletes. No root needed - uses the " +
-                "accessibility service only.",
+            stringResource(R.string.pin_desc),
             style = MaterialTheme.typography.bodySmall
         )
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enabled")
+            Text(stringResource(R.string.generic_enabled))
             Switch(
                 checked = enabled,
                 onCheckedChange = { checked ->

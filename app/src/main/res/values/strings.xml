@@ -1,4 +1,105 @@
 <resources>
     <string name="app_name">Q25 Toolbox</string>
     <string name="accessibility_description">Enables lockscreen PIN entry on the physical keyboard, per-app keyboard block, and adaptive keyboard backlight.</string>
+
+    <!-- App Tabs -->
+    <string name="tab_info">Info</string>
+    <string name="tab_keyboard">Keyboard</string>
+    <string name="tab_system">System</string>
+    <string name="tab_network">Network</string>
+
+    <!-- Screen Titles -->
+    <string name="title_wireless_adb">Persistent Wireless ADB</string>
+    <string name="title_dt2w">Double-Tap to Wake</string>
+    <string name="title_pin_keyboard">Lockscreen PIN on Keyboard</string>
+    <string name="title_ime_block">Per-App Keyboard Block</string>
+    <string name="title_chat_composer">Chat Enter-to-Send</string>
+    <string name="title_calculator_input">Calculator Keys</string>
+    <string name="title_bt_idle">Auto-disable Bluetooth</string>
+    <string name="title_telemetry">Global Telemetry Block</string>
+    <string name="title_extra_dim">Extra Dimming</string>
+    <string name="title_app_scaling">Per-App Display Scaling</string>
+
+    <!-- Screen Subtitles -->
+    <string name="subtitle_wireless_adb">Static port, survives reboot</string>
+    <string name="subtitle_dt2w">Wake screen with a double tap</string>
+    <string name="subtitle_pin_keyboard">Type your PIN on hardware keys</string>
+    <string name="subtitle_ime_block">Send keys straight to chosen apps</string>
+    <string name="subtitle_chat_composer">Enter sends, Alt+Enter newline in chat apps</string>
+    <string name="subtitle_calculator_input">Route number &amp; operator keys to the calculator</string>
+    <string name="subtitle_bt_idle">Turn off Bluetooth when idle</string>
+    <string name="subtitle_telemetry">Disable Firebase Crashlytics system-wide</string>
+    <string name="subtitle_extra_dim">Reduce brightness below system minimum</string>
+    <string name="subtitle_app_scaling">Force phone layout on misbehaving apps</string>
+
+    <!-- Info Screen -->
+    <string name="info_access">Access</string>
+    <string name="info_root_access">Root access</string>
+    <string name="info_root_checking">Checking…</string>
+    <string name="info_root_granted">Granted</string>
+    <string name="info_root_not_granted">Not granted</string>
+    <string name="info_a11y_service">Accessibility service</string>
+    <string name="info_enabled">Enabled</string>
+    <string name="info_disabled">Disabled</string>
+    <string name="info_device">Device</string>
+    <string name="info_battery">Battery</string>
+    <string name="info_model">Model</string>
+    <string name="info_android">Android</string>
+    <string name="info_lineageos">LineageOS</string>
+    <string name="info_build">Build</string>
+    <string name="info_security_patch">Security patch</string>
+    <string name="info_kernel">Kernel</string>
+    <string name="info_battery_charging">Charging</string>
+    <string name="info_battery_discharging">Discharging</string>
+    <string name="info_battery_full">Full</string>
+    <string name="info_battery_not_charging">Not charging</string>
+    <string name="info_battery_unknown">Unknown</string>
+    <string name="info_battery_health_good">Good</string>
+    <string name="info_battery_health_overheat">Overheat</string>
+    <string name="info_battery_health_dead">Dead</string>
+    <string name="info_battery_health_over_voltage">Over voltage</string>
+    <string name="info_battery_health_cold">Cold</string>
+    <string name="info_battery_level">Level</string>
+    <string name="info_battery_health">Health</string>
+    <string name="info_battery_temp">Temperature</string>
+    <string name="info_battery_volt">Voltage</string>
+    <string name="info_battery_tech">Technology</string>
+    <string name="info_battery_capacity">Capacity</string>
+    <string name="info_battery_cycles">Charge cycles</string>
+
+    <!-- Wireless ADB Screen -->
+    <string name="wadb_wlan_ip">WLAN IP: %1$s</string>
+    <string name="wadb_not_connected">not connected</string>
+    <string name="wadb_live_port">Current live port: %1$s</string>
+    <string name="wadb_not_set">not set</string>
+    <string name="wadb_persisted">Persisted: %1$s</string>
+    <string name="wadb_yes">Yes</string>
+    <string name="wadb_no">No</string>
+    <string name="wadb_port_label">Port</string>
+    <string name="wadb_btn_apply">Enable / Apply</string>
+    <string name="wadb_btn_disable">Disable</string>
+    <string name="wadb_status_enabled">Wireless ADB enabled on port %1$d. Persisted: %2$s.</string>
+    <string name="wadb_status_disabled">Wireless ADB disabled.</string>
+    <string name="wadb_persisted_yes">yes</string>
+    <string name="wadb_persisted_no">NO - check service.d write permissions</string>
+
+    <!-- DT2W Screen -->
+    <string name="dt2w_desc">Wake the device by double-tapping the screen while it\'s off. The Q25 has no hardware gesture-wake, so this runs a small background watchdog that watches the touchscreen and wakes on a double-tap.</string>
+    <string name="dt2w_state">State: %1$s</string>
+    <string name="dt2w_on">On</string>
+    <string name="dt2w_off">Off</string>
+    <string name="dt2w_boot_notice"> (starts at next boot)</string>
+    <string name="dt2w_enabled_label">Enabled</string>
+    <string name="dt2w_status_on">DT2W on. Double-tap the off screen to wake.</string>
+    <string name="dt2w_status_off">DT2W off.</string>
+
+    <!-- PIN Keyboard Screen -->
+    <string name="pin_desc">Type your lockscreen PIN on the physical keyboard. Digits map phone-dialpad style: W E R = 1 2 3, S D F = 4 5 6, Z X C = 7 8 9, Q = 0. Enter confirms, Backspace deletes. No root needed - uses the accessibility service only.</string>
+    <string name="generic_enabled">Enabled</string>
+
+    <!-- Accessibility Service Banner -->
+    <string name="a11y_banner_enabled">Accessibility service: enabled</string>
+    <string name="a11y_banner_needed">This feature needs the accessibility service enabled.</string>
+    <string name="a11y_banner_btn">Open Accessibility Settings</string>
+
 </resources>
