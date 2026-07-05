@@ -33,6 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.core.RootShell
+import com.kgr.q25toolbox.modules.UpdateChecker
+import com.kgr.q25toolbox.modules.UpdateInfo
 import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -48,6 +50,15 @@ fun InfoScreen() {
     var imeOk by remember { mutableStateOf(false) }
     var device by remember { mutableStateOf<List<Row>>(emptyList()) }
     var battery by remember { mutableStateOf<List<Row>>(emptyList()) }
+    val currentVersion = remember {
+        try {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: ""
+        } catch (_: Exception) {
+            ""
+        }
+    }
+    var updateCheckDone by remember { mutableStateOf(false) }
+    var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
 
     LaunchedEffect(Unit) {
         a11yOk = isQ25AccessibilityServiceEnabled(context)
@@ -57,9 +68,12 @@ fun InfoScreen() {
         withContext(Dispatchers.IO) {
             val r = RootShell.isRootAvailable()
             val health = readBatteryHealthRows(context)
+            val update = UpdateChecker.checkForUpdate(currentVersion)
             withContext(Dispatchers.Main) {
                 rootOk = r
                 if (health.isNotEmpty()) battery = battery + health
+                updateInfo = update
+                updateCheckDone = true
             }
         }
     }
@@ -98,6 +112,24 @@ fun InfoScreen() {
             )
         }
 
+        InfoCard(stringResource(R.string.info_app)) {
+            LabelValue(Row(stringResource(R.string.info_app_version), currentVersion))
+            StatusRow(
+                stringResource(R.string.info_app_update),
+                when {
+                    !updateCheckDone -> stringResource(R.string.info_update_checking)
+                    updateInfo != null -> stringResource(R.string.info_update_available, updateInfo!!.latestVersion)
+                    else -> stringResource(R.string.info_update_up_to_date)
+                },
+                when {
+                    !updateCheckDone -> NEUTRAL
+                    updateInfo != null -> UPDATE
+                    else -> OK
+                },
+                onClick = updateInfo?.let { info -> { openUrl(context, info.htmlUrl) } }
+            )
+        }
+
         InfoCard(stringResource(R.string.info_device)) { device.forEach { LabelValue(it) } }
 
         InfoCard(stringResource(R.string.info_battery)) { battery.forEach { LabelValue(it) } }
@@ -107,6 +139,7 @@ fun InfoScreen() {
 private val OK = Color(0xFF81C784)
 private val BAD = Color(0xFFE57373)
 private val NEUTRAL = Color(0xFFB0B0B0)
+private val UPDATE = Color(0xFF64B5F6)
 
 @Composable
 private fun InfoCard(title: String, content: @Composable () -> Unit) {
@@ -194,6 +227,12 @@ private fun openAccessibilitySettings(context: Context) {
 
 private fun openInputMethodSettings(context: Context) {
     val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    context.startActivity(intent)
+}
+
+private fun openUrl(context: Context, url: String) {
+    if (url.isEmpty()) return
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     context.startActivity(intent)
 }
 

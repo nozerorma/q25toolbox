@@ -17,6 +17,8 @@ sealed class Screen(@StringRes val titleRes: Int, @StringRes val subtitleRes: In
     data object Telemetry : Screen(R.string.title_telemetry, R.string.subtitle_telemetry)
     data object ExtraDim : Screen(R.string.title_extra_dim, R.string.subtitle_extra_dim)
     data object AppScaling : Screen(R.string.title_app_scaling, R.string.subtitle_app_scaling)
+    data object AutoFocus : Screen(R.string.title_auto_focus, R.string.subtitle_auto_focus)
+    data object InCallShortcuts : Screen(R.string.title_in_call_shortcuts, R.string.subtitle_in_call_shortcuts)
 
     val title: String @Composable get() = stringResource(titleRes)
     val subtitle: String @Composable get() = if (subtitleRes != 0) stringResource(subtitleRes) else ""
@@ -44,6 +46,8 @@ val systemScreens = listOf(
     Screen.Dt2w,
     Screen.ExtraDim,
     Screen.AppScaling,
+    Screen.AutoFocus,
+    Screen.InCallShortcuts,
 )
 
 /** Screens listed under the Network tab. */

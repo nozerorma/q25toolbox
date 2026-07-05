@@ -116,11 +116,11 @@
     <string name="key_remap_enabled_label">Habilitat</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Enfocament automàtic d’entrada</string>
-    <string name="subtitle_auto_focus">Enfoca el primer camp de text al carregar</string>
+    <string name="subtitle_auto_focus">Enfoca el primer camp després d’una tecla</string>
     <string name="auto_focus_enabled_switch">Habilitar enfocament automàtic</string>
     <string name="auto_focus_search_label">Buscar aplicacions</string>
     <string name="auto_focus_selected_count">%1$d seleccionades de %2$d aplicacions</string>
-    <string name="auto_focus_long_desc">En les aplicacions seleccionades, el servei d’accessibilitat busca automàticament el primer camp d’entrada de text editable quan es carrega la pantalla i l’enfoca. Això li permet començar a escriure al teclat físic immediatament sense haver de tocar el camp primer (per exemple, en marcadors telefònics o aplicacions de missatgeria).</string>
+    <string name="auto_focus_long_desc">En les aplicacions seleccionades, el servei d’accessibilitat busca el primer camp de text editable després de la primera pulsació d’una tecla física, l’enfoca i torna a enviar aquesta tecla perquè puguis continuar escrivint sense tocar abans el camp (per exemple, en marcadors telefònics o aplicacions de missatgeria).</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Dreceres en trucada</string>
     <string name="subtitle_in_call_shortcuts">Alterna silenci, altaveu i teclat en trucades</string>

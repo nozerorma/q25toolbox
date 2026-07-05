@@ -116,11 +116,11 @@
     <string name="key_remap_enabled_label">Aktiviert</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Automatischer Eingabefokus</string>
-    <string name="subtitle_auto_focus">Erstes Textfeld beim Laden fokussieren</string>
+    <string name="subtitle_auto_focus">Erstes Textfeld nach Tastendruck fokussieren</string>
     <string name="auto_focus_enabled_switch">Automatischen Fokus aktivieren</string>
     <string name="auto_focus_search_label">Apps suchen</string>
     <string name="auto_focus_selected_count">%1$d ausgewählt von %2$d Apps</string>
-    <string name="auto_focus_long_desc">In den ausgewählten Apps sucht der Barrierefreiheitsdienst beim Laden des Bildschirms automatisch nach dem ersten bearbeitbaren Texteingabefeld und fokussiert dieses. So können Sie sofort auf der physischen Tastatur zu tippen beginnen, ohne das Feld vorher antippen zu müssen (z. B. in Telefon- oder Messenger-Apps).</string>
+    <string name="auto_focus_long_desc">In den ausgewählten Apps sucht der Barrierefreiheitsdienst nach dem ersten Druck auf eine physische Taste das erste bearbeitbare Texteingabefeld, fokussiert es und sendet diese Taste erneut. So können Sie weiter tippen, ohne das Feld vorher antippen zu müssen (z. B. in Telefon- oder Messenger-Apps).</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Tastenkombinationen im Telefonat</string>
     <string name="subtitle_in_call_shortcuts">Stummschaltung, Lautsprecher und Tastatur in Anrufen umschalten</string>

@@ -116,11 +116,11 @@
     <string name="key_remap_enabled_label">Activé</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Mise au point automatique</string>
-    <string name="subtitle_auto_focus">Focaliser le premier champ de texte au chargement</string>
+    <string name="subtitle_auto_focus">Focaliser le premier champ après une touche</string>
     <string name="auto_focus_enabled_switch">Activer la mise au point automatique</string>
     <string name="auto_focus_search_label">Rechercher des applications</string>
     <string name="auto_focus_selected_count">%1$d sélectionnées de %2$d applications</string>
-    <string name="auto_focus_long_desc">Dans les applications sélectionnées, le service d\'accessibilité recherche automatiquement le premier champ de saisie de texte modifiable lors du chargement de l\'écran et le focalise. Cela vous permet de commencer à taper immédiatement sur le clavier physique sans avoir à toucher le champ d\'abord (par exemple, dans les numéroteurs ou les applications de messagerie).</string>
+    <string name="auto_focus_long_desc">Dans les applications sélectionnées, le service d\'accessibilité recherche le premier champ de texte modifiable après la première pression sur une touche physique, le focalise et renvoie cette touche afin que vous puissiez continuer à taper sans toucher d\'abord le champ (par exemple, dans les numéroteurs ou les applications de messagerie).</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Raccourcis en appel</string>
     <string name="subtitle_in_call_shortcuts">Basculer sourdine, haut-parleur et clavier en appels</string>

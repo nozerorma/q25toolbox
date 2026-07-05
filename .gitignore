@@ -16,6 +16,9 @@ local.properties
 *.iws
 .navigation/
 
+# Antigravity/VSCode local history
+.history/
+
 # macOS
 .DS_Store
 

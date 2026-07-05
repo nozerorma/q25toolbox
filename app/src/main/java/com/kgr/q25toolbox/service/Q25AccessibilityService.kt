@@ -142,9 +142,6 @@ class Q25AccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
-        // Skip content-change events – they fire hundreds of times per second
-        // and would flood the main thread with expensive foregroundAppPackage() calls.
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) return
 
         val pkg = foregroundAppPackage()
         if (pkg != null && pkg != foregroundPkg) {
@@ -289,7 +286,6 @@ class Q25AccessibilityService : AccessibilityService() {
         val kc = event.keyCode
 
         // Key-triggered AutoFocus: Focus input field and type key once any printable key is pressed on an unfocused field
-        Log.d("Q25Toolbox", "onKeyEvent: kc=$kc action=${event.action} unicodeChar=${event.unicodeChar} autoFocusEnabled=${isAutoFocusEnabledForForeground()} foregroundPkg=$foregroundPkg")
         if (isAutoFocusEnabledForForeground()) {
             if (event.action == KeyEvent.ACTION_DOWN) {
                 val unicodeChar = event.unicodeChar
@@ -298,7 +294,6 @@ class Q25AccessibilityService : AccessibilityService() {
                     if (root != null) {
                         try {
                             val inputNode = AutoFocusController.findFirstEditableNode(root)
-                            Log.d("Q25Toolbox", "onKeyEvent: inputNode=$inputNode isFocused=${inputNode?.isFocused}")
                             if (inputNode != null) {
                                 try {
                                     if (!inputNode.isFocused) {
@@ -321,11 +316,9 @@ class Q25AccessibilityService : AccessibilityService() {
                                                         r.recycle()
                                                     }
                                                 } ?: false
-                                                Log.d("Q25Toolbox", "autofocus poll attempt=$attempt hasInputFocus=$hasInputFocus")
                                                 if (hasInputFocus) break
                                             }
-                                            val result = RootShell.run("input keyevent $kc")
-                                            Log.d("Q25Toolbox", "autofocus inject kc=$kc hasInputFocus=$hasInputFocus result=$result")
+                                            RootShell.run("input keyevent $kc")
                                         }
                                         return true // Consume original press event
                                     }
@@ -595,18 +588,47 @@ class Q25AccessibilityService : AccessibilityService() {
         return result
     }
 
+    /**
+     * Finds the PIN pad button by exact resource-id first (SystemUI's key ids
+     * are stable and unique, so the first hit can return immediately - no
+     * need to keep walking siblings to rule out a duplicate). Only falls back
+     * to the slower exhaustive-with-uniqueness-check text search, which stays
+     * cautious since matching by visible label alone is inherently fuzzier.
+     */
     private fun findSingleNodeInTree(
         root: AccessibilityNodeInfo?,
         viewId: String,
         fallbackTexts: List<CharSequence>
     ): AccessibilityNodeInfo? {
+        findByViewIdFast(root, viewId)?.let { return it }
+        return findByFallbackTextUnique(root, fallbackTexts)
+    }
+
+    private fun findByViewIdFast(root: AccessibilityNodeInfo?, viewId: String): AccessibilityNodeInfo? {
+        if (root == null) return null
+        val rootViewId = root.viewIdResourceName
+        if (rootViewId != null && viewId.contentEquals(rootViewId)) {
+            return AccessibilityNodeInfo.obtain(root)
+        }
+        for (i in 0 until root.childCount) {
+            val child = root.getChild(i) ?: continue
+            try {
+                findByViewIdFast(child, viewId)?.let { return it }
+            } finally {
+                child.recycle()
+            }
+        }
+        return null
+    }
+
+    private fun findByFallbackTextUnique(
+        root: AccessibilityNodeInfo?,
+        fallbackTexts: List<CharSequence>
+    ): AccessibilityNodeInfo? {
         if (root == null) return null
 
         var match: AccessibilityNodeInfo? = null
-        val rootViewId = root.viewIdResourceName
-        if (rootViewId != null && viewId.contentEquals(rootViewId)) {
-            match = AccessibilityNodeInfo.obtain(root)
-        } else if (isActionableMatch(root, fallbackTexts)) {
+        if (isActionableMatch(root, fallbackTexts)) {
             match = AccessibilityNodeInfo.obtain(root)
         }
 
@@ -614,7 +636,7 @@ class Q25AccessibilityService : AccessibilityService() {
         for (i in 0 until childCount) {
             val child = root.getChild(i) ?: continue
             try {
-                val childMatch = findSingleNodeInTree(child, viewId, fallbackTexts)
+                val childMatch = findByFallbackTextUnique(child, fallbackTexts)
                 if (childMatch != null) {
                     if (match != null) {
                         match.recycle()

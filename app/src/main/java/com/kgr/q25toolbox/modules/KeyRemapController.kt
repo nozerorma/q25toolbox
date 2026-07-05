@@ -41,6 +41,13 @@ object KeyRemapController {
             "The right-hand Shift key. Left Shift still works normally for uppercase.",
             54,
             "SHIFT_RIGHT"
+        ),
+        RECENTS(
+            "Recents (BlackBerry key)",
+            "The dedicated recent-apps/task-switcher key. Remapping it to Ctrl means you lose " +
+            "the hardware shortcut for recents.",
+            580,
+            "APP_SWITCH"
         )
     }
 
@@ -86,7 +93,10 @@ object KeyRemapController {
     }
 
     private fun generateBootScript(source: SourceKey): String {
-        val sedCommand = "sed \"s/key ${source.scancode}    ${source.originalKeycode}/key ${source.scancode}    CTRL_RIGHT/\" $SYS_FILE > $TMP_FILE.tmp"
+        // The column padding between scancode and keycode in the layout file varies with the
+        // scancode's digit width (e.g. "54    SHIFT_RIGHT" vs "580   APP_SWITCH"), so match on
+        // one-or-more whitespace rather than a fixed run of spaces.
+        val sedCommand = "sed -E \"s/key ${source.scancode}[[:space:]]+${source.originalKeycode}/key ${source.scancode} CTRL_RIGHT/\" $SYS_FILE > $TMP_FILE.tmp"
         return """
 #!/system/bin/sh
 # Wait for the system partition layout file to be available

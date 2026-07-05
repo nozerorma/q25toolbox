@@ -116,11 +116,11 @@
     <string name="key_remap_enabled_label">Abilitato</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Messa a fuoco automatica dell’input</string>
-    <string name="subtitle_auto_focus">Mette a fuoco il primo campo di testo al caricamento</string>
+    <string name="subtitle_auto_focus">Mette a fuoco il primo campo dopo un tasto</string>
     <string name="auto_focus_enabled_switch">Abilita messa a fuoco automatica</string>
     <string name="auto_focus_search_label">Cerca applicazioni</string>
     <string name="auto_focus_selected_count">%1$d selezionate di %2$d applicazioni</string>
-    <string name="auto_focus_long_desc">Nelle applicazioni selezionate, il servizio di accessibilità cerca automaticamente il primo campo di inserimento del testo modificabile al caricamento dello schermo e lo mette a fuoco. Ciò consente di iniziare a digitare immediatamente sulla tastiera fisica senza dover prima toccare il campo (ad esempio, in combinatori telefonici o app di messaggistica).</string>
+    <string name="auto_focus_long_desc">Nelle applicazioni selezionate, il servizio di accessibilità cerca il primo campo di testo modificabile dopo la prima pressione di un tasto fisico, lo mette a fuoco e reinvia quel tasto, così puoi continuare a digitare senza toccare prima il campo (ad esempio, in combinatori telefonici o app di messaggistica).</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Scorciatoie in chiamata</string>
     <string name="subtitle_in_call_shortcuts">Alterna silenziamento, altoparlante e tastierino in chiamata</string>

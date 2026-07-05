@@ -47,6 +47,12 @@
     <string name="info_tap_to_open">Tap to open</string>
     <string name="info_enabled">Enabled</string>
     <string name="info_disabled">Disabled</string>
+    <string name="info_app">App</string>
+    <string name="info_app_version">Version</string>
+    <string name="info_app_update">Update</string>
+    <string name="info_update_checking">Checking…</string>
+    <string name="info_update_up_to_date">Up to date</string>
+    <string name="info_update_available">Update available: v%1$s (tap to view)</string>
     <string name="info_device">Device</string>
     <string name="info_battery">Battery</string>
     <string name="info_model">Model</string>
@@ -115,14 +121,17 @@
     <string name="key_remap_currency_desc">The € / £ / $ key next to Space. Currently mismapped as backtick by the firmware — remapping it to Ctrl doesn\'t affect normal typing.</string>
     <string name="key_remap_rshift_label">Right Shift</string>
     <string name="key_remap_rshift_desc">The right-hand Shift key. Left Shift still works normally for uppercase.</string>
+    <string name="key_remap_recents_label">Recents (BlackBerry key)</string>
+    <string name="key_remap_recents_desc">The dedicated recent-apps/task-switcher key. Remapping it to Ctrl means you lose the hardware shortcut for recents.</string>
     <string name="key_remap_enabled_label">Enabled</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Auto-Focus Input</string>
-    <string name="subtitle_auto_focus">Focus first text field on load</string>
+    <string name="subtitle_auto_focus">Focus first text field after keypress</string>
     <string name="auto_focus_enabled_switch">Enable autofocus</string>
     <string name="auto_focus_search_label">Search apps</string>
     <string name="auto_focus_selected_count">%1$d selected of %2$d apps</string>
-    <string name="auto_focus_long_desc">In selected apps, the accessibility service automatically searches for the first editable text input field when the screen loads and focuses it. This allows you to start typing on the physical keyboard immediately without needing to tap the field first (e.g., in dialers or messaging apps).</string>
+    <string name="auto_focus_long_desc">In selected apps, the accessibility service searches for the first editable text input field after your first physical keypress, focuses it, and replays that key so typing can continue without tapping the field first (e.g., in dialers or messaging apps).</string>
+    <string name="auto_focus_enabled_label">Enabled</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">In-Call Shortcuts</string>
     <string name="subtitle_in_call_shortcuts">Toggle mute, speaker, and keypad in calls</string>

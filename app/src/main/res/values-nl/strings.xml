@@ -118,11 +118,11 @@
     <string name="key_remap_enabled_label">Ingeschakeld</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Automatisch invoerveld focussen</string>
-    <string name="subtitle_auto_focus">Eerste tekstveld focussen bij laden</string>
+    <string name="subtitle_auto_focus">Eerste tekstveld focussen na toetsdruk</string>
     <string name="auto_focus_enabled_switch">Automatisch focussen inschakelen</string>
     <string name="auto_focus_search_label">Apps zoeken</string>
     <string name="auto_focus_selected_count">%1$d geselecteerd van %2$d apps</string>
-    <string name="auto_focus_long_desc">In de geselecteerde apps zoekt de toegankelijkheidsservice automatisch naar het eerste bewerkbare tekstveld wanneer het scherm wordt geladen en focust dit. Hierdoor kun je direct op het fysieke toetsenbord beginnen met typen zonder dat je eerst op het veld hoeft te tikken (bijvoorbeeld in dialers of chat-apps).</string>
+    <string name="auto_focus_long_desc">In de geselecteerde apps zoekt de toegankelijkheidsservice na de eerste fysieke toetsdruk naar het eerste bewerkbare tekstveld, focust dit en stuurt die toets opnieuw, zodat je kunt blijven typen zonder eerst op het veld te tikken (bijvoorbeeld in dialers of chat-apps).</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Sneltoetsen tijdens gesprek</string>
     <string name="subtitle_in_call_shortcuts">Demping, luidspreker en toetsenbord schakelen tijdens oproepen</string>

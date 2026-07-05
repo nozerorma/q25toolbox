@@ -64,10 +64,12 @@ fun KeyRemapScreen(onBack: () -> Unit) {
                         val label = when (key) {
                             KeyRemapController.SourceKey.GRAVE -> stringResource(R.string.key_remap_currency_label)
                             KeyRemapController.SourceKey.RSHIFT -> stringResource(R.string.key_remap_rshift_label)
+                            KeyRemapController.SourceKey.RECENTS -> stringResource(R.string.key_remap_recents_label)
                         }
                         val description = when (key) {
                             KeyRemapController.SourceKey.GRAVE -> stringResource(R.string.key_remap_currency_desc)
                             KeyRemapController.SourceKey.RSHIFT -> stringResource(R.string.key_remap_rshift_desc)
+                            KeyRemapController.SourceKey.RECENTS -> stringResource(R.string.key_remap_recents_desc)
                         }
 
                         Row(

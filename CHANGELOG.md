@@ -4,6 +4,28 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.0-beta9] - 2026-07-05
+
+### Added
+- **Recents key remap option**: the dedicated recent-apps/task-switcher key
+  (BlackBerry key) can now be reassigned to Ctrl alongside the Currency and
+  Right Shift options.
+- **Update check**: the Info screen now checks GitHub for a newer release on
+  load and shows a tappable link to the release page when one is available.
+
+### Fixed
+- **Auto-focus in Maps/Gmail**: search boxes that activate via click rather
+  than accessibility focus (Google Maps' omnibox, Gmail's search bar) are now
+  correctly detected and typed into, instead of silently failing.
+- **Auto-focus in browsers**: when a WebView page has no input fields, typing
+  no longer falls through to focus the browser's own address bar.
+- **Key-remap script for 3+ digit scancodes**: the boot-script's keylayout
+  edit now tolerates the layout file's variable column spacing, which
+  previously made 3-digit scancodes (like the Recents key) silently fail to
+  remap.
+- **Lockscreen PIN input lag**: the PIN-button lookup no longer keeps walking
+  the whole keypad tree after finding an exact resource-id match.
+
 ## [1.0-beta8] - 2026-07-05
 
 ### Added

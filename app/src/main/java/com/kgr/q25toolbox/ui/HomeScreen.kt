@@ -103,6 +103,8 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.Telemetry -> TelemetryScreen(onBack)
         Screen.ExtraDim -> ExtraDimScreen(onBack)
         Screen.AppScaling -> AppScalingScreen(onBack)
+        Screen.AutoFocus -> AutoFocusScreen(onBack)
+        Screen.InCallShortcuts -> InCallShortcutsScreen(onBack)
     }
 }
 
