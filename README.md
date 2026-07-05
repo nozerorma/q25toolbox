@@ -182,7 +182,7 @@ list uses a `<queries>` launcher intent so it can enumerate launchable apps
 on Android 11+.
 
 ### Chat Enter-to-Send / Calculator Keys (`Q25AccessibilityService` + `inputfix/`)
-Ported from [nozerorma/q25-input-helper](https://github.com/nozerorma/q25-input-helper).
+Ported from [smh786/q25-input-helper](https://github.com/smh786/q25-input-helper).
 No root needed. Both are physical-key handlers dispatched from the
 accessibility service's `onKeyEvent`, gated by their own `q25tweaks` prefs
 (`chat_composer_enabled` / `calculator_enabled`, both off by default). The
