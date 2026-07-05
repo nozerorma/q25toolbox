@@ -6,25 +6,24 @@ bottom-bar sections:
 
 **Info** - device status landing page: build (model, Android, LineageOS,
 security patch, kernel), battery (level, health, temperature, voltage,
-technology, capacity-health % and charge cycles from sysfs), and root +
-accessibility-service status.
+technology, capacity-health % and charge cycles from sysfs), and the current
+root, accessibility-service, and IME status.
 
 **Keyboard**
-- **Key Remapper** - remap the 5 modifier keys (Left Alt, Left/Right Shift,
-  Right SYM, Currency) and personalise what the currency key types
+- **Key Remapper** - remap the main modifier keys and assign spare hardware
+  keys to Ctrl or other modifier actions, with live apply support
 - **Lockscreen PIN on Keyboard** - type your PIN on the physical keyboard
 - **Per-App Keyboard Block** - in chosen apps, route physical keys straight
-  to the app (for games) by switching to a passthrough IME
+to the app (for games) by switching to a passthrough IME
 - **Chat Enter-to-Send** - in messaging apps, Enter sends and Alt/Shift+Enter
   inserts a newline
 - **Calculator Keys** - route physical number and operator keys to the
   AOSP/Google Calculator
-
-**System**
-- **Double-Tap to Wake** (DT2W) - software watchdog: double-tap the off screen
-  to wake it
-- **Extra Dimming** - reduce brightness below the system's standard minimum,
-  with an optional nightly auto-on/off schedule
+- **Auto-Focus Input** - automatically focus the first editable field in chosen
+  apps, including the Google Phone dialer when it opens
+- **In-Call Shortcuts** - in Google Phone, use M to mute/unmute and $ to toggle
+  the speaker, while the dialer and keypad can be brought up automatically for
+  direct numeric input
 - **Adaptive Brightness (One-Shot)** - measure ambient light once per screen
   wake and then hold it steady, instead of continuously adapting
 - **Per-App Display Scaling** - switch to a smaller/portrait resolution while a
@@ -93,6 +92,21 @@ the build script.
   EventHub reloads. The same script runs live on save, so no reboot is needed.
 - Settings live in a `q25keyremap` prefs file. Clearing all remaps (everything
   back to default) removes the script and undoes the mounts.
+
+### Auto-Focus Input (`AutoFocusController`)
+- Uses the accessibility service to focus the first editable field in selected
+  apps once the window appears, which makes the Google Phone dialer and other
+  text-entry screens ready for immediate keyboard input.
+- The per-app target list is stored in the same `q25tweaks` prefs set used by
+  the other accessibility-service modules, so the behavior can be enabled or
+  disabled independently for each app.
+
+### In-Call Shortcuts (`InCallShortcutsController`)
+- Adds a few lightweight phone-call shortcuts for the Google Phone app, such as
+  muting/unmuting with M, toggling the speaker with $, and bringing up the
+  dialer/keypad flow for direct numeric entry.
+- Like the other accessibility-service features, it runs through the shared
+  service layer so it can react to the foreground app and ongoing call UI.
 
 ### Double-Tap to Wake (`Dt2wController`)
 - The Q25 touch panel has **no** hardware/driver gesture-wake, and the
@@ -307,7 +321,7 @@ find-and-replace:
 ## Extending
 
 - For stateless root-command modules, add a `core`-style controller in
-  `modules/`, following the pattern of `CtrlKeyController` /
+  `modules/`, following the pattern of `KeyRemapController` /
   `WirelessAdbController` / `Dt2wController` (persist
   via `AssetInstaller`, live-apply via `RootShell.run`).
 - For features that need to observe ongoing state (window/IME visibility,
