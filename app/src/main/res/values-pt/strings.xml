@@ -41,6 +41,8 @@
     <string name="info_root_granted">Concedido</string>
     <string name="info_root_not_granted">Não concedido</string>
     <string name="info_a11y_service">Serviço de acessibilidade</string>
+    <string name="info_ime_service">IME</string>
+    <string name="info_tap_to_open">Toque para abrir</string>
     <string name="info_enabled">Ativado</string>
     <string name="info_disabled">Desativado</string>
     <string name="info_device">Dispositivo</string>
@@ -112,4 +114,16 @@
     <string name="key_remap_rshift_label">Shift Direito</string>
     <string name="key_remap_rshift_desc">A tecla Shift direita. O Shift Esquerdo continua funcionando normalmente para as maiúsculas.</string>
     <string name="key_remap_enabled_label">Ativado</string>
+    <!-- Auto Focus Screen -->
+    <string name="title_auto_focus">Foco automático de entrada</string>
+    <string name="subtitle_auto_focus">Foca o primeiro campo de texto ao carregar</string>
+    <string name="auto_focus_enabled_switch">Habilitar foco automático</string>
+    <string name="auto_focus_search_label">Buscar aplicativos</string>
+    <string name="auto_focus_selected_count">%1$d selecionados de %2$d aplicativos</string>
+    <string name="auto_focus_long_desc">Nos aplicativos selecionados, o serviço de acessibilidade busca automaticamente o primeiro campo de entrada de texto editável quando a tela é carregada e o foca. Isso permite que você comece a digitar no teclado físico imediatamente, sem a necessidade de tocar no campo antes (por exemplo, em discadores ou aplicativos de mensagens).</string>
+    <!-- In-Call Shortcuts Screen -->
+    <string name="title_in_call_shortcuts">Atalhos em chamada</string>
+    <string name="subtitle_in_call_shortcuts">Alterna mudo, alto-falante e teclado em chamadas</string>
+    <string name="in_call_shortcuts_desc">Na tela de chamada do aplicativo Telefone do Google, use Alt+M para ativar/desativar o mudo do microfone, Alt+S para alternar o alto-falante e Alt+K para mostrar/ocultar o teclado numérico. Não requer root.</string>
+    <string name="in_call_shortcuts_enabled_label">Ativado</string>
 </resources>

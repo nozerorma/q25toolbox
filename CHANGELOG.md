@@ -4,6 +4,66 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.0-beta8] - 2026-07-05
+
+### Added
+- **Info-screen access status**: the Access card now reports the current root,
+  accessibility-service, and IME state at a glance, and the related rows open
+  the relevant Android settings screens directly.
+- **Key remapping improvements**: spare hardware keys can be reassigned to
+  Ctrl/other modifiers and applied live with persistent boot-script support.
+- **Auto-focus input**: the app can now focus the first editable field in
+  selected apps, including the Google Phone dialer when it opens.
+- **In-call shortcuts for Google Phone**: press M to mute, $ to toggle the
+  speaker, the dialer opens automatically for calls, and numeric keys can be
+  routed directly to the dialer keypad.
+- **Improved beta versioning**: the app version name and code now match the
+  beta8 release so update trackers such as Obtainium can detect the new build
+  correctly.
+
+### Changed
+- Simplified the Access card wording while keeping the accessibility and IME
+  shortcuts clear.
+- Added localized strings for the new Info-screen copy in the existing supported
+  languages.
+
+## [1.0-beta7] - 2026-07-05
+
+### Added
+- **Complete key-remap redesign**: remapping is now applied through the
+  keyboard layout itself, with live reload via driver unbind/rebind and a
+  persistent boot script for future reboots.
+- **Expanded localization**: translated the main UI strings into Catalan,
+  German, Spanish, French, Italian, Dutch, and Portuguese.
+
+### Changed
+- Cleaned up the accessibility-service key handling to reduce soft-intercept
+  overhead while keeping the remap behavior intact.
+
+## [1.0-beta6] - 2026-07-05
+
+### Added
+- **Hardware-key remap to Right Ctrl**: a spare key (Currency or Right Shift)
+  can now be remapped to Right Ctrl directly from the app.
+- **New Key Remap screen**: an in-app screen exposes the remapping option with
+  simple on/off controls.
+
+### Changed
+- Integrated the remap feature with the newer string-resource translation flow
+  so the UI is easier to localize and maintain.
+
+## [1.0-beta5] - 2026-07-04
+
+### Fixed
+- **More stable per-app scaling**: improved the foreground/window tracking logic
+  so scaling behaves more reliably across apps.
+- **Lockscreen reset and taskbar suppression**: fixed the reset path when the
+  screen locks and prevented the Android taskbar from appearing after scaling.
+
+### Changed
+- Added additional guards around scaling commands, including a busy-state guard
+  and timeouts to prevent shell stalls while applying resolution changes.
+
 ## [1.0-beta4] - 2026-07-04
 
 ### Added

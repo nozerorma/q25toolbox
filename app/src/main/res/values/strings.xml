@@ -43,6 +43,8 @@
     <string name="info_root_granted">Granted</string>
     <string name="info_root_not_granted">Not granted</string>
     <string name="info_a11y_service">Accessibility service</string>
+    <string name="info_ime_service">IME</string>
+    <string name="info_tap_to_open">Tap to open</string>
     <string name="info_enabled">Enabled</string>
     <string name="info_disabled">Disabled</string>
     <string name="info_device">Device</string>
@@ -114,4 +116,16 @@
     <string name="key_remap_rshift_label">Right Shift</string>
     <string name="key_remap_rshift_desc">The right-hand Shift key. Left Shift still works normally for uppercase.</string>
     <string name="key_remap_enabled_label">Enabled</string>
+    <!-- Auto Focus Screen -->
+    <string name="title_auto_focus">Auto-Focus Input</string>
+    <string name="subtitle_auto_focus">Focus first text field on load</string>
+    <string name="auto_focus_enabled_switch">Enable autofocus</string>
+    <string name="auto_focus_search_label">Search apps</string>
+    <string name="auto_focus_selected_count">%1$d selected of %2$d apps</string>
+    <string name="auto_focus_long_desc">In selected apps, the accessibility service automatically searches for the first editable text input field when the screen loads and focuses it. This allows you to start typing on the physical keyboard immediately without needing to tap the field first (e.g., in dialers or messaging apps).</string>
+    <!-- In-Call Shortcuts Screen -->
+    <string name="title_in_call_shortcuts">In-Call Shortcuts</string>
+    <string name="subtitle_in_call_shortcuts">Toggle mute, speaker, and keypad in calls</string>
+    <string name="in_call_shortcuts_desc">In the Google Phone app call screen, use Alt+M to mute/unmute, Alt+S to toggle the speakerphone, and Alt+K to show/hide the call keypad. No root required.</string>
+    <string name="in_call_shortcuts_enabled_label">Enabled</string>
 </resources>

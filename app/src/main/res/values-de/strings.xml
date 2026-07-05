@@ -41,6 +41,8 @@
     <string name="info_root_granted">Erteilt</string>
     <string name="info_root_not_granted">Nicht erteilt</string>
     <string name="info_a11y_service">Barrierefreiheitsdienst</string>
+    <string name="info_ime_service">IME</string>
+    <string name="info_tap_to_open">Tippen, um zu öffnen</string>
     <string name="info_enabled">Aktiviert</string>
     <string name="info_disabled">Deaktiviert</string>
     <string name="info_device">Gerät</string>
@@ -112,4 +114,16 @@
     <string name="key_remap_rshift_label">Rechte Umschalttaste</string>
     <string name="key_remap_rshift_desc">Die rechte Umschalttaste. Die linke Umschalttaste funktioniert weiterhin normal zur Großschreibung.</string>
     <string name="key_remap_enabled_label">Aktiviert</string>
+    <!-- Auto Focus Screen -->
+    <string name="title_auto_focus">Automatischer Eingabefokus</string>
+    <string name="subtitle_auto_focus">Erstes Textfeld beim Laden fokussieren</string>
+    <string name="auto_focus_enabled_switch">Automatischen Fokus aktivieren</string>
+    <string name="auto_focus_search_label">Apps suchen</string>
+    <string name="auto_focus_selected_count">%1$d ausgewählt von %2$d Apps</string>
+    <string name="auto_focus_long_desc">In den ausgewählten Apps sucht der Barrierefreiheitsdienst beim Laden des Bildschirms automatisch nach dem ersten bearbeitbaren Texteingabefeld und fokussiert dieses. So können Sie sofort auf der physischen Tastatur zu tippen beginnen, ohne das Feld vorher antippen zu müssen (z. B. in Telefon- oder Messenger-Apps).</string>
+    <!-- In-Call Shortcuts Screen -->
+    <string name="title_in_call_shortcuts">Tastenkombinationen im Telefonat</string>
+    <string name="subtitle_in_call_shortcuts">Stummschaltung, Lautsprecher und Tastatur in Anrufen umschalten</string>
+    <string name="in_call_shortcuts_desc">Verwenden Sie im Anruferbildschirm der Google Telefon-App Alt+M zum Stummschalten/Aktivieren, Alt+S zum Ein-/Ausschalten des Lautsprechers und Alt+K zum Ein-/Ausblenden der Wähltastatur. Kein Root erforderlich.</string>
+    <string name="in_call_shortcuts_enabled_label">Aktiviert</string>
 </resources>

@@ -41,6 +41,8 @@
     <string name="info_root_granted">Concesso</string>
     <string name="info_root_not_granted">Non concesso</string>
     <string name="info_a11y_service">Servizio di accessibilità</string>
+    <string name="info_ime_service">IME</string>
+    <string name="info_tap_to_open">Tocca per aprire</string>
     <string name="info_enabled">Abilitato</string>
     <string name="info_disabled">Disabilitato</string>
     <string name="info_device">Dispositivo</string>
@@ -112,4 +114,16 @@
     <string name="key_remap_rshift_label">Shift Destro</string>
     <string name="key_remap_rshift_desc">Il tasto Shift destro. Shift Sinistro continua a funzionare normalmente per le maiuscole.</string>
     <string name="key_remap_enabled_label">Abilitato</string>
+    <!-- Auto Focus Screen -->
+    <string name="title_auto_focus">Messa a fuoco automatica dell’input</string>
+    <string name="subtitle_auto_focus">Mette a fuoco il primo campo di testo al caricamento</string>
+    <string name="auto_focus_enabled_switch">Abilita messa a fuoco automatica</string>
+    <string name="auto_focus_search_label">Cerca applicazioni</string>
+    <string name="auto_focus_selected_count">%1$d selezionate di %2$d applicazioni</string>
+    <string name="auto_focus_long_desc">Nelle applicazioni selezionate, il servizio di accessibilità cerca automaticamente il primo campo di inserimento del testo modificabile al caricamento dello schermo e lo mette a fuoco. Ciò consente di iniziare a digitare immediatamente sulla tastiera fisica senza dover prima toccare il campo (ad esempio, in combinatori telefonici o app di messaggistica).</string>
+    <!-- In-Call Shortcuts Screen -->
+    <string name="title_in_call_shortcuts">Scorciatoie in chiamata</string>
+    <string name="subtitle_in_call_shortcuts">Alterna silenziamento, altoparlante e tastierino in chiamata</string>
+    <string name="in_call_shortcuts_desc">Nella schermata di chiamata dell\'applicazione Telefono di Google, usa Alt+M per disattivare/riattivare il microfono, Alt+S per attivare/disattivare l\'altoparlante e Alt+K per mostrare/nascondere il tastierino numerico. Non richiede root.</string>
+    <string name="in_call_shortcuts_enabled_label">Abilitato</string>
 </resources>

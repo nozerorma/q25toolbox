@@ -3,8 +3,13 @@ package com.kgr.q25toolbox.ui
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.BatteryManager
 import android.os.Build
+import android.provider.Settings
+import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,11 +45,13 @@ fun InfoScreen() {
 
     var rootOk by remember { mutableStateOf<Boolean?>(null) }
     var a11yOk by remember { mutableStateOf(false) }
+    var imeOk by remember { mutableStateOf(false) }
     var device by remember { mutableStateOf<List<Row>>(emptyList()) }
     var battery by remember { mutableStateOf<List<Row>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         a11yOk = isQ25AccessibilityServiceEnabled(context)
+        imeOk = isQ25ImeEnabled(context)
         device = buildDeviceRows(context)
         battery = readBatteryRows(context)
         withContext(Dispatchers.IO) {
@@ -74,12 +81,20 @@ fun InfoScreen() {
                     true -> stringResource(R.string.info_root_granted)
                     else -> stringResource(R.string.info_root_not_granted)
                 },
-                when (rootOk) { null -> NEUTRAL; true -> OK; else -> BAD }
+                when (rootOk) { null -> NEUTRAL; true -> OK; else -> BAD },
+                onClick = { openRootManager(context) }
             )
             StatusRow(
                 stringResource(R.string.info_a11y_service),
                 if (a11yOk) stringResource(R.string.info_enabled) else stringResource(R.string.info_disabled),
-                if (a11yOk) OK else BAD
+                if (a11yOk) OK else BAD,
+                onClick = { openAccessibilitySettings(context) }
+            )
+            StatusRow(
+                stringResource(R.string.info_ime_service),
+                if (imeOk) stringResource(R.string.info_enabled) else stringResource(R.string.info_disabled),
+                if (imeOk) OK else BAD,
+                onClick = { openInputMethodSettings(context) }
             )
         }
 
@@ -115,11 +130,71 @@ private fun LabelValue(row: Row) {
 }
 
 @Composable
-private fun StatusRow(label: String, value: String, color: Color) {
-    Column {
+private fun StatusRow(
+    label: String,
+    value: String,
+    color: Color,
+    hint: String? = null,
+    onClick: (() -> Unit)? = null
+) {
+    Column(
+        modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    ) {
         Text(label, style = MaterialTheme.typography.labelMedium, color = NEUTRAL)
         Text(value, style = MaterialTheme.typography.bodyMedium, color = color)
+        if (!hint.isNullOrEmpty()) {
+            Text(hint, style = MaterialTheme.typography.bodySmall, color = NEUTRAL)
+        }
     }
+}
+
+private fun isQ25ImeEnabled(context: Context): Boolean {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return false
+    val imeId = "${context.packageName}/.service.Q25PassthroughIme"
+    return imm.enabledInputMethodList.any { it.id == imeId }
+}
+
+private fun openRootManager(context: Context) {
+    val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+    val launchableApps = context.packageManager.queryIntentActivities(launcherIntent, PackageManager.MATCH_DEFAULT_ONLY)
+
+    val detectedRootManager = launchableApps.asSequence()
+        .map { it.activityInfo }
+        .firstOrNull { activityInfo ->
+            val packageName = activityInfo.packageName.lowercase()
+            val label = activityInfo.loadLabel(context.packageManager).toString().lowercase()
+            packageName.contains("magisk") ||
+                packageName.contains("kernelsu") ||
+                packageName.contains("apatch") ||
+                label.contains("magisk") ||
+                label.contains("kernelsu") ||
+                label.contains("apatch")
+        }
+
+    if (detectedRootManager != null) {
+        val intent = Intent(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_LAUNCHER)
+            .setClassName(detectedRootManager.packageName, detectedRootManager.name)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+        return
+    }
+
+    val settingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = Uri.parse("package:${context.packageName}")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    context.startActivity(settingsIntent)
+}
+
+private fun openAccessibilitySettings(context: Context) {
+    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    context.startActivity(intent)
+}
+
+private fun openInputMethodSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    context.startActivity(intent)
 }
 
 private fun getprop(key: String): String = try {

@@ -43,6 +43,8 @@
     <string name="info_root_granted">Verleend</string>
     <string name="info_root_not_granted">Niet verleend</string>
     <string name="info_a11y_service">Toegankelijkheidsservice</string>
+    <string name="info_ime_service">IME</string>
+    <string name="info_tap_to_open">Tik om te openen</string>
     <string name="info_enabled">Ingeschakeld</string>
     <string name="info_disabled">Uitgeschakeld</string>
     <string name="info_device">Apparaat</string>
@@ -114,4 +116,16 @@
     <string name="key_remap_rshift_label">Rechter Shift</string>
     <string name="key_remap_rshift_desc">De rechter Shift-toets. Linker Shift werkt nog steeds normaal voor hoofdletters.</string>
     <string name="key_remap_enabled_label">Ingeschakeld</string>
+    <!-- Auto Focus Screen -->
+    <string name="title_auto_focus">Automatisch invoerveld focussen</string>
+    <string name="subtitle_auto_focus">Eerste tekstveld focussen bij laden</string>
+    <string name="auto_focus_enabled_switch">Automatisch focussen inschakelen</string>
+    <string name="auto_focus_search_label">Apps zoeken</string>
+    <string name="auto_focus_selected_count">%1$d geselecteerd van %2$d apps</string>
+    <string name="auto_focus_long_desc">In de geselecteerde apps zoekt de toegankelijkheidsservice automatisch naar het eerste bewerkbare tekstveld wanneer het scherm wordt geladen en focust dit. Hierdoor kun je direct op het fysieke toetsenbord beginnen met typen zonder dat je eerst op het veld hoeft te tikken (bijvoorbeeld in dialers of chat-apps).</string>
+    <!-- In-Call Shortcuts Screen -->
+    <string name="title_in_call_shortcuts">Sneltoetsen tijdens gesprek</string>
+    <string name="subtitle_in_call_shortcuts">Demping, luidspreker en toetsenbord schakelen tijdens oproepen</string>
+    <string name="in_call_shortcuts_desc">Gebruik in het belscherm van de Google Telefoon-app Alt+M om het dempen in/uit te schakelen, Alt+S om de luidspreker in/uit te schakelen en Alt+K om het toetsenbord te tonen/verbergen. Geen root vereist.</string>
+    <string name="in_call_shortcuts_enabled_label">Ingeschakeld</string>
 </resources>

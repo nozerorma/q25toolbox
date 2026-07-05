@@ -41,6 +41,8 @@
     <string name="info_root_granted">Concedit</string>
     <string name="info_root_not_granted">No concedit</string>
     <string name="info_a11y_service">Servei d’accessibilitat</string>
+    <string name="info_ime_service">IME</string>
+    <string name="info_tap_to_open">Toca per obrir</string>
     <string name="info_enabled">Habilitat</string>
     <string name="info_disabled">Deshabilitat</string>
     <string name="info_device">Dispositiu</string>
@@ -112,4 +114,16 @@
     <string name="key_remap_rshift_label">Shift Dret</string>
     <string name="key_remap_rshift_desc">La tecla Shift dreta. Shift Esquerre segueix funcionant amb normalitat per a les majúscules.</string>
     <string name="key_remap_enabled_label">Habilitat</string>
+    <!-- Auto Focus Screen -->
+    <string name="title_auto_focus">Enfocament automàtic d’entrada</string>
+    <string name="subtitle_auto_focus">Enfoca el primer camp de text al carregar</string>
+    <string name="auto_focus_enabled_switch">Habilitar enfocament automàtic</string>
+    <string name="auto_focus_search_label">Buscar aplicacions</string>
+    <string name="auto_focus_selected_count">%1$d seleccionades de %2$d aplicacions</string>
+    <string name="auto_focus_long_desc">En les aplicacions seleccionades, el servei d’accessibilitat busca automàticament el primer camp d’entrada de text editable quan es carrega la pantalla i l’enfoca. Això li permet començar a escriure al teclat físic immediatament sense haver de tocar el camp primer (per exemple, en marcadors telefònics o aplicacions de missatgeria).</string>
+    <!-- In-Call Shortcuts Screen -->
+    <string name="title_in_call_shortcuts">Dreceres en trucada</string>
+    <string name="subtitle_in_call_shortcuts">Alterna silenci, altaveu i teclat en trucades</string>
+    <string name="in_call_shortcuts_desc">A la pantalla de trucada de l’aplicació Telèfon de Google, utilitzeu Alt+M per silenciar/activar el micròfon, Alt+S per alternar l’altaveu i Alt+K per mostrar/ocultar el teclat de marcatge. No requereix root.</string>
+    <string name="in_call_shortcuts_enabled_label">Habilitat</string>
 </resources>

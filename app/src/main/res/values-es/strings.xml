@@ -41,6 +41,8 @@
     <string name="info_root_granted">Concedido</string>
     <string name="info_root_not_granted">No concedido</string>
     <string name="info_a11y_service">Servicio de accesibilidad</string>
+    <string name="info_ime_service">IME</string>
+    <string name="info_tap_to_open">Pulsa para abrir</string>
     <string name="info_enabled">Habilitado</string>
     <string name="info_disabled">Deshabilitado</string>
     <string name="info_device">Dispositivo</string>
@@ -112,4 +114,16 @@
     <string name="key_remap_rshift_label">Shift Derecho</string>
     <string name="key_remap_rshift_desc">La tecla Shift derecha. Shift Izquierdo sigue funcionando con normalidad para las mayúsculas.</string>
     <string name="key_remap_enabled_label">Habilitado</string>
+    <!-- Auto Focus Screen -->
+    <string name="title_auto_focus">Enfoque automático de entrada</string>
+    <string name="subtitle_auto_focus">Enfoca el primer campo de texto al cargar</string>
+    <string name="auto_focus_enabled_switch">Habilitar enfoque automático</string>
+    <string name="auto_focus_search_label">Buscar aplicaciones</string>
+    <string name="auto_focus_selected_count">%1$d seleccionadas de %2$d aplicaciones</string>
+    <string name="auto_focus_long_desc">En las aplicaciones seleccionadas, el servicio de accesibilidad busca automáticamente el primer campo de entrada de texto editable cuando se carga la pantalla y lo enfoca. Esto le permite comenzar a escribir en el teclado físico inmediatamente sin tener que tocar el campo primero (por ejemplo, en marcadores telefónicos o aplicaciones de mensajería).</string>
+    <!-- In-Call Shortcuts Screen -->
+    <string name="title_in_call_shortcuts">Atajos en llamada</string>
+    <string name="subtitle_in_call_shortcuts">Alterna silencio, altavoz y teclado en llamadas</string>
+    <string name="in_call_shortcuts_desc">En la pantalla de llamada de la aplicación Teléfono de Google, use Alt+M para silenciar/activar el micrófono, Alt+S para alternar el altavoz y Alt+K para mostrar/ocultar el teclado de marcación. No requiere root.</string>
+    <string name="in_call_shortcuts_enabled_label">Habilitado</string>
 </resources>
