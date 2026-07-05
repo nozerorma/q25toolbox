@@ -4,49 +4,18 @@ A root app for the Zinwa Q25 (KernelSU, Qualcomm-based, physical QWERTY
 keyboard) that bundles a set of tweaks into one UI, organised into four
 bottom-bar sections:
 
-**Info** - device status landing page: build (model, Android, LineageOS,
-security patch, kernel), battery (level, health, temperature, voltage,
-technology, capacity-health % and charge cycles from sysfs), and the current
-root, accessibility-service, and IME status.
-
-**Keyboard**
-- **Key Remapper** - remap the main modifier keys and assign spare hardware
-  keys to Ctrl or other modifier actions, with live apply support
-- **Lockscreen PIN on Keyboard** - type your PIN on the physical keyboard
-- **Per-App Keyboard Block** - in chosen apps, route physical keys straight
-to the app (for games) by switching to a passthrough IME
-- **Chat Enter-to-Send** - in messaging apps, Enter sends and Alt/Shift+Enter
-  inserts a newline
-- **Calculator Keys** - route physical number and operator keys to the
-  AOSP/Google Calculator
-- **Auto-Focus Input** - automatically focus the first editable field in chosen
-  apps, including the Google Phone dialer when it opens
-- **In-Call Shortcuts** - in Google Phone, use M to mute/unmute and $ to toggle
-  the speaker, while the dialer and keypad can be brought up automatically for
-  direct numeric input
-- **Adaptive Brightness (One-Shot)** - measure ambient light once per screen
-  wake and then hold it steady, instead of continuously adapting
-- **Per-App Display Scaling** - switch to a smaller/portrait resolution while a
-  chosen app is open (the only display-scaling knob this ROM honours)
-- **ZRAM** - compressed-swap size, compression algorithm and swappiness
-- **Key2 App Spoof** - install a module that spoofs the device as a BlackBerry
-  KEY2 so Key2-only apps install and run
-
-**Network**
-- **Global Telemetry Block** - disable Firebase Crashlytics collection across
-  all installed apps at boot
-- **Persistent wireless ADB** on a user-chosen static port
-- **Wearable Power Saver** - put any GMS-paired wearable into Dormant mode so
-  out-of-range devices don't trigger constant Bluetooth reconnect alarms
-- **Bluetooth Auto-Disable** - watchdog daemon that turns Bluetooth off after a
-  configurable idle timeout (no device connected), preventing
-  `hal_bluetooth_lock` from blocking deep sleep overnight
+- **Info** — device status landing page with build, battery, and current
+  root/accessibility/IME state.
+- **Keyboard** — key remapping, auto-focus input, in-call shortcuts, PIN entry
+  on the physical keyboard, IME blocking, Enter-to-send, and calculator-key
+  routing.
+- **System** — double-tap-to-wake, extra dimming, and per-app display scaling.
+- **Network** — telemetry blocking, wireless ADB, and Bluetooth auto-disable.
 
 Ported from [Key2 Toolbox](../Key2Toolbox), the same app built for the
-BlackBerry Key2. Most of the UI/architecture carried over unchanged; the
-hardware underneath several modules didn't, and a few Key2-only modules were
-dropped entirely - see "Ported from Key2Toolbox" below for what changed and
-why.
+BlackBerry Key2. Most of the UI and architecture carried over unchanged; the
+hardware underneath several modules did not, so a few Key2-only features were
+left out of this Q25 build.
 
 The UI follows Material You (Monet), in light or dark to match the system.
 Most modules are stateless: they fire root commands on demand and persist by
@@ -137,25 +106,6 @@ the build script.
   immediately clobbered - matching how Android's own Night Light schedule
   coexists with manual toggles.
 
-### Adaptive Brightness (One-Shot) (`OneShotBrightnessController`)
-- LineageOS has a "one-shot auto-brightness" option that measures ambient
-  light once when the screen turns on, then stops the sensor from
-  continuously driving brightness until the next screen-off. This ROM
-  (BenOS/MTK) has no such framework flag, so it's reproduced in userspace by
-  a root watchdog daemon (`service.d/one_shot_brightness.sh`).
-- On each screen-on (detected from the `lcd-backlight` node, 0 = off), the
-  daemon flips `screen_brightness_mode` to auto, waits ~2s for the framework
-  to settle, reads the committed brightness float from `dumpsys display`, then
-  flips back to manual with that captured value so brightness holds steady
-  until the next wake.
-- `screen_brightness` doesn't track the auto value on this ROM and the MTK
-  backlight sysfs node is non-linear, so `dumpsys display`'s `Display
-  Brightness=` float (converted to the 0-255 setting scale) is the readback
-  source. The frozen value is clamped to a small floor so a dark reading can't
-  blank the screen.
-- Disabling the module restores normal continuous adaptive brightness (puts
-  `screen_brightness_mode` back to auto) and removes the boot script.
-
 ### Per-App Display Scaling (`AppScalingController` + `Q25AccessibilityService`)
 - This ROM ignores every *per-app* scaling mechanism - the compat-framework
   `DOWNSCALE_*` changes and GameManager downscale are both no-ops, and `wm
@@ -176,34 +126,8 @@ the build script.
   StringSet in the `q25tweaks` prefs; the service always resets to native on
   teardown so it can't leave the screen stuck at a scaled resolution.
 
-### ZRAM (`ZramController`)
-- Controls compressed-swap **size** (Off / 2 / 3 / 4 / 6 / 8 GB - scaled for the
-  Q25's 12 GB RAM), **compression algorithm** (read live from
-  `/sys/block/zram0/comp_algorithm`, so only kernel-supported ones are offered:
-  `lzo`, `lzo-rle`, `lz4`, `zstd`), and **swappiness**.
-- **Persist**: installs `assets/zram_template.sh` (with size/algo/swappiness
-  substituted) to `/data/adb/service.d/zram_size.sh`; "Off" removes it. Unlike
-  the Key2 version there's no Qualcomm post-boot wait - the Q25 is MediaTek.
-- **Apply now** (behind a confirmation): `swapoff` → reset → `comp_algorithm` →
-  `disksize` → `mkswap` → `swapon` → swappiness. This briefly turns swap off and
-  can close background apps, so the default action is save-for-next-boot.
-
-### Key2 App Spoof (`ProdFixController`)
-- Installs wumbomumbo's **BBProdFix Lite** as a KernelSU/Magisk module (bundled
-  under `assets/bbprodfix/`) into `/data/adb/modules/bb-prodfix/`. Two pieces,
-  both of which only work applied at boot from a systemless overlay - which is
-  why this is a module rather than a runtime tweak:
-  - `system.prop` spoofs `ro.product.*` (model=KEY2, brand=blackberry,
-    device=bbf100) across all partition namespaces, for apps that check
-    `Build.MODEL` / brand at runtime;
-  - `com.blackberry.only.jar` + its permissions XML provide the
-    `com.blackberry.only` shared library that BlackBerry-only apps require via
-    `<uses-library>` - without it they won't install.
-- Enabling writes the module and prompts a **reboot** (required for the module
-  manager to mount it and for the prop overrides to apply); disabling flags it
-  for removal. The screen shows whether the spoof is merely installed or live
-  (props actually reflect KEY2). Note it's a **global** spoof - every app sees
-  `Build.MODEL=KEY2`, which can affect Play Integrity / banking apps.
+The current Q25 build focuses on the modules above; older Key2-only helpers
+such as ZRAM and the Key2 App Spoof module are not part of this repo snapshot.
 
 ### Persistent wireless ADB (`WirelessAdbController`)
 - User enters a port; **persist** installs `assets/adb_wireless_template.sh`
@@ -213,16 +137,6 @@ the build script.
 - **Live apply** sets the same properties immediately.
 - The screen also shows the device's current WLAN IP and the live port, so
   you can confirm the `adb connect <ip>:<port>` target at a glance.
-
-### Wearable Power Saver (`WatchController`)
-- Reads all wearables paired through GMS from `connectionconfig.db` and
-  lists them by name and MAC. Toggling a device **Dormant** sets
-  `connectionEnabled = 0` in that SQLite table and force-stops GMS so it
-  picks up the change immediately.
-- A `service.d/wearable_dormant.sh` boot script re-applies `connectionEnabled
-  = 0` for all selected MACs at boot (retrying until the data partition is
-  decrypted and the DB is accessible), since GMS can reset the field during a
-  cold boot before our script runs.
 
 ### Bluetooth Auto-Disable (`BtIdleController`)
 - A root watchdog daemon (`service.d/bt_idle.sh`) that checks once per minute
@@ -316,7 +230,8 @@ find-and-replace:
 - **Increase Volume Steps** - raising `ro.config.*_vol_steps` broke volume
   control above the default step count on this device.
 - **5GHz Hotspot Workaround**, **CPU Performance Tuning** (both Key2
-  hardware/ROM specific). *(ZRAM was later re-added - see above.)*
+  hardware/ROM specific). **ZRAM** and **Key2 App Spoof** are not part of the
+  current Q25 build.
 
 ## Extending
 
