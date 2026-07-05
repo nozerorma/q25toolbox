@@ -19,6 +19,8 @@
     <string name="title_telemetry">Wereldwijde telemetrieblokkering</string>
     <string name="title_extra_dim">Extra dimmen</string>
     <string name="title_app_scaling">Schermschaling per app</string>
+    <string name="title_key_remap">Toetstoewijzing</string>
+
 
     <!-- Screen Subtitles -->
     <string name="subtitle_wireless_adb">Statische poort, blijft behouden na herstart</string>
@@ -31,6 +33,8 @@
     <string name="subtitle_telemetry">Firebase Crashlytics systeembreed uitschakelen</string>
     <string name="subtitle_extra_dim">Helderheid verlagen onder het systeemminimum</string>
     <string name="subtitle_app_scaling">Telefoonlay-out afdwingen voor slecht werkende apps</string>
+    <string name="subtitle_key_remap">Wijs een reserve-toets toe aan Rechter Ctrl</string>
+
 
     <!-- Info Screen -->
     <string name="info_access">Toegang</string>

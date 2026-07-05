@@ -18,6 +18,7 @@ import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.inputfix.CalculatorInputFix
 import com.kgr.q25toolbox.inputfix.ComposerEnterKeyHandler
 import com.kgr.q25toolbox.modules.AppScalingController
+import com.kgr.q25toolbox.modules.KeyRemapController
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -257,6 +258,20 @@ class Q25AccessibilityService : AccessibilityService() {
         if (event == null) return false
         val kc = event.keyCode
 
+        // Key remap: intercept the configured source key and inject CTRL_RIGHT into
+        // the hardware event device so all apps receive a proper modifier event.
+        if (prefs?.getBoolean(KeyRemapController.KEY_REMAP_ENABLED, false) == true) {
+            val sourceKc = KeyRemapController.getSourceKey(prefs!!).androidKeycode
+            if (kc == sourceKc) {
+                // Inject only on the first down and on up; consume repeats silently.
+                if (event.action == KeyEvent.ACTION_UP ||
+                    (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0)) {
+                    val action = if (event.action == KeyEvent.ACTION_DOWN) 1 else 0
+                    worker.execute { KeyRemapController.injectCtrlRight(action) }
+                }
+                return true
+            }
+        }
         // Ported q25-input-helper fixes. Each checks the foreground app itself,
         // so they're safe to call for every key and no-op elsewhere. Calculator
         // claims digit/operator keys; chat composer claims Enter - disjoint, so

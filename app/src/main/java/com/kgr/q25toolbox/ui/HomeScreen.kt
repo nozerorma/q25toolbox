@@ -92,6 +92,7 @@ fun HomeScreen() {
 @Composable
 private fun DetailHost(screen: Screen, onBack: () -> Unit) {
     when (screen) {
+        Screen.KeyRemap -> KeyRemapScreen(onBack)
         Screen.WirelessAdb -> WirelessAdbScreen(onBack)
         Screen.Dt2w -> Dt2wScreen(onBack)
         Screen.PinKeyboard -> PinKeyboardScreen(onBack)
