@@ -124,6 +124,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Atajos en llamada</string>
     <string name="subtitle_in_call_shortcuts">Alterna silencio, altavoz y teclado en llamadas</string>
-    <string name="in_call_shortcuts_desc">En la pantalla de llamada de la aplicación Teléfono de Google, use Alt+M para silenciar/activar el micrófono, Alt+S para alternar el altavoz y Alt+K para mostrar/ocultar el teclado de marcación. No requiere root.</string>
+    <string name="in_call_shortcuts_desc">En la pantalla de llamada de la aplicación Teléfono de Google, use M para silenciar/activar el micrófono, $ para alternar el altavoz y 0–9 para abrir el teclado de marcación. No requiere root.</string>
     <string name="in_call_shortcuts_enabled_label">Habilitado</string>
 </resources>

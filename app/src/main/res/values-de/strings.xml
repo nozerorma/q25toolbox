@@ -124,6 +124,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Tastenkombinationen im Telefonat</string>
     <string name="subtitle_in_call_shortcuts">Stummschaltung, Lautsprecher und Tastatur in Anrufen umschalten</string>
-    <string name="in_call_shortcuts_desc">Verwenden Sie im Anruferbildschirm der Google Telefon-App Alt+M zum Stummschalten/Aktivieren, Alt+S zum Ein-/Ausschalten des Lautsprechers und Alt+K zum Ein-/Ausblenden der Wähltastatur. Kein Root erforderlich.</string>
+    <string name="in_call_shortcuts_desc">Verwenden Sie im Anruferbildschirm der Google Telefon-App M zum Stummschalten/Aktivieren, $ zum Ein-/Ausschalten des Lautsprechers und 0–9 zum Öffnen der Wähltastatur. Kein Root erforderlich.</string>
     <string name="in_call_shortcuts_enabled_label">Aktiviert</string>
 </resources>

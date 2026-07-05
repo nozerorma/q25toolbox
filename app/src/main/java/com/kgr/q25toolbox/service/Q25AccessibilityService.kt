@@ -18,6 +18,7 @@ import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.inputfix.CalculatorInputFix
 import com.kgr.q25toolbox.inputfix.ComposerEnterKeyHandler
 import com.kgr.q25toolbox.modules.AppScalingController
+import com.kgr.q25toolbox.modules.AutoFocusController
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -52,6 +53,8 @@ class Q25AccessibilityService : AccessibilityService() {
         const val KEY_IME_BLOCK_APPS = "ime_block_apps"   // StringSet of package names
         const val KEY_IME_SAVED = "ime_block_saved_ime"   // IME to restore when leaving a blocked app
         const val KEY_SCALING_APPS = "scaling_apps"       // StringSet "pkg=width" for per-app resolution
+        const val KEY_IN_CALL_SHORTCUTS = "in_call_shortcuts_enabled"
+
 
         // Our do-nothing IME: while it's active, physical key presses go straight
         // to the app instead of being intercepted/translated by the normal keyboard.
@@ -90,6 +93,8 @@ class Q25AccessibilityService : AccessibilityService() {
 
     @Volatile private var imeBlockApplied = false // last show_ime value we pushed (true = suppressed)
     @Volatile private var foregroundPkg: String? = null // last seen foreground app package
+    private var autoFocusDone = false
+    private var consumedAutofocusKeycode = -1
     private var prefs: SharedPreferences? = null
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -130,16 +135,42 @@ class Q25AccessibilityService : AccessibilityService() {
     private fun imeBlockEnabled() = prefs?.getBoolean(KEY_IME_BLOCK, false) ?: false
     private fun imeBlockApps(): Set<String> =
         prefs?.getStringSet(KEY_IME_BLOCK_APPS, emptySet()) ?: emptySet()
+    private fun inCallShortcutsEnabled() = prefs?.getBoolean(KEY_IN_CALL_SHORTCUTS, false) ?: false
+
 
     // ------------------------------------------------------- Foreground tracking
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        if (event == null) return
+        // Skip content-change events – they fire hundreds of times per second
+        // and would flood the main thread with expensive foregroundAppPackage() calls.
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) return
+
         val pkg = foregroundAppPackage()
         if (pkg != null && pkg != foregroundPkg) {
             foregroundPkg = pkg
             reconcileImeBlock()
             reconcileScaling()
+            autoFocusDone = false // Reset when app changes
         }
+
+        if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
+            if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+                autoOpenDialpad()
+            }
+        }
+    }
+
+    private fun isGoogleDialerForeground(): Boolean {
+        val pkg = foregroundPkg ?: return false
+        return pkg == "com.google.android.dialer" || pkg == "com.google.android.apps.dialer"
+    }
+
+    private fun isAutoFocusEnabledForForeground(): Boolean {
+        val prefs = prefs ?: return false
+        if (!AutoFocusController.isEnabled(prefs)) return false
+        val pkg = foregroundPkg ?: return false
+        return pkg in AutoFocusController.getSelectedApps(prefs)
     }
 
     private fun checkForeground() {
@@ -257,6 +288,123 @@ class Q25AccessibilityService : AccessibilityService() {
         if (event == null) return false
         val kc = event.keyCode
 
+        // Key-triggered AutoFocus: Focus input field and type key once any printable key is pressed on an unfocused field
+        Log.d("Q25Toolbox", "onKeyEvent: kc=$kc action=${event.action} unicodeChar=${event.unicodeChar} autoFocusEnabled=${isAutoFocusEnabledForForeground()} foregroundPkg=$foregroundPkg")
+        if (isAutoFocusEnabledForForeground()) {
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                val unicodeChar = event.unicodeChar
+                if (unicodeChar > 0 && event.repeatCount == 0 && !event.isAltPressed && !event.isCtrlPressed) {
+                    val root = rootInActiveWindow
+                    if (root != null) {
+                        try {
+                            val inputNode = AutoFocusController.findFirstEditableNode(root)
+                            Log.d("Q25Toolbox", "onKeyEvent: inputNode=$inputNode isFocused=${inputNode?.isFocused}")
+                            if (inputNode != null) {
+                                try {
+                                    if (!inputNode.isFocused) {
+                                        // Some search boxes (Maps, Gmail) actually activate via
+                                        // ACTION_CLICK (opening a full search overlay/activity),
+                                        // ignoring ACTION_FOCUS entirely - so don't gate on its
+                                        // return value, just fire both and poll for real input
+                                        // focus to land before injecting the triggering key.
+                                        inputNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
+                                        inputNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                        consumedAutofocusKeycode = kc
+                                        worker.execute {
+                                            var hasInputFocus = false
+                                            for (attempt in 1..10) {
+                                                Thread.sleep(100)
+                                                hasInputFocus = rootInActiveWindow?.let { r ->
+                                                    try {
+                                                        r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)?.also { it.recycle() } != null
+                                                    } finally {
+                                                        r.recycle()
+                                                    }
+                                                } ?: false
+                                                Log.d("Q25Toolbox", "autofocus poll attempt=$attempt hasInputFocus=$hasInputFocus")
+                                                if (hasInputFocus) break
+                                            }
+                                            val result = RootShell.run("input keyevent $kc")
+                                            Log.d("Q25Toolbox", "autofocus inject kc=$kc hasInputFocus=$hasInputFocus result=$result")
+                                        }
+                                        return true // Consume original press event
+                                    }
+                                } finally {
+                                    inputNode.recycle()
+                                }
+                            }
+                        } finally {
+                            root.recycle()
+                        }
+                    }
+                }
+            } else if (event.action == KeyEvent.ACTION_UP) {
+                if (kc == consumedAutofocusKeycode) {
+                    consumedAutofocusKeycode = -1
+                    return true // Consume corresponding key release event
+                }
+            }
+        }
+
+        // In-call shortcuts for Google Phone / Dialer: currency key (Speaker), M key (Mute), digits (Dialpad)
+        if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
+            val root = rootInActiveWindow
+            if (root != null) {
+                try {
+                    val checkables = mutableListOf<AccessibilityNodeInfo>()
+                    findCheckables(root, checkables)
+                    try {
+                        if (checkables.isNotEmpty()) {
+                            val isCurrencyKey = kc == KeyEvent.KEYCODE_CTRL_RIGHT || kc == KeyEvent.KEYCODE_GRAVE
+                            val isMKey = kc == KeyEvent.KEYCODE_M
+
+                            if (isCurrencyKey) {
+                                // Short press currency key -> Toggle Speaker (index 2)
+                                if (event.action == KeyEvent.ACTION_UP) {
+                                    if (checkables.size > 2) {
+                                        checkables[2].performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                    }
+                                }
+                                return true // Consume currency key event
+                            }
+
+                            if (isMKey) {
+                                // Press M key -> Toggle Mute (index 1)
+                                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                                    if (checkables.size > 1) {
+                                        checkables[1].performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                    }
+                                }
+                                return true // Consume M key event
+                            }
+
+                            val injectKc = getDialerKeycode(kc)
+                            if (injectKc != null) {
+                                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                                    val keypadNode = checkables[0]
+                                    if (keypadNode.isChecked) {
+                                        injectDialerKey(injectKc)
+                                    } else {
+                                        keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                        mainHandler.postDelayed({
+                                            injectDialerKey(injectKc)
+                                        }, 200)
+                                    }
+                                }
+                                return true // Consume dialpad digit events
+                            }
+                        }
+                    } finally {
+                        checkables.forEach { it.recycle() }
+                    }
+                } finally {
+                    root.recycle()
+                }
+            }
+        }
+
+
+
         // Ported q25-input-helper fixes. Each checks the foreground app itself,
         // so they're safe to call for every key and no-op elsewhere. Calculator
         // claims digit/operator keys; chat composer claims Enter - disjoint, so
@@ -300,6 +448,84 @@ class Q25AccessibilityService : AccessibilityService() {
     private fun isDeviceLocked(): Boolean {
         val km = getSystemService(KEYGUARD_SERVICE) as? KeyguardManager
         return km?.isKeyguardLocked ?: false
+    }
+
+    private fun getDialerKeycode(kc: Int): Int? {
+        return when (kc) {
+            KeyEvent.KEYCODE_W -> KeyEvent.KEYCODE_1
+            KeyEvent.KEYCODE_E -> KeyEvent.KEYCODE_2
+            KeyEvent.KEYCODE_R -> KeyEvent.KEYCODE_3
+            KeyEvent.KEYCODE_S -> KeyEvent.KEYCODE_4
+            KeyEvent.KEYCODE_D -> KeyEvent.KEYCODE_5
+            KeyEvent.KEYCODE_F -> KeyEvent.KEYCODE_6
+            KeyEvent.KEYCODE_Z -> KeyEvent.KEYCODE_7
+            KeyEvent.KEYCODE_X -> KeyEvent.KEYCODE_8
+            KeyEvent.KEYCODE_C -> KeyEvent.KEYCODE_9
+            KeyEvent.KEYCODE_0 -> KeyEvent.KEYCODE_0
+            else -> null
+        }
+    }
+
+    private fun injectDialerKey(kcCode: Int) {
+        worker.execute {
+            RootShell.run("input keyevent $kcCode")
+        }
+    }
+
+    private fun performDialerAction(index: Int): Boolean {
+        val root = rootInActiveWindow ?: return false
+        try {
+            val checkables = mutableListOf<AccessibilityNodeInfo>()
+            findCheckables(root, checkables)
+            try {
+                if (checkables.size > index) {
+                    val node = checkables[index]
+                    val success = node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    if (success) {
+                        Log.d("Q25Toolbox", "Successfully clicked dialer button index $index")
+                    }
+                    return success
+                }
+            } finally {
+                checkables.forEach { it.recycle() }
+            }
+        } finally {
+            root.recycle()
+        }
+        return false
+    }
+
+    private fun autoOpenDialpad() {
+        val root = rootInActiveWindow ?: return
+        try {
+            val checkables = mutableListOf<AccessibilityNodeInfo>()
+            findCheckables(root, checkables)
+            try {
+                if (checkables.isNotEmpty()) {
+                    val keypadNode = checkables[0]
+                    if (!keypadNode.isChecked) {
+                        keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        Log.d("Q25Toolbox", "Auto-opened dialpad on call screen load")
+                    }
+                }
+            } finally {
+                checkables.forEach { it.recycle() }
+            }
+        } finally {
+            root.recycle()
+        }
+    }
+
+
+    private fun findCheckables(node: AccessibilityNodeInfo, list: MutableList<AccessibilityNodeInfo>) {
+        if (node.isCheckable) {
+            list.add(AccessibilityNodeInfo.obtain(node))
+        }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            findCheckables(child, list)
+            child.recycle()
+        }
     }
 
     enum class PinInput { DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, ENTER, DELETE }

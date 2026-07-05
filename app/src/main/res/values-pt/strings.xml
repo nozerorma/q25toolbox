@@ -124,6 +124,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Atalhos em chamada</string>
     <string name="subtitle_in_call_shortcuts">Alterna mudo, alto-falante e teclado em chamadas</string>
-    <string name="in_call_shortcuts_desc">Na tela de chamada do aplicativo Telefone do Google, use Alt+M para ativar/desativar o mudo do microfone, Alt+S para alternar o alto-falante e Alt+K para mostrar/ocultar o teclado numérico. Não requer root.</string>
+    <string name="in_call_shortcuts_desc">Na tela de chamada do aplicativo Telefone do Google, use M para ativar/desativar o mudo do microfone, $ para alternar o alto-falante e 0–9 para abrir o teclado numérico. Não requer root.</string>
     <string name="in_call_shortcuts_enabled_label">Ativado</string>
 </resources>

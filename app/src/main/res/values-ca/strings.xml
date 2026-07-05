@@ -124,6 +124,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Dreceres en trucada</string>
     <string name="subtitle_in_call_shortcuts">Alterna silenci, altaveu i teclat en trucades</string>
-    <string name="in_call_shortcuts_desc">A la pantalla de trucada de l’aplicació Telèfon de Google, utilitzeu Alt+M per silenciar/activar el micròfon, Alt+S per alternar l’altaveu i Alt+K per mostrar/ocultar el teclat de marcatge. No requereix root.</string>
+    <string name="in_call_shortcuts_desc">A la pantalla de trucada de l’aplicació Telèfon de Google, utilitzeu M per silenciar/activar el micròfon, $ per alternar l’altaveu i 0–9 per obrir el teclat de marcatge. No requereix root.</string>
     <string name="in_call_shortcuts_enabled_label">Habilitat</string>
 </resources>

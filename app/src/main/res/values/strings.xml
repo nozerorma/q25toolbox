@@ -126,6 +126,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">In-Call Shortcuts</string>
     <string name="subtitle_in_call_shortcuts">Toggle mute, speaker, and keypad in calls</string>
-    <string name="in_call_shortcuts_desc">In the Google Phone app call screen, use Alt+M to mute/unmute, Alt+S to toggle the speakerphone, and Alt+K to show/hide the call keypad. No root required.</string>
+    <string name="in_call_shortcuts_desc">On the Google Phone call screen, use M to mute/unmute, $ to toggle the speaker, and 0–9 to open the dialer keypad. No root required.</string>
     <string name="in_call_shortcuts_enabled_label">Enabled</string>
 </resources>

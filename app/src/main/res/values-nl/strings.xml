@@ -126,6 +126,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Sneltoetsen tijdens gesprek</string>
     <string name="subtitle_in_call_shortcuts">Demping, luidspreker en toetsenbord schakelen tijdens oproepen</string>
-    <string name="in_call_shortcuts_desc">Gebruik in het belscherm van de Google Telefoon-app Alt+M om het dempen in/uit te schakelen, Alt+S om de luidspreker in/uit te schakelen en Alt+K om het toetsenbord te tonen/verbergen. Geen root vereist.</string>
+    <string name="in_call_shortcuts_desc">Gebruik in het belscherm van de Google Telefoon-app M om het dempen in/uit te schakelen, $ om de luidspreker in/uit te schakelen en 0–9 om het toetsenbord te openen. Geen root vereist.</string>
     <string name="in_call_shortcuts_enabled_label">Ingeschakeld</string>
 </resources>

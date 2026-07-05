@@ -124,6 +124,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Scorciatoie in chiamata</string>
     <string name="subtitle_in_call_shortcuts">Alterna silenziamento, altoparlante e tastierino in chiamata</string>
-    <string name="in_call_shortcuts_desc">Nella schermata di chiamata dell\'applicazione Telefono di Google, usa Alt+M per disattivare/riattivare il microfono, Alt+S per attivare/disattivare l\'altoparlante e Alt+K per mostrare/nascondere il tastierino numerico. Non richiede root.</string>
+    <string name="in_call_shortcuts_desc">Nella schermata di chiamata dell\'applicazione Telefono di Google, usa M per disattivare/riattivare il microfono, $ per attivare/disattivare l\'altoparlante e 0–9 per aprire il tastierino numerico. Non richiede root.</string>
     <string name="in_call_shortcuts_enabled_label">Abilitato</string>
 </resources>

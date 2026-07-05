@@ -124,6 +124,6 @@
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Raccourcis en appel</string>
     <string name="subtitle_in_call_shortcuts">Basculer sourdine, haut-parleur et clavier en appels</string>
-    <string name="in_call_shortcuts_desc">Dans l\'écran d\'appel de l\'application Téléphone de Google, utilisez Alt+M pour couper/activer le micro, Alt+S pour basculer le haut-parleur et Alt+K pour afficher/masquer le pavé numérique. Root non requis.</string>
+    <string name="in_call_shortcuts_desc">Dans l\'écran d\'appel de l\'application Téléphone de Google, utilisez M pour couper/activer le micro, $ pour basculer le haut-parleur et 0–9 pour ouvrir le pavé numérique. Root non requis.</string>
     <string name="in_call_shortcuts_enabled_label">Activé</string>
 </resources>
