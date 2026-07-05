@@ -66,7 +66,7 @@ the build script.
 
 ### Auto-Focus Input (`AutoFocusController`)
 - Uses the accessibility service to focus the first editable field in selected
-  apps once the window appears, which makes the Google Phone dialer and other
+  apps once a key is pressed, which makes the Google Phone dialer and other
   text-entry screens ready for immediate keyboard input.
 - The per-app target list is stored in the same `q25tweaks` prefs set used by
   the other accessibility-service modules, so the behavior can be enabled or
@@ -199,41 +199,6 @@ key.
 - **Calculator Keys**: in the AOSP/Google Calculator, maps digit and operator
   keys to the calculator's buttons (by view ID with a label fallback), and
   inserts `!`, `(`, `)` straight into the formula field via `ACTION_SET_TEXT`.
-
-## Ported from Key2Toolbox: what changed and why
-
-The Key2 and the Q25 share a lot of surface area (both root-friendly Android
-devices with a physical keyboard), but the underlying hardware/driver stack
-is different enough that several modules needed real rewrites rather than a
-find-and-replace:
-
-- **Ctrl key remap**: Key2 could remount `/vendor` read-write and `sed` the
-  keylayout file in place (`stmpe.kl`, key 110, `setenforce 0` around the
-  edit). On the Q25 the keyboard resolves its layout to `Generic.kl` under the
-  read-only `/system`, so the working approach is a `mount -o bind` of a
-  modified copy over it (key 54) plus an i2c driver unbind/rebind to reload
-  live.
-- **Double-Tap to Wake**: Key2 used a raw `wake_gesture` sysfs write on its
-  Synaptics touch driver. The Q25 has no hardware gesture-wake at all and
-  ignores the `double_tap_to_wake` setting, so DT2W is reimplemented in
-  software (a `getevent` watchdog that injects `KEYCODE_WAKEUP`).
-- **Extra Dimming / One-Shot Brightness**: new on Q25.
-- **Per-App Display Scaling**: reworked - the Key2 approach (compat
-  `DOWNSCALE_*`) is a no-op on this ROM, so it's done by foreground-switching
-  the global `wm size` (the only knob that works here).
-
-**Dropped**:
-- **Keyboard Nav Lock** (Key2) - the capacitive nav buttons it locked
-  (`0dbutton` sysfs node, Synaptics touchscreen) don't exist on the Q25.
-- **Adaptive Keyboard Backlight** - the Q25's `bbqX0kbd` (i2c_puppet) keyboard
-  exposes no host-controllable backlight (no `/sys/class/backlight` node, no
-  `/dev/i2c`); brightness is set only by the firmware combo **Sym + Right-Shift
-  + 1..9**.
-- **Increase Volume Steps** - raising `ro.config.*_vol_steps` broke volume
-  control above the default step count on this device.
-- **5GHz Hotspot Workaround**, **CPU Performance Tuning** (both Key2
-  hardware/ROM specific). **ZRAM** and **Key2 App Spoof** are not part of the
-  current Q25 build.
 
 ## Extending
 
