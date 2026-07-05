@@ -1,0 +1,105 @@
+<resources>
+    <string name="app_name">Q25 Toolbox</string>
+    <string name="accessibility_description">Maakt invoer van pincode op het vergrendelscherm mogelijk via het fysieke toetsenbord, blokkering van het toetsenbord per app en adaptieve toetsenbordverlichting.</string>
+
+    <!-- App Tabs -->
+    <string name="tab_info">Info</string>
+    <string name="tab_keyboard">Toetsenbord</string>
+    <string name="tab_system">Systeem</string>
+    <string name="tab_network">Netwerk</string>
+
+    <!-- Screen Titles -->
+    <string name="title_wireless_adb">Permanente draadloze ADB</string>
+    <string name="title_dt2w">Dubbeltikken om te wekken</string>
+    <string name="title_pin_keyboard">Lockscreen PIN op toetsenbord</string>
+    <string name="title_ime_block">Toetsenbordblokkering per app</string>
+    <string name="title_chat_composer">Chat Enter-om-te-verzenden</string>
+    <string name="title_calculator_input">Rekenmachinetoetsen</string>
+    <string name="title_bt_idle">Bluetooth automatisch uitschakelen</string>
+    <string name="title_telemetry">Wereldwijde telemetrieblokkering</string>
+    <string name="title_extra_dim">Extra dimmen</string>
+    <string name="title_app_scaling">Schermschaling per app</string>
+
+    <!-- Screen Subtitles -->
+    <string name="subtitle_wireless_adb">Statische poort, blijft behouden na herstart</string>
+    <string name="subtitle_dt2w">Scherm wekken met twee tikken</string>
+    <string name="subtitle_pin_keyboard">Typ je pincode op hardwaretoetsen</string>
+    <string name="subtitle_ime_block">Toetsaanslagen direct naar gekozen apps sturen</string>
+    <string name="subtitle_chat_composer">Enter verzendt, Alt+Enter nieuwe regel in chat-apps</string>
+    <string name="subtitle_calculator_input">Cijfer- en operatortoetsen doorsturen naar de rekenmachine</string>
+    <string name="subtitle_bt_idle">Schakel Bluetooth uit bij inactiviteit</string>
+    <string name="subtitle_telemetry">Firebase Crashlytics systeembreed uitschakelen</string>
+    <string name="subtitle_extra_dim">Helderheid verlagen onder het systeemminimum</string>
+    <string name="subtitle_app_scaling">Telefoonlay-out afdwingen voor slecht werkende apps</string>
+
+    <!-- Info Screen -->
+    <string name="info_access">Toegang</string>
+    <string name="info_root_access">Root-toegang</string>
+    <string name="info_root_checking">Controleren…</string>
+    <string name="info_root_granted">Verleend</string>
+    <string name="info_root_not_granted">Niet verleend</string>
+    <string name="info_a11y_service">Toegankelijkheidsservice</string>
+    <string name="info_enabled">Ingeschakeld</string>
+    <string name="info_disabled">Uitgeschakeld</string>
+    <string name="info_device">Apparaat</string>
+    <string name="info_battery">Batterij</string>
+    <string name="info_model">Model</string>
+    <string name="info_android">Android</string>
+    <string name="info_lineageos">LineageOS</string>
+    <string name="info_build">Build</string>
+    <string name="info_security_patch">Beveiligingspatch</string>
+    <string name="info_kernel">Kernel</string>
+    <string name="info_battery_charging">Opladen</string>
+    <string name="info_battery_discharging">Ontladen</string>
+    <string name="info_battery_full">Vol</string>
+    <string name="info_battery_not_charging">Laadt niet op</string>
+    <string name="info_battery_unknown">Onbekend</string>
+    <string name="info_battery_health_good">Goed</string>
+    <string name="info_battery_health_overheat">Oververhit</string>
+    <string name="info_battery_health_dead">Defect</string>
+    <string name="info_battery_health_over_voltage">Overspanning</string>
+    <string name="info_battery_health_cold">Koud</string>
+    <string name="info_battery_level">Niveau</string>
+    <string name="info_battery_health">Gezondheid</string>
+    <string name="info_battery_temp">Temperatuur</string>
+    <string name="info_battery_volt">Voltage</string>
+    <string name="info_battery_tech">Technologie</string>
+    <string name="info_battery_capacity">Capaciteit</string>
+    <string name="info_battery_cycles">Laadcycli</string>
+
+    <!-- Wireless ADB Screen -->
+    <string name="wadb_wlan_ip">WLAN IP: %1$s</string>
+    <string name="wadb_not_connected">niet verbonden</string>
+    <string name="wadb_live_port">Huidige actieve poort: %1$s</string>
+    <string name="wadb_not_set">niet ingesteld</string>
+    <string name="wadb_persisted">Opgeslagen: %1$s</string>
+    <string name="wadb_yes">Ja</string>
+    <string name="wadb_no">Nee</string>
+    <string name="wadb_port_label">Poort</string>
+    <string name="wadb_btn_apply">Inschakelen / Toepassen</string>
+    <string name="wadb_btn_disable">Uitschakelen</string>
+    <string name="wadb_status_enabled">Draadloze ADB ingeschakeld op poort %1$d. Opgeslagen: %2$s.</string>
+    <string name="wadb_status_disabled">Draadloze ADB uitgeschakeld.</string>
+    <string name="wadb_persisted_yes">ja</string>
+    <string name="wadb_persisted_no">NEE - controleer service.d schrijfrechten</string>
+
+    <!-- DT2W Screen -->
+    <string name="dt2w_desc">Maak het apparaat wakker door twee keer op het scherm te tikken terwijl het uit staat. De Q25 heeft geen hardwarematige gebaar-ontwaking, dus dit voert een kleine achtergrond-watchdog uit die het aanraakscherm in de gaten houdt en wakker wordt bij een dubbeltik.</string>
+    <string name="dt2w_state">Status: %1$s</string>
+    <string name="dt2w_on">Aan</string>
+    <string name="dt2w_off">Uit</string>
+    <string name="dt2w_boot_notice"> (start bij de volgende keer opstarten)</string>
+    <string name="dt2w_enabled_label">Ingeschakeld</string>
+    <string name="dt2w_status_on">DT2W aan. Dubbeltik op het uitgeschakelde scherm om te wekken.</string>
+    <string name="dt2w_status_off">DT2W uit.</string>
+
+    <!-- PIN Keyboard Screen -->
+    <string name="pin_desc">Typ je pincode van het vergrendelscherm op het fysieke toetsenbord. Cijfers zijn toegewezen zoals op een telefoon-kiesscherm: W E R = 1 2 3, S D F = 4 5 6, Z X C = 7 8 9, Q = 0. Enter bevestigt, Backspace verwijdert. Geen root nodig - gebruikt alleen de toegankelijkheidsservice.</string>
+    <string name="generic_enabled">Ingeschakeld</string>
+
+    <!-- Accessibility Service Banner -->
+    <string name="a11y_banner_enabled">Toegankelijkheidsservice: ingeschakeld</string>
+    <string name="a11y_banner_needed">Deze functie vereist dat de toegankelijkheidsservice is ingeschakeld.</string>
+    <string name="a11y_banner_btn">Open toegankelijkheidsinstellingen</string>
+
+</resources>

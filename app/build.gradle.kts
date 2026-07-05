@@ -1,6 +1,12 @@
+val appVersionName = "1.0-beta6"
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+}
+
+base {
+    archivesName = "Q25toolbox-v$appVersionName"
 }
 
 android {
@@ -11,8 +17,10 @@ android {
         applicationId = "com.kgr.q25toolbox"
         minSdk = 28
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.0-beta4"
+        versionCode = 6
+        versionName = appVersionName
+
+        ndk { abiFilters += "arm64-v8a" }
     }
 
     // To produce a release build signed with your existing keystore, fill these

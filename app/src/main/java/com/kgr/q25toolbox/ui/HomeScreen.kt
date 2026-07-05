@@ -28,7 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 
 /**
  * Top-level navigation: a bottom bar with Info / Keyboard / System sections.
@@ -49,25 +51,25 @@ fun HomeScreen() {
                     selected = tab == AppTab.Info && detail == null,
                     onClick = { tab = AppTab.Info; detail = null },
                     icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-                    label = { Text(AppTab.Info.label) }
+                    label = { Text(stringResource(AppTab.Info.labelRes)) }
                 )
                 NavigationBarItem(
                     selected = tab == AppTab.Keyboard,
                     onClick = { tab = AppTab.Keyboard; detail = null },
                     icon = { Icon(Icons.Filled.Keyboard, contentDescription = null) },
-                    label = { Text(AppTab.Keyboard.label) }
+                    label = { Text(stringResource(AppTab.Keyboard.labelRes)) }
                 )
                 NavigationBarItem(
                     selected = tab == AppTab.System,
                     onClick = { tab = AppTab.System; detail = null },
                     icon = { Icon(Icons.Filled.Build, contentDescription = null) },
-                    label = { Text(AppTab.System.label) }
+                    label = { Text(stringResource(AppTab.System.labelRes)) }
                 )
                 NavigationBarItem(
                     selected = tab == AppTab.Network,
                     onClick = { tab = AppTab.Network; detail = null },
                     icon = { Icon(Icons.Filled.Wifi, contentDescription = null) },
-                    label = { Text(AppTab.Network.label) }
+                    label = { Text(stringResource(AppTab.Network.labelRes)) }
                 )
             }
         }
@@ -78,9 +80,9 @@ fun HomeScreen() {
                 DetailHost(current) { detail = null }
             } else when (tab) {
                 AppTab.Info -> InfoScreen()
-                AppTab.Keyboard -> CategoryMenu("Keyboard", keyboardScreens) { detail = it }
-                AppTab.System -> CategoryMenu("System", systemScreens) { detail = it }
-                AppTab.Network -> CategoryMenu("Network", networkScreens) { detail = it }
+                AppTab.Keyboard -> CategoryMenu(stringResource(R.string.tab_keyboard), keyboardScreens) { detail = it }
+                AppTab.System -> CategoryMenu(stringResource(R.string.tab_system), systemScreens) { detail = it }
+                AppTab.Network -> CategoryMenu(stringResource(R.string.tab_network), networkScreens) { detail = it }
             }
         }
     }
@@ -130,10 +132,10 @@ private fun MenuEntry(screen: Screen, onClick: () -> Unit) {
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            Text(screen.title, style = MaterialTheme.typography.titleMedium)
-            if (screen.subtitle.isNotEmpty()) {
+            Text(stringResource(screen.titleRes), style = MaterialTheme.typography.titleMedium)
+            if (screen.subtitleRes != 0) {
                 Text(
-                    screen.subtitle,
+                    stringResource(screen.subtitleRes),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 
 /**
  * Shown on Nav Lock / PIN Keyboard / Audio FX screens when
@@ -23,7 +25,7 @@ import androidx.compose.ui.unit.dp
 fun AccessibilityServiceBanner(serviceEnabled: Boolean) {
     if (serviceEnabled) {
         Text(
-            "Accessibility service: enabled",
+            stringResource(R.string.a11y_banner_enabled),
             color = androidx.compose.ui.graphics.Color(0xFF81C784)
         )
         return
@@ -36,14 +38,14 @@ fun AccessibilityServiceBanner(serviceEnabled: Boolean) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                "This feature needs the accessibility service enabled.",
+                stringResource(R.string.a11y_banner_needed),
                 color = androidx.compose.ui.graphics.Color(0xFFE57373),
                 style = MaterialTheme.typography.bodyMedium
             )
             Button(onClick = {
                 context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             }) {
-                Text("Open Accessibility Settings")
+                Text(stringResource(R.string.a11y_banner_btn))
             }
         }
     }

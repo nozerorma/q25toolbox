@@ -14,7 +14,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.modules.Dt2wController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,17 +39,17 @@ fun Dt2wScreen(onBack: () -> Unit) {
         }
     }
 
-    ScreenScaffold(title = Screen.Dt2w.title, onBack = onBack) {
+    ScreenScaffold(title = stringResource(Screen.Dt2w.titleRes), onBack = onBack) {
         Text(
-            "Wake the device by double-tapping the screen while it's off. The Q25 " +
-                "has no hardware gesture-wake, so this runs a small background " +
-                "watchdog that watches the touchscreen and wakes on a double-tap.",
+            stringResource(R.string.dt2w_desc),
             style = MaterialTheme.typography.bodySmall
         )
-        Text("State: ${if (enabled) "On" else "Off"}${if (enabled && !running) " (starts at next boot)" else ""}")
+        val stateStr = if (enabled) stringResource(R.string.dt2w_on) else stringResource(R.string.dt2w_off)
+        val bootNotice = if (enabled && !running) stringResource(R.string.dt2w_boot_notice) else ""
+        Text(stringResource(R.string.dt2w_state, "$stateStr$bootNotice"))
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enabled")
+            Text(stringResource(R.string.dt2w_enabled_label))
             Switch(
                 checked = enabled,
                 enabled = !busy,
@@ -59,8 +61,8 @@ fun Dt2wScreen(onBack: () -> Unit) {
                         running = Dt2wController.isRunning()
                         busy = false
                         statusMessage = if (enable)
-                            "DT2W on. Double-tap the off screen to wake."
-                        else "DT2W off."
+                            context.getString(R.string.dt2w_status_on)
+                        else context.getString(R.string.dt2w_status_off)
                     }
                 }
             )
