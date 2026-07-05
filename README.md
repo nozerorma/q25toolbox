@@ -45,7 +45,8 @@ the build script.
 ### Key Remapper (`KeyRemapController`)
 - Remaps one of the currently supported source keys to Right Ctrl at the
   hardware keylayout level: the **Currency key** (the firmware-miswired key
-  next to Space) or **Right Shift**.
+  next to "M") or **Right Shift**. It is recommended to map currency symbol
+  to double tap using KeyMapper app.
 - The implementation currently targets the Q25's existing keyboard layout file
   (`Q25_keyboard.kl`) by rewriting the relevant scancode entry and reloading
   the i2c keyboard driver so the change applies live and persists across
