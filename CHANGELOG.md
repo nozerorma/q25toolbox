@@ -4,6 +4,22 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.0-beta10] - 2026-07-05
+
+### Fixed
+- **DT2W degrading SystemUI after a few hours**: the watchdog forked `date`
+  and `cat` on every single touch anywhere on the device (not just wake
+  gestures), continuously, for as long as it ran. Rewritten to do all timing
+  and state inside one persistent `awk` process fed by `getevent`'s own
+  timestamps, so no subprocess is spawned except the rare actual wake action.
+- **Typing lag and occasional double-typed characters in auto-focus apps**:
+  a leftover `autoFocusDone` flag was set but never checked, so every
+  keystroke in an auto-focus-enabled app (Gmail, Maps, banking apps, browser)
+  redid a full window-tree search even after the field was already focused.
+  Now the focus attempt only ever runs once per app-foreground session, which
+  also removes the race where a fast second keypress could queue its own
+  overlapping focus-and-reinject before the first one had landed.
+
 ## [1.0-beta9] - 2026-07-05
 
 ### Added

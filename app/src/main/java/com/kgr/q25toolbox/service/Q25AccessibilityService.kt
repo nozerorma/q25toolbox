@@ -285,9 +285,15 @@ class Q25AccessibilityService : AccessibilityService() {
         if (event == null) return false
         val kc = event.keyCode
 
-        // Key-triggered AutoFocus: Focus input field and type key once any printable key is pressed on an unfocused field
+        // Key-triggered AutoFocus: Focus input field and type key once any printable key is pressed on an unfocused field.
+        // Only ever attempted once per app-foreground session (autoFocusDone, reset in
+        // onAccessibilityEvent on app change) - otherwise every keystroke after the first would
+        // redo a rootInActiveWindow binder call plus a full tree search just to confirm the field
+        // is already focused, which is both a per-keystroke lag source and a race: a fast second
+        // press arriving before the first press's focus had visibly landed would see isFocused
+        // still false and queue its own overlapping focus+reinject, duplicating the character.
         if (isAutoFocusEnabledForForeground()) {
-            if (event.action == KeyEvent.ACTION_DOWN) {
+            if (event.action == KeyEvent.ACTION_DOWN && !autoFocusDone) {
                 val unicodeChar = event.unicodeChar
                 if (unicodeChar > 0 && event.repeatCount == 0 && !event.isAltPressed && !event.isCtrlPressed) {
                     val root = rootInActiveWindow
@@ -305,6 +311,7 @@ class Q25AccessibilityService : AccessibilityService() {
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                                         consumedAutofocusKeycode = kc
+                                        autoFocusDone = true
                                         worker.execute {
                                             var hasInputFocus = false
                                             for (attempt in 1..10) {
@@ -321,6 +328,8 @@ class Q25AccessibilityService : AccessibilityService() {
                                             RootShell.run("input keyevent $kc")
                                         }
                                         return true // Consume original press event
+                                    } else {
+                                        autoFocusDone = true
                                     }
                                 } finally {
                                     inputNode.recycle()
