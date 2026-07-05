@@ -71,7 +71,6 @@
     <string name="info_battery_volt">Voltage</string>
     <string name="info_battery_tech">Technologie</string>
     <string name="info_battery_capacity">Capaciteit</string>
-    <string name="info_battery_cycles">Laadcycli</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN IP: %1$s</string>

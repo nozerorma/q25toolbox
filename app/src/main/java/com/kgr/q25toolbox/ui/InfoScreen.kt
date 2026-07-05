@@ -295,16 +295,19 @@ private fun readBatteryRows(context: Context): List<Row> {
     return rows
 }
 
-/** Capacity-based health and cycle count from sysfs (needs root). */
+/**
+ * Capacity-based health from sysfs (needs root). Cycle count is deliberately not
+ * read here - this MTK gauge driver reports a static, non-incrementing value
+ * (stuck at 1 regardless of actual usage) with no alternate source on this
+ * hardware, so displaying it would just be misleading.
+ */
 private fun readBatteryHealthRows(context: Context): List<Row> {
     val out = RootShell.run(
         "cat /sys/class/power_supply/battery/charge_full " +
-            "/sys/class/power_supply/battery/charge_full_design " +
-            "/sys/class/power_supply/battery/cycle_count 2>/dev/null"
+            "/sys/class/power_supply/battery/charge_full_design 2>/dev/null"
     ).out.map { it.trim() }
     val full = out.getOrNull(0)?.toLongOrNull()
     val design = out.getOrNull(1)?.toLongOrNull()
-    val cycles = out.getOrNull(2)?.toIntOrNull()
 
     val rows = mutableListOf<Row>()
     if (full != null && design != null && design > 0) {
@@ -312,6 +315,5 @@ private fun readBatteryHealthRows(context: Context): List<Row> {
         val pct = full * 100 / normDesign
         rows += Row(context.getString(R.string.info_battery_capacity), "${full / 1000} / ${normDesign / 1000} mAh  ($pct%)")
     }
-    if (cycles != null) rows += Row(context.getString(R.string.info_battery_cycles), cycles.toString())
     return rows
 }
