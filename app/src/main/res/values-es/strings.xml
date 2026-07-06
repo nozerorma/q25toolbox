@@ -82,8 +82,9 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Uso de la batería</string>
-    <string name="battery_usage_desc">Uso estimado por app desde la última carga, leído directamente del propio modelo de energía del sistema mediante root. Esto funciona aunque la pantalla nativa de Ajustes de este dispositivo nunca se complete (además requiere una señal de carga completa que el controlador de carga de este dispositivo nunca informa).</string>
+    <string name="battery_usage_desc">Uso estimado por app, leído directamente del propio modelo de energía del sistema mediante root. Esto funciona aunque la pantalla nativa de Ajustes de este dispositivo nunca se complete (además requiere una señal de carga completa que el controlador de carga de este dispositivo nunca informa) - pero por el mismo motivo, estas cifras se acumulan a lo largo de varios ciclos de carga en lugar de reiniciarse automáticamente, así que el total puede acabar siendo mayor que la capacidad real de la batería. Usa el botón de reinicio tras una carga completa para ponerlo a cero.</string>
     <string name="battery_usage_total">Total estimado: %1$s</string>
+    <string name="battery_usage_reset">Reiniciar estadísticas de uso de batería</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>

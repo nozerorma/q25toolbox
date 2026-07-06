@@ -38,6 +38,16 @@ object BatteryUsageController {
         2000 to "Shell",
     )
 
+    /**
+     * Zeroes the underlying system battery stats. Needed on this device because the charging
+     * driver never reports a full-charge signal, so Android's own auto-reset-on-full-charge
+     * never fires and the numbers [readUsage] reads otherwise accumulate indefinitely across
+     * multiple charge cycles instead of representing just the latest one.
+     */
+    fun resetStats() {
+        RootShell.run("dumpsys batterystats --reset")
+    }
+
     /** Reads and aggregates per-UID power estimates. Requires root; run off the main thread. */
     fun readUsage(context: Context): List<AppPowerUsage> {
         val output = RootShell.run("dumpsys batterystats --checkin").outString

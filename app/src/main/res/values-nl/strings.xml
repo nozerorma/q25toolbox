@@ -84,8 +84,9 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Batterijgebruik</string>
-    <string name="battery_usage_desc">Geschat batterijgebruik per app sinds de laatste keer opladen, rechtstreeks uitgelezen uit het eigen energiemodel van het systeem via root. Dit werkt ook al wordt het native Instellingen-scherm op dit toestel nooit gevuld (dat vereist bovendien een volledig-opgeladen-signaal dat de laaddriver van dit toestel nooit meldt).</string>
+    <string name="battery_usage_desc">Geschat batterijgebruik per app, rechtstreeks uitgelezen uit het eigen energiemodel van het systeem via root. Dit werkt ook al wordt het native Instellingen-scherm op dit toestel nooit gevuld (dat vereist bovendien een volledig-opgeladen-signaal dat de laaddriver van dit toestel nooit meldt) - maar om dezelfde reden stapelen deze cijfers zich op over meerdere laadcycli in plaats van automatisch te resetten, waardoor het totaal hoger kan uitkomen dan de werkelijke batterijcapaciteit. Gebruik de reset-knop na een volledige lading om dit op nul te zetten.</string>
     <string name="battery_usage_total">Geschat totaal: %1$s</string>
+    <string name="battery_usage_reset">Batterijgebruikstatistieken resetten</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN IP: %1$s</string>

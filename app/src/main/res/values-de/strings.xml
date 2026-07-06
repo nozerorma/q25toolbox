@@ -82,8 +82,9 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Akkunutzung</string>
-    <string name="battery_usage_desc">Geschätzter Akkuverbrauch pro App seit der letzten Ladung, direkt aus dem eigenen Energiemodell des Systems per Root ausgelesen. Dies funktioniert, obwohl der native Einstellungen-Bildschirm auf diesem Gerät nie befüllt wird (er erfordert zusätzlich ein Vollladesignal, das der Ladetreiber dieses Geräts nie meldet).</string>
+    <string name="battery_usage_desc">Geschätzter Akkuverbrauch pro App, direkt aus dem eigenen Energiemodell des Systems per Root ausgelesen. Dies funktioniert, obwohl der native Einstellungen-Bildschirm auf diesem Gerät nie befüllt wird (er erfordert zusätzlich ein Vollladesignal, das der Ladetreiber dieses Geräts nie meldet) - aber aus demselben Grund summieren sich diese Zahlen über mehrere Ladezyklen auf, statt automatisch zurückgesetzt zu werden, sodass die Summe am Ende höher sein kann als die tatsächliche Akkukapazität. Nutze den Zurücksetzen-Button nach einer vollen Ladung, um sie auf null zu setzen.</string>
     <string name="battery_usage_total">Geschätzt insgesamt: %1$s</string>
+    <string name="battery_usage_reset">Akkunutzungsstatistik zurücksetzen</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN-IP: %1$s</string>

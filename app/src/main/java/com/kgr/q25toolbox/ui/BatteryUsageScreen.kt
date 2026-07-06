@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,8 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,15 +36,19 @@ import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.modules.AppPowerUsage
 import com.kgr.q25toolbox.modules.BatteryUsageController
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
 @Composable
 fun BatteryUsageScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var usage by remember { mutableStateOf<List<AppPowerUsage>?>(null) }
+    var refreshToken by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshToken) {
+        usage = null
         usage = withContext(Dispatchers.IO) { BatteryUsageController.readUsage(context) }
     }
 
@@ -64,6 +71,14 @@ fun BatteryUsageScreen(onBack: () -> Unit) {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
+            IconButton(onClick = {
+                scope.launch {
+                    withContext(Dispatchers.IO) { BatteryUsageController.resetStats() }
+                    refreshToken++
+                }
+            }) {
+                Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.battery_usage_reset))
+            }
         }
 
         Text(
