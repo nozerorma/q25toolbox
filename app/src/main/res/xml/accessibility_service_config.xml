@@ -5,6 +5,6 @@
     android:accessibilityEventTypes="typeWindowStateChanged|typeWindowsChanged|typeViewFocused"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:notificationTimeout="50"
-    android:accessibilityFlags="flagRetrieveInteractiveWindows|flagRequestFilterKeyEvents"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows|flagRequestFilterKeyEvents|flagReportViewIds"
     android:canRetrieveWindowContent="true"
     android:canRequestFilterKeyEvents="true"/>

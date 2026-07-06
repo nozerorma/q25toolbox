@@ -171,6 +171,16 @@ class Q25AccessibilityService : AccessibilityService() {
         return pkg == "com.google.android.dialer" || pkg == "com.google.android.apps.dialer"
     }
 
+    /**
+     * True only for the Dialpad tab's actual phone-number EditText, not other dialer-app
+     * screens (Contacts search, Favorites/Home, Recents) that share the same foreground
+     * package. Confirmed via uiautomator dump: resource-id "com.google.android.dialer:id/digits".
+     */
+    private fun isDialpadDigitsField(node: AccessibilityNodeInfo): Boolean {
+        val id = node.viewIdResourceName ?: return false
+        return id == "com.google.android.dialer:id/digits" || id == "com.google.android.apps.dialer:id/digits"
+    }
+
     private fun isAutoFocusEnabledForForeground(): Boolean {
         val prefs = prefs ?: return false
         if (!AutoFocusController.isEnabled(prefs)) return false
@@ -378,8 +388,12 @@ class Q25AccessibilityService : AccessibilityService() {
                                                     val current = if (target.isShowingHintText) "" else (target.text?.toString() ?: "")
                                                     // In the dialer, the physical letter keys are meant to
                                                     // type their phone-keypad digit (F -> 6), not the raw
-                                                    // letter the key produces.
-                                                    val insertedChar = if (isGoogleDialerForeground()) {
+                                                    // letter the key produces - but only on the actual
+                                                    // Dialpad number-entry field. isGoogleDialerForeground()
+                                                    // alone can't tell the Dialpad tab apart from Contacts
+                                                    // search / Favorites within the same app, which would
+                                                    // otherwise turn contact-name searches into digits too.
+                                                    val insertedChar = if (isGoogleDialerForeground() && isDialpadDigitsField(target)) {
                                                         dialerDigitChar(kc) ?: unicodeChar.toChar()
                                                     } else {
                                                         unicodeChar.toChar()
