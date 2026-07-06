@@ -34,10 +34,10 @@ object ExtraDimController {
     private const val SCHEDULE_TEMPLATE_ASSET = "extra_dim_schedule_template.sh"
     private const val SCHEDULE_LOCK = "/data/adb/.extra_dim_schedule.lock"
 
-    val START_HOUR_OPTIONS = (0..23).toList()
-    val END_HOUR_OPTIONS = (0..23).toList()
-    const val DEFAULT_START_HOUR = 22
-    const val DEFAULT_END_HOUR = 7
+    // Minutes since midnight (0..1439), so the schedule supports any time of day
+    // (e.g. 00:35), not just whole hours.
+    const val DEFAULT_START_MINUTES = 22 * 60
+    const val DEFAULT_END_MINUTES = 7 * 60
 
     fun isScheduleEnabled(): Boolean = AssetInstaller.fileExists(SCHEDULE_TARGET)
 
@@ -46,31 +46,31 @@ object ExtraDimController {
         RootShell.run("pgrep -f $SCHEDULE_SCRIPT_NAME >/dev/null 2>&1 && echo yes || echo no")
             .outString.trim() == "yes"
 
-    fun persistedStartHour(): Int {
+    fun persistedStartMinutes(): Int {
         val content = AssetInstaller.readFile(SCHEDULE_TARGET)
-        return Regex("""START_HOUR=(\d+)""").find(content)?.groupValues?.get(1)?.toIntOrNull()
-            ?: DEFAULT_START_HOUR
+        return Regex("""START_MINUTES=(\d+)""").find(content)?.groupValues?.get(1)?.toIntOrNull()
+            ?: DEFAULT_START_MINUTES
     }
 
-    fun persistedEndHour(): Int {
+    fun persistedEndMinutes(): Int {
         val content = AssetInstaller.readFile(SCHEDULE_TARGET)
-        return Regex("""END_HOUR=(\d+)""").find(content)?.groupValues?.get(1)?.toIntOrNull()
-            ?: DEFAULT_END_HOUR
+        return Regex("""END_MINUTES=(\d+)""").find(content)?.groupValues?.get(1)?.toIntOrNull()
+            ?: DEFAULT_END_MINUTES
     }
 
     /**
      * Enables (installs + launches) or disables (stops + removes) the schedule
-     * watchdog, which turns Extra Dim on/off at [startHour]/[endHour] each day.
-     * Any running instance is stopped first so a changed window takes effect
-     * immediately.
+     * watchdog, which turns Extra Dim on/off at [startMinutes]/[endMinutes] (each
+     * minutes-since-midnight) every day. Any running instance is stopped first so
+     * a changed window takes effect immediately.
      */
-    fun setScheduleEnabled(context: Context, enabled: Boolean, startHour: Int, endHour: Int): ShellResult {
+    fun setScheduleEnabled(context: Context, enabled: Boolean, startMinutes: Int, endMinutes: Int): ShellResult {
         RootShell.run("pkill -f $SCHEDULE_SCRIPT_NAME 2>/dev/null; rm -f $SCHEDULE_LOCK")
 
         return if (enabled) {
             val result = AssetInstaller.installFromAsset(context, SCHEDULE_TEMPLATE_ASSET, SCHEDULE_TARGET) { raw ->
-                raw.replace("__START_HOUR__", startHour.toString())
-                   .replace("__END_HOUR__", endHour.toString())
+                raw.replace("__START_MINUTES__", startMinutes.toString())
+                   .replace("__END_MINUTES__", endMinutes.toString())
             }
             RootShell.run("nohup sh $SCHEDULE_TARGET >/dev/null 2>&1 &")
             result

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.util.Log
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
@@ -54,6 +55,7 @@ class Q25AccessibilityService : AccessibilityService() {
         const val KEY_IME_SAVED = "ime_block_saved_ime"   // IME to restore when leaving a blocked app
         const val KEY_SCALING_APPS = "scaling_apps"       // StringSet "pkg=width" for per-app resolution
         const val KEY_IN_CALL_SHORTCUTS = "in_call_shortcuts_enabled"
+        const val KEY_IME_SUGGESTIONS = "ime_suggestions_enabled" // Ctrl+W/E/R picks IME suggestion 1/2/3
 
 
         // Our do-nothing IME: while it's active, physical key presses go straight
@@ -62,6 +64,13 @@ class Q25AccessibilityService : AccessibilityService() {
     }
 
     private val worker: ExecutorService = Executors.newSingleThreadExecutor()
+    // IME switching (e.g. entering the per-app keyboard block) is latency-critical - the user
+    // can start typing the moment the new app appears - so it gets its own executor rather than
+    // sharing `worker` with slower, poll-based tasks (auto-focus's focus-and-verify loop, the
+    // in-call dialpad-open poll). Those can legitimately take over a second, and queuing behind
+    // one on the same single thread was delaying the IME switch by that much, which is exactly
+    // what caused the "first keypress after switching apps doesn't register" symptom.
+    private val imeWorker: ExecutorService = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val debounceForegroundRunnable = Runnable { checkForeground() }
 
@@ -93,7 +102,6 @@ class Q25AccessibilityService : AccessibilityService() {
 
     @Volatile private var imeBlockApplied = false // last show_ime value we pushed (true = suppressed)
     @Volatile private var foregroundPkg: String? = null // last seen foreground app package
-    private var autoFocusDone = false
     private var consumedAutofocusKeycode = -1
     private var prefs: SharedPreferences? = null
 
@@ -120,7 +128,7 @@ class Q25AccessibilityService : AccessibilityService() {
             serviceInfo = info
         }
 
-        worker.execute {
+        imeWorker.execute {
             val curIme = RootShell.run("settings get secure default_input_method")
                 .outString.trim()
             imeBlockApplied = (curIme == PASSTHRU_IME)
@@ -132,6 +140,7 @@ class Q25AccessibilityService : AccessibilityService() {
     private fun pinInputEnabled() = prefs?.getBoolean(KEY_PIN_INPUT, true) ?: true
     private fun chatComposerEnabled() = prefs?.getBoolean(KEY_CHAT_COMPOSER, false) ?: false
     private fun calculatorEnabled() = prefs?.getBoolean(KEY_CALCULATOR, false) ?: false
+    private fun imeSuggestionsEnabled() = prefs?.getBoolean(KEY_IME_SUGGESTIONS, false) ?: false
     private fun imeBlockEnabled() = prefs?.getBoolean(KEY_IME_BLOCK, false) ?: false
     private fun imeBlockApps(): Set<String> =
         prefs?.getStringSet(KEY_IME_BLOCK_APPS, emptySet()) ?: emptySet()
@@ -148,7 +157,6 @@ class Q25AccessibilityService : AccessibilityService() {
             foregroundPkg = pkg
             reconcileImeBlock()
             reconcileScaling()
-            autoFocusDone = false // Reset when app changes
         }
 
         if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
@@ -243,7 +251,7 @@ class Q25AccessibilityService : AccessibilityService() {
         val desired = imeBlockEnabled() && foregroundPkg?.let { it in imeBlockApps() } == true
         if (desired == imeBlockApplied) return
         imeBlockApplied = desired
-        worker.execute { applyImeBlock(desired) }
+        imeWorker.execute { applyImeBlock(desired) }
     }
 
     /**
@@ -285,24 +293,44 @@ class Q25AccessibilityService : AccessibilityService() {
         if (event == null) return false
         val kc = event.keyCode
 
-        // Key-triggered AutoFocus: Focus input field and type key once any printable key is pressed on an unfocused field.
-        // Only ever attempted once per app-foreground session (autoFocusDone, reset in
-        // onAccessibilityEvent on app change) - otherwise every keystroke after the first would
-        // redo a rootInActiveWindow binder call plus a full tree search just to confirm the field
-        // is already focused, which is both a per-keystroke lag source and a race: a fast second
-        // press arriving before the first press's focus had visibly landed would see isFocused
-        // still false and queue its own overlapping focus+reinject, duplicating the character.
+        // IME suggestion shortcuts: Ctrl+W/E/R picks suggestion 1/2/3 from the keyboard's
+        // candidate strip. Only consumes the key if a suggestion was actually found and
+        // clicked, so Ctrl+W/E/R still behaves normally (e.g. closing a browser tab) when
+        // no suggestions are showing.
+        if (imeSuggestionsEnabled() && event.isCtrlPressed && event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+            val suggestionIndex = when (kc) {
+                KeyEvent.KEYCODE_W -> 0
+                KeyEvent.KEYCODE_E -> 1
+                KeyEvent.KEYCODE_R -> 2
+                else -> -1
+            }
+            if (suggestionIndex >= 0 && clickImeSuggestion(suggestionIndex)) {
+                return true
+            }
+        }
+
+        // Key-triggered AutoFocus: Focus input field and type key once any printable key is pressed
+        // on an unfocused field. Gated on a cheap, native-backed "does anything already have input
+        // focus?" check rather than a per-app-session "have we tried already" flag - the latter
+        // (autoFocusDone) got stuck once focus was lost mid-session (e.g. tapping a back arrow or
+        // the screen elsewhere in the same app), since nothing re-armed it without an app change.
+        // Checking live focus state instead means it naturally re-attempts whenever focus is
+        // actually gone, while still skipping the expensive tree search whenever a field is
+        // already focused (the common case while continuing to type).
         if (isAutoFocusEnabledForForeground()) {
-            if (event.action == KeyEvent.ACTION_DOWN && !autoFocusDone) {
+            if (event.action == KeyEvent.ACTION_DOWN) {
                 val unicodeChar = event.unicodeChar
                 if (unicodeChar > 0 && event.repeatCount == 0 && !event.isAltPressed && !event.isCtrlPressed) {
                     val root = rootInActiveWindow
                     if (root != null) {
                         try {
-                            val inputNode = AutoFocusController.findFirstEditableNode(root)
-                            if (inputNode != null) {
-                                try {
-                                    if (!inputNode.isFocused) {
+                            val alreadyFocused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+                            val alreadyFocusedIsTextField = alreadyFocused?.let { AutoFocusController.isEditableTextField(it) } ?: false
+                            alreadyFocused?.recycle()
+                            if (!alreadyFocusedIsTextField) {
+                                val inputNode = AutoFocusController.findFirstEditableNode(root)
+                                if (inputNode != null) {
+                                    try {
                                         // Some search boxes (Maps, Gmail) actually activate via
                                         // ACTION_CLICK (opening a full search overlay/activity),
                                         // ignoring ACTION_FOCUS entirely - so don't gate on its
@@ -311,28 +339,67 @@ class Q25AccessibilityService : AccessibilityService() {
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                                         consumedAutofocusKeycode = kc
-                                        autoFocusDone = true
                                         worker.execute {
                                             var hasInputFocus = false
                                             for (attempt in 1..10) {
                                                 Thread.sleep(100)
                                                 hasInputFocus = rootInActiveWindow?.let { r ->
                                                     try {
-                                                        r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)?.also { it.recycle() } != null
+                                                        // Must specifically be the editable field, not just
+                                                        // any focus holder - Gmail's search transition (a
+                                                        // full overlay/activity, unlike Maps' inline omnibox)
+                                                        // briefly hands input focus to intermediate widgets
+                                                        // (e.g. the overlay's toolbar/back button) before the
+                                                        // real search box gets it, and injecting too early
+                                                        // against one of those drops the keystroke entirely.
+                                                        val focused = r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+                                                        val isEditable = focused?.let { AutoFocusController.isEditableTextField(it) } ?: false
+                                                        focused?.recycle()
+                                                        isEditable
                                                     } finally {
                                                         r.recycle()
                                                     }
                                                 } ?: false
                                                 if (hasInputFocus) break
                                             }
-                                            RootShell.run("input keyevent $kc")
+                                            if (hasInputFocus) Thread.sleep(150)
+                                            // Re-injecting via "input keyevent" turned out unreliable
+                                            // here: it reports shell-level success, but confirmed via
+                                            // logging that the dialer's phone-number field's text never
+                                            // actually changes - the synthetic event is silently dropped
+                                            // (and doesn't even re-enter this filter, unlike a real
+                                            // keypress). Setting the text directly through the
+                                            // accessibility API instead - the same mechanism assistive
+                                            // typing tools are meant to use - sidesteps IME/input-
+                                            // connection timing entirely rather than fighting it.
+                                            val target = rootInActiveWindow?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+                                            if (target != null) {
+                                                try {
+                                                    val current = if (target.isShowingHintText) "" else (target.text?.toString() ?: "")
+                                                    // In the dialer, the physical letter keys are meant to
+                                                    // type their phone-keypad digit (F -> 6), not the raw
+                                                    // letter the key produces.
+                                                    val insertedChar = if (isGoogleDialerForeground()) {
+                                                        dialerDigitChar(kc) ?: unicodeChar.toChar()
+                                                    } else {
+                                                        unicodeChar.toChar()
+                                                    }
+                                                    val args = Bundle().apply {
+                                                        putCharSequence(
+                                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                                                            current + insertedChar
+                                                        )
+                                                    }
+                                                    target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
+                                                } finally {
+                                                    target.recycle()
+                                                }
+                                            }
                                         }
                                         return true // Consume original press event
-                                    } else {
-                                        autoFocusDone = true
+                                    } finally {
+                                        inputNode.recycle()
                                     }
-                                } finally {
-                                    inputNode.recycle()
                                 }
                             }
                         } finally {
@@ -356,7 +423,12 @@ class Q25AccessibilityService : AccessibilityService() {
                     val checkables = mutableListOf<AccessibilityNodeInfo>()
                     findCheckables(root, checkables)
                     try {
-                        if (checkables.isNotEmpty()) {
+                        // Require the full expected in-call toggle set (keypad, mute, speaker) -
+                        // the standalone pre-call dial-a-number screen isn't guaranteed to have
+                        // zero checkables, and matching on just "any" let this block misfire
+                        // there, double-handling keys that auto-focus's own generic search-box
+                        // logic was already correctly handling for that screen.
+                        if (checkables.size >= 3) {
                             val isCurrencyKey = kc == KeyEvent.KEYCODE_CTRL_RIGHT || kc == KeyEvent.KEYCODE_GRAVE
                             val isMKey = kc == KeyEvent.KEYCODE_M
 
@@ -385,12 +457,35 @@ class Q25AccessibilityService : AccessibilityService() {
                                 if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
                                     val keypadNode = checkables[0]
                                     if (keypadNode.isChecked) {
+                                        // Common case: autoOpenDialpad() already opened it earlier,
+                                        // so just inject straight away.
                                         injectDialerKey(injectKc)
                                     } else {
+                                        // Dialpad hasn't visibly opened yet - autoOpenDialpad()'s
+                                        // click is async and can lose this race for the very first
+                                        // digit. Poll for it to actually finish opening instead of
+                                        // guessing a fixed delay.
                                         keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                                        mainHandler.postDelayed({
-                                            injectDialerKey(injectKc)
-                                        }, 200)
+                                        worker.execute {
+                                            for (attempt in 1..10) {
+                                                Thread.sleep(50)
+                                                val opened = rootInActiveWindow?.let { r ->
+                                                    try {
+                                                        val cs = mutableListOf<AccessibilityNodeInfo>()
+                                                        findCheckables(r, cs)
+                                                        try {
+                                                            cs.isNotEmpty() && cs[0].isChecked
+                                                        } finally {
+                                                            cs.forEach { it.recycle() }
+                                                        }
+                                                    } finally {
+                                                        r.recycle()
+                                                    }
+                                                } ?: false
+                                                if (opened) break
+                                            }
+                                            RootShell.run("input keyevent $injectKc")
+                                        }
                                     }
                                 }
                                 return true // Consume dialpad digit events
@@ -421,30 +516,35 @@ class Q25AccessibilityService : AccessibilityService() {
 
         val input = toPinInput(kc) ?: return false
 
+        // Straight from root to the button by resource id - a single native,
+        // index-backed lookup (same approach as the original q25pininput,
+        // which was noticeably snappier than scoping through an intermediate
+        // keyguard_pin_view container first via a manual tree walk). Only
+        // falls back to walking the tree by label if the id lookup misses
+        // (e.g. a SystemUI version using different ids).
         val root = rootInActiveWindow ?: return false
         try {
-            val pinView = findSingleNode(root, "com.android.systemui:id/keyguard_pin_view") ?: return false
+            val buttonId = pinButtonId(input)
+            val button = findNodeByViewIdFirst(root, buttonId)
+                ?: findByFallbackTextUnique(root, pinButtonFallbackLabels(input))
+                ?: return false
             try {
-                val pkgName = pinView.packageName?.toString()
-                if (pkgName != "com.android.systemui") {
-                    return false
-                }
-
-                val buttonId = pinButtonId(input)
-                val button = findSingleNodeInTree(pinView, buttonId, pinButtonFallbackLabels(input)) ?: return false
-                try {
-                    if (!button.isClickable) return false
-                    if (event.repeatCount > 0) return true
-                    return button.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                } finally {
-                    button.recycle()
-                }
+                if (!button.isClickable) return false
+                if (event.repeatCount > 0) return true
+                return button.performAction(AccessibilityNodeInfo.ACTION_CLICK)
             } finally {
-                pinView.recycle()
+                button.recycle()
             }
         } finally {
             root.recycle()
         }
+    }
+
+    private fun findNodeByViewIdFirst(root: AccessibilityNodeInfo, viewId: String): AccessibilityNodeInfo? {
+        val nodes = root.findAccessibilityNodeInfosByViewId(viewId) ?: return null
+        val first = nodes.firstOrNull()
+        for (i in 1 until nodes.size) nodes[i].recycle()
+        return first
     }
 
     private fun isDeviceLocked(): Boolean {
@@ -466,6 +566,27 @@ class Q25AccessibilityService : AccessibilityService() {
             KeyEvent.KEYCODE_0 -> KeyEvent.KEYCODE_0
             else -> null
         }
+    }
+
+    /**
+     * Same W/E/R/S/D/F/Z/X/C/0 -> phone-digit mapping as [getDialerKeycode], as a character
+     * instead of a keycode - used when the generic auto-focus text-insertion path (which
+     * otherwise just inserts the raw unicode character the key produces) needs to insert into
+     * the dialer's number field specifically, where the physical letter keys are meant to type
+     * their corresponding phone-keypad digit, not the letter itself.
+     */
+    private fun dialerDigitChar(kc: Int): Char? = when (getDialerKeycode(kc)) {
+        KeyEvent.KEYCODE_0 -> '0'
+        KeyEvent.KEYCODE_1 -> '1'
+        KeyEvent.KEYCODE_2 -> '2'
+        KeyEvent.KEYCODE_3 -> '3'
+        KeyEvent.KEYCODE_4 -> '4'
+        KeyEvent.KEYCODE_5 -> '5'
+        KeyEvent.KEYCODE_6 -> '6'
+        KeyEvent.KEYCODE_7 -> '7'
+        KeyEvent.KEYCODE_8 -> '8'
+        KeyEvent.KEYCODE_9 -> '9'
+        else -> null
     }
 
     private fun injectDialerKey(kcCode: Int) {
@@ -503,7 +624,10 @@ class Q25AccessibilityService : AccessibilityService() {
             val checkables = mutableListOf<AccessibilityNodeInfo>()
             findCheckables(root, checkables)
             try {
-                if (checkables.isNotEmpty()) {
+                // Same guard as the key-handling block: only the actual in-call screen has
+                // the full keypad+mute+speaker toggle set, so this can't misfire on the
+                // pre-call dial-a-number screen's own (unrelated) checkables.
+                if (checkables.size >= 3) {
                     val keypadNode = checkables[0]
                     if (!keypadNode.isChecked) {
                         keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
@@ -518,6 +642,40 @@ class Q25AccessibilityService : AccessibilityService() {
         }
     }
 
+
+    /**
+     * Clicks the Nth clickable TextView in the IME window (its suggestion strip) - confirmed on
+     * BlackBerry Keyboard, where the candidate strip is exactly a row of clickable TextViews
+     * alongside an unrelated ImageButton (the quick-modes toggle), which the TextView classname
+     * check filters out. Assumes other BlackBerry-derived keyboards (e.g. Harpocrat) use a
+     * similar structure; if a given keyboard doesn't, this just finds nothing and no-ops.
+     */
+    private fun clickImeSuggestion(index: Int): Boolean {
+        val imeRoot = windows?.firstOrNull { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }?.root ?: return false
+        try {
+            val suggestions = mutableListOf<AccessibilityNodeInfo>()
+            findClickableTextViews(imeRoot, suggestions)
+            try {
+                if (suggestions.size <= index) return false
+                return suggestions[index].performAction(AccessibilityNodeInfo.ACTION_CLICK)
+            } finally {
+                suggestions.forEach { it.recycle() }
+            }
+        } finally {
+            imeRoot.recycle()
+        }
+    }
+
+    private fun findClickableTextViews(node: AccessibilityNodeInfo, list: MutableList<AccessibilityNodeInfo>) {
+        if (node.isClickable && node.className?.contains("TextView") == true) {
+            list.add(AccessibilityNodeInfo.obtain(node))
+        }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            findClickableTextViews(child, list)
+            child.recycle()
+        }
+    }
 
     private fun findCheckables(node: AccessibilityNodeInfo, list: MutableList<AccessibilityNodeInfo>) {
         if (node.isCheckable) {
@@ -584,51 +742,6 @@ class Q25AccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun findSingleNode(root: AccessibilityNodeInfo, viewId: String): AccessibilityNodeInfo? {
-        val nodes = root.findAccessibilityNodeInfosByViewId(viewId) ?: return null
-        if (nodes.size != 1) {
-            for (node in nodes) node.recycle()
-            return null
-        }
-        val result = nodes[0]
-        for (i in 1 until nodes.size) {
-            nodes[i].recycle()
-        }
-        return result
-    }
-
-    /**
-     * Finds the PIN pad button by exact resource-id first (SystemUI's key ids
-     * are stable and unique, so the first hit can return immediately - no
-     * need to keep walking siblings to rule out a duplicate). Only falls back
-     * to the slower exhaustive-with-uniqueness-check text search, which stays
-     * cautious since matching by visible label alone is inherently fuzzier.
-     */
-    private fun findSingleNodeInTree(
-        root: AccessibilityNodeInfo?,
-        viewId: String,
-        fallbackTexts: List<CharSequence>
-    ): AccessibilityNodeInfo? {
-        findByViewIdFast(root, viewId)?.let { return it }
-        return findByFallbackTextUnique(root, fallbackTexts)
-    }
-
-    private fun findByViewIdFast(root: AccessibilityNodeInfo?, viewId: String): AccessibilityNodeInfo? {
-        if (root == null) return null
-        val rootViewId = root.viewIdResourceName
-        if (rootViewId != null && viewId.contentEquals(rootViewId)) {
-            return AccessibilityNodeInfo.obtain(root)
-        }
-        for (i in 0 until root.childCount) {
-            val child = root.getChild(i) ?: continue
-            try {
-                findByViewIdFast(child, viewId)?.let { return it }
-            } finally {
-                child.recycle()
-            }
-        }
-        return null
-    }
 
     private fun findByFallbackTextUnique(
         root: AccessibilityNodeInfo?,

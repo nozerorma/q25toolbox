@@ -81,24 +81,8 @@ fun AutoFocusScreen(onBack: () -> Unit) {
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AppListTopBar(
-            title = Screen.AutoFocus.title,
-            onBack = onBack,
-            showSystemApps = showSystemApps,
-            onToggleShowSystemApps = { showSystemApps = it },
-        )
-
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(stringResource(R.string.auto_focus_enabled_switch), modifier = Modifier.weight(1f))
-            Switch(
-                checked = enabled,
-                onCheckedChange = { checked ->
-                    enabled = checked
-                    prefs.edit().putBoolean(AutoFocusController.KEY_AUTO_FOCUS, checked).apply()
-                }
-            )
-        }
-
+        // Only the search field stays pinned while scrolling - the header, switch, and
+        // description scroll away with the list so more of it is visible at once.
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
@@ -114,22 +98,44 @@ fun AutoFocusScreen(onBack: () -> Unit) {
             ) { CircularProgressIndicator() }
 
             else -> {
-                Text(
-                    stringResource(R.string.auto_focus_selected_count, selected.size, list.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    item(key = "_topbar") {
+                        AppListTopBar(
+                            title = Screen.AutoFocus.title,
+                            onBack = onBack,
+                            showSystemApps = showSystemApps,
+                            onToggleShowSystemApps = { showSystemApps = it },
+                        )
+                    }
+                    item(key = "_switch") {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(stringResource(R.string.auto_focus_enabled_switch), modifier = Modifier.weight(1f))
+                            Switch(
+                                checked = enabled,
+                                onCheckedChange = { checked ->
+                                    enabled = checked
+                                    prefs.edit().putBoolean(AutoFocusController.KEY_AUTO_FOCUS, checked).apply()
+                                }
+                            )
+                        }
+                    }
                     item(key = "_banner") { AccessibilityServiceBanner(serviceEnabled) }
                     item(key = "_desc") {
                         Text(
                             stringResource(R.string.auto_focus_long_desc),
                             style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    item(key = "_count") {
+                        Text(
+                            stringResource(R.string.auto_focus_selected_count, selected.size, list.size),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     items(filtered, key = { it.pkg }) { app ->

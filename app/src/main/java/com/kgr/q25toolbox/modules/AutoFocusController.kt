@@ -62,11 +62,8 @@ object AutoFocusController {
         // isEditable() to true once actually tapped into. The classname
         // check alone is narrow enough to avoid the old false-positive
         // matches (mail list items, map view).
-        if (node.isFocusable) {
-            val className = node.className?.toString() ?: ""
-            if (className.contains("EditText") || className.contains("AutoCompleteTextView")) {
-                return AccessibilityNodeInfo.obtain(node)
-            }
+        if (node.isFocusable && isEditableTextField(node)) {
+            return AccessibilityNodeInfo.obtain(node)
         }
         for (i in 0 until node.childCount) {
             val child = node.getChild(i) ?: continue
@@ -77,5 +74,18 @@ object AutoFocusController {
             }
         }
         return null
+    }
+
+    /**
+     * Whether [node] is itself a text input widget by classname. Used both to
+     * find candidates and to check whether the system's currently-focused
+     * node (AccessibilityNodeInfo.FOCUS_INPUT) is actually a usable text
+     * field - list items, the map surface, or other default-focused widgets
+     * in apps like Gmail/Maps also report as "focused" but aren't editable,
+     * so that check alone isn't enough to conclude there's nothing to do.
+     */
+    fun isEditableTextField(node: AccessibilityNodeInfo): Boolean {
+        val className = node.className?.toString() ?: ""
+        return className.contains("EditText") || className.contains("AutoCompleteTextView")
     }
 }

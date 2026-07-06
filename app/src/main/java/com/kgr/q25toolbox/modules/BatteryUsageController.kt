@@ -1,0 +1,81 @@
+package com.kgr.q25toolbox.modules
+
+import android.content.Context
+import android.content.pm.PackageManager
+import com.kgr.q25toolbox.core.RootShell
+
+/** One UID's estimated share of battery use since last charge. */
+data class AppPowerUsage(
+    val uid: Int,
+    val label: String,
+    val packageName: String?,
+    val mAh: Double,
+    val percentOfTotal: Double,
+)
+
+/**
+ * Per-app battery usage estimation, sourced from the same underlying data as
+ * Android's native "Battery usage" screen (BatteryStatsImpl's power model) -
+ * but read directly via root instead of through Settings' own UI, which on
+ * this device never populates because it additionally requires a
+ * BATTERY_STATUS_FULL transition the charging driver never reports.
+ *
+ * Uses `--checkin` (a stable, machine-parseable format) rather than the
+ * human-readable dump, whose formatting isn't meant to be scraped.
+ */
+object BatteryUsageController {
+
+    private val PWI_UID_LINE = Regex("""^9,(-?\d+),l,pwi,uid,([0-9.eE+-]+),""")
+
+    private val KNOWN_SYSTEM_UIDS = mapOf(
+        0 to "Android (kernel/root)",
+        1000 to "Android System",
+        1001 to "Radio",
+        1002 to "Bluetooth",
+        1010 to "Wi-Fi",
+        1013 to "Media",
+        1041 to "Bluetooth stack",
+        2000 to "Shell",
+    )
+
+    /** Reads and aggregates per-UID power estimates. Requires root; run off the main thread. */
+    fun readUsage(context: Context): List<AppPowerUsage> {
+        val output = RootShell.run("dumpsys batterystats --checkin").outString
+        val perUid = mutableMapOf<Int, Double>()
+        for (line in output.lineSequence()) {
+            val match = PWI_UID_LINE.find(line) ?: continue
+            val uid = match.groupValues[1].toIntOrNull() ?: continue
+            val mah = match.groupValues[2].toDoubleOrNull() ?: continue
+            perUid[uid] = (perUid[uid] ?: 0.0) + mah
+        }
+
+        val total = perUid.values.sum().takeIf { it > 0.0 } ?: return emptyList()
+        val pm = context.packageManager
+
+        return perUid.entries
+            .filter { it.value > 0.0 }
+            .map { (uid, mah) ->
+                val (label, pkg) = resolveUid(pm, uid)
+                AppPowerUsage(uid, label, pkg, mah, mah / total * 100.0)
+            }
+            .sortedByDescending { it.mAh }
+    }
+
+    private fun resolveUid(pm: PackageManager, uid: Int): Pair<String, String?> {
+        val packages = try {
+            pm.getPackagesForUid(uid)
+        } catch (_: Exception) {
+            null
+        }
+        val pkg = packages?.firstOrNull()
+        if (pkg != null) {
+            val label = try {
+                pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
+            } catch (_: Exception) {
+                pkg
+            }
+            return label to pkg
+        }
+        return (KNOWN_SYSTEM_UIDS[uid] ?: "uid $uid") to null
+    }
+}

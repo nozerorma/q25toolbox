@@ -1,11 +1,11 @@
 #!/system/bin/sh
 # Auto-schedule Extra Dim - Q25 Toolbox
 #
-# Turns Extra Dim on during [__START_HOUR__:00, __END_HOUR__:00) and off
-# outside that window. Only writes the setting on an on/off transition (not
-# every poll), so a manual toggle in between the transitions isn't
-# immediately overwritten - matches how Android's own Night Light schedule
-# behaves with manual overrides.
+# Turns Extra Dim on/off at specific times of day (minutes-since-midnight, so
+# any time like 00:35 is supported, not just whole hours). Only writes the
+# setting on an on/off transition (not every poll), so a manual toggle in
+# between the transitions isn't immediately overwritten - matches how
+# Android's own Night Light schedule behaves with manual overrides.
 
 LOCK=/data/adb/.extra_dim_schedule.lock
 if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
@@ -13,16 +13,16 @@ if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
 fi
 echo $$ > "$LOCK"
 
-START_HOUR=__START_HOUR__
-END_HOUR=__END_HOUR__
+START_MINUTES=__START_MINUTES__
+END_MINUTES=__END_MINUTES__
 LAST_STATE=""
 
 in_window() {
-    HOUR=$1
-    if [ "$START_HOUR" -lt "$END_HOUR" ]; then
-        [ "$HOUR" -ge "$START_HOUR" ] && [ "$HOUR" -lt "$END_HOUR" ]
+    M=$1
+    if [ "$START_MINUTES" -lt "$END_MINUTES" ]; then
+        [ "$M" -ge "$START_MINUTES" ] && [ "$M" -lt "$END_MINUTES" ]
     else
-        [ "$HOUR" -ge "$START_HOUR" ] || [ "$HOUR" -lt "$END_HOUR" ]
+        [ "$M" -ge "$START_MINUTES" ] || [ "$M" -lt "$END_MINUTES" ]
     fi
 }
 
@@ -30,8 +30,12 @@ while true; do
     HOUR=$(date +%H)
     HOUR=${HOUR#0}
     [ -z "$HOUR" ] && HOUR=0
+    MIN=$(date +%M)
+    MIN=${MIN#0}
+    [ -z "$MIN" ] && MIN=0
+    NOW_MINUTES=$((HOUR * 60 + MIN))
 
-    if in_window "$HOUR"; then
+    if in_window "$NOW_MINUTES"; then
         DESIRED=1
     else
         DESIRED=0
@@ -42,5 +46,5 @@ while true; do
         LAST_STATE=$DESIRED
     fi
 
-    sleep 60
+    sleep 30
 done

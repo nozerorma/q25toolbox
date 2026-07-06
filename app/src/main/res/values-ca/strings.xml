@@ -15,6 +15,7 @@
     <string name="title_ime_block">Bloqueig de teclat per aplicació</string>
     <string name="title_chat_composer">Enter per enviar al xat</string>
     <string name="title_calculator_input">Tecles de calculadora</string>
+    <string name="title_ime_suggestions">Dreceres de suggeriments de l\'IME</string>
     <string name="title_bt_idle">Desactivar Bluetooth inactiu</string>
     <string name="title_telemetry">Bloqueig global de telemetria</string>
     <string name="title_extra_dim">Atenuació extra</string>
@@ -28,6 +29,7 @@
     <string name="subtitle_ime_block">Envia les tecles directament a les apps triades</string>
     <string name="subtitle_chat_composer">Enter envia, Alt+Enter nova línia als xats</string>
     <string name="subtitle_calculator_input">Envia números i operadors a la calculadora</string>
+    <string name="subtitle_ime_suggestions">Ctrl+W/E/R tria el suggeriment 1/2/3 del teclat</string>
     <string name="subtitle_bt_idle">Apaga el Bluetooth quan estigui inactiu</string>
     <string name="subtitle_telemetry">Desactiva Firebase Crashlytics a tot el sistema</string>
     <string name="subtitle_extra_dim">Redueix la brillantor per sota del mínim del sistema</string>
@@ -45,6 +47,12 @@
     <string name="info_tap_to_open">Toca per obrir</string>
     <string name="info_enabled">Habilitat</string>
     <string name="info_disabled">Deshabilitat</string>
+    <string name="info_app">App</string>
+    <string name="info_app_version">Versió</string>
+    <string name="info_app_update">Actualització</string>
+    <string name="info_update_checking">Comprovant…</string>
+    <string name="info_update_up_to_date">Actualitzat</string>
+    <string name="info_update_available">Actualització disponible: v%1$s (toca per veure-la)</string>
     <string name="info_device">Dispositiu</string>
     <string name="info_battery">Bateria</string>
     <string name="info_model">Model</string>
@@ -69,6 +77,13 @@
     <string name="info_battery_volt">Voltatge</string>
     <string name="info_battery_tech">Tecnologia</string>
     <string name="info_battery_capacity">Capacitat</string>
+    <string name="info_battery_usage_row">Desglossament d\'ús</string>
+    <string name="info_battery_usage_hint">Toca per veure una estimació per aplicació</string>
+
+    <!-- Battery Usage Screen -->
+    <string name="title_battery_usage">Ús de la bateria</string>
+    <string name="battery_usage_desc">Ús estimat per aplicació des de l\'última càrrega, llegit directament del model d\'energia del sistema mitjançant root. Això funciona encara que la pantalla nativa d\'Ajustos d\'aquest dispositiu mai es completi (necessita a més un senyal de càrrega completa que el controlador de càrrega d\'aquest dispositiu mai informa).</string>
+    <string name="battery_usage_total">Total estimat: %1$s</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>
@@ -106,12 +121,14 @@
     <string name="a11y_banner_btn">Obrir Ajustos d’Accessibilitat</string>
 
     <!-- Key Remap Screen -->
-    <string name="key_remap_desc">Onderschept o intercepta una tecla física lliure al controlador de maquinari i la reassigna a Ctrl Dret. Com que funciona a nivell de distribució d’entrada del sistema operatiu, funciona a tot arreu (emuladors de terminal, clients SSH, jocs i editors de text). Torna a carregar el controlador del teclat en aplicar perquè tingui efecte immediat.</string>
+    <string name="key_remap_desc">Intercepta una tecla física lliure al controlador de maquinari i la reassigna a Ctrl Dret. Com que funciona a nivell de distribució d’entrada del sistema operatiu, funciona a tot arreu (emuladors de terminal, clients SSH, jocs i editors de text). Torna a carregar el controlador del teclat en aplicar perquè tingui efecte immediat.</string>
     <string name="key_remap_source_title">Tecla origen</string>
     <string name="key_remap_currency_label">Tecla de moneda</string>
     <string name="key_remap_currency_desc">La tecla € / £ / $ al costat d’Espai. El microprogramari la mapeja incorrectament com a accent greu — reassignar-la a Ctrl no afecta l’escriptura normal.</string>
     <string name="key_remap_rshift_label">Shift Dret</string>
     <string name="key_remap_rshift_desc">La tecla Shift dreta. Shift Esquerre segueix funcionant amb normalitat per a les majúscules.</string>
+    <string name="key_remap_recents_label">Recents (tecla BlackBerry)</string>
+    <string name="key_remap_recents_desc">La tecla dedicada d\'aplicacions recents/canvi de tasca. Reassignar-la a Ctrl fa que perdis la drecera de maquinari per a recents.</string>
     <string name="key_remap_enabled_label">Habilitat</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Enfocament automàtic d’entrada</string>
@@ -125,4 +142,7 @@
     <string name="subtitle_in_call_shortcuts">Alterna silenci, altaveu i teclat en trucades</string>
     <string name="in_call_shortcuts_desc">A la pantalla de trucada de l’aplicació Telèfon de Google, utilitzeu M per silenciar/activar el micròfon, $ per alternar l’altaveu i 0–9 per obrir el teclat de marcatge. No requereix root.</string>
     <string name="in_call_shortcuts_enabled_label">Habilitat</string>
+
+    <!-- IME Suggestions Screen -->
+    <string name="ime_suggestions_desc">Prem Ctrl+W, Ctrl+E o Ctrl+R per triar el suggeriment 1, 2 o 3 de la barra de candidats del teclat físic (BlackBerry Keyboard, Harpocrat i similars). Només actua quan hi ha un suggeriment visible, de manera que Ctrl+W/E/R continuen funcionant amb normalitat en altres llocs (per exemple, tancar una pestanya del navegador). No cal root.</string>
 </resources>

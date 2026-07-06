@@ -9,17 +9,27 @@ import android.os.BatteryManager
 import android.os.Build
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,7 +52,7 @@ import kotlinx.coroutines.withContext
 private data class Row(val label: String, val value: String)
 
 @Composable
-fun InfoScreen() {
+fun InfoScreen(onOpenBatteryUsage: () -> Unit) {
     val context = LocalContext.current
 
     var rootOk by remember { mutableStateOf<Boolean?>(null) }
@@ -132,7 +142,15 @@ fun InfoScreen() {
 
         InfoCard(stringResource(R.string.info_device)) { device.forEach { LabelValue(it) } }
 
-        InfoCard(stringResource(R.string.info_battery)) { battery.forEach { LabelValue(it) } }
+        InfoCard(stringResource(R.string.info_battery)) {
+            val levelLabel = stringResource(R.string.info_battery_level)
+            battery.forEach { row ->
+                LabelValue(row)
+                if (row.label == levelLabel) {
+                    BatteryUsageEntryRow(onClick = onOpenBatteryUsage)
+                }
+            }
+        }
     }
 }
 
@@ -159,6 +177,36 @@ private fun LabelValue(row: Row) {
     Column {
         Text(row.label, style = MaterialTheme.typography.labelMedium, color = NEUTRAL)
         Text(row.value, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+private fun BatteryUsageEntryRow(onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Icon(Icons.Filled.QueryStats, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(stringResource(R.string.info_battery_usage_row), style = MaterialTheme.typography.titleSmall)
+            Text(
+                stringResource(R.string.info_battery_usage_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

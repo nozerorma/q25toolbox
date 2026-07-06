@@ -19,6 +19,8 @@ sealed class Screen(@StringRes val titleRes: Int, @StringRes val subtitleRes: In
     data object AppScaling : Screen(R.string.title_app_scaling, R.string.subtitle_app_scaling)
     data object AutoFocus : Screen(R.string.title_auto_focus, R.string.subtitle_auto_focus)
     data object InCallShortcuts : Screen(R.string.title_in_call_shortcuts, R.string.subtitle_in_call_shortcuts)
+    data object ImeSuggestions : Screen(R.string.title_ime_suggestions, R.string.subtitle_ime_suggestions)
+    data object BatteryUsage : Screen(R.string.title_battery_usage)
 
     val title: String @Composable get() = stringResource(titleRes)
     val subtitle: String @Composable get() = if (subtitleRes != 0) stringResource(subtitleRes) else ""
@@ -39,6 +41,7 @@ val keyboardScreens = listOf(
     Screen.ImeBlock,
     Screen.ChatComposer,
     Screen.CalculatorInput,
+    Screen.ImeSuggestions,
 )
 
 /** Screens listed under the System tab. */

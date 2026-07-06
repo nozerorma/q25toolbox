@@ -15,6 +15,7 @@
     <string name="title_ime_block">Per-App Keyboard Block</string>
     <string name="title_chat_composer">Chat Enter-to-Send</string>
     <string name="title_calculator_input">Calculator Keys</string>
+    <string name="title_ime_suggestions">IME Suggestion Shortcuts</string>
     <string name="title_bt_idle">Auto-disable Bluetooth</string>
     <string name="title_telemetry">Global Telemetry Block</string>
     <string name="title_extra_dim">Extra Dimming</string>
@@ -29,6 +30,7 @@
     <string name="subtitle_ime_block">Send keys straight to chosen apps</string>
     <string name="subtitle_chat_composer">Enter sends, Alt+Enter newline in chat apps</string>
     <string name="subtitle_calculator_input">Route number &amp; operator keys to the calculator</string>
+    <string name="subtitle_ime_suggestions">Ctrl+W/E/R picks keyboard suggestion 1/2/3</string>
     <string name="subtitle_bt_idle">Turn off Bluetooth when idle</string>
     <string name="subtitle_telemetry">Disable Firebase Crashlytics system-wide</string>
     <string name="subtitle_extra_dim">Reduce brightness below system minimum</string>
@@ -77,6 +79,13 @@
     <string name="info_battery_volt">Voltage</string>
     <string name="info_battery_tech">Technology</string>
     <string name="info_battery_capacity">Capacity</string>
+    <string name="info_battery_usage_row">Usage breakdown</string>
+    <string name="info_battery_usage_hint">Tap for a per-app estimate</string>
+
+    <!-- Battery Usage Screen -->
+    <string name="title_battery_usage">Battery Usage</string>
+    <string name="battery_usage_desc">Estimated per-app battery use since last charge, read directly from the system\'s own power model via root. This works even though the native Settings screen for this device never populates (it additionally requires a full-charge signal this device\'s charging driver never reports).</string>
+    <string name="battery_usage_total">Total estimated: %1$s</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN IP: %1$s</string>
@@ -136,4 +145,7 @@
     <string name="subtitle_in_call_shortcuts">Toggle mute, speaker, and keypad in calls</string>
     <string name="in_call_shortcuts_desc">On the Google Phone call screen, use M to mute/unmute, $ to toggle the speaker, and 0–9 to open the dialer keypad. No root required.</string>
     <string name="in_call_shortcuts_enabled_label">Enabled</string>
+
+    <!-- IME Suggestions Screen -->
+    <string name="ime_suggestions_desc">Press Ctrl+W, Ctrl+E, or Ctrl+R to pick suggestion 1, 2, or 3 from the physical keyboard\'s candidate strip (BlackBerry Keyboard, Harpocrat, and similar). Only acts when a suggestion is actually showing, so Ctrl+W/E/R still behave normally elsewhere (e.g. closing a browser tab). No root required.</string>
 </resources>

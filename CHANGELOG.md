@@ -4,6 +4,80 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.0-beta11] - 2026-07-06
+
+### Added
+- **Battery Usage screen**: a new screen under Battery Health shows a real
+  per-app battery estimate (percentage and mAh, since last charge), read
+  directly from the system's own power model via root. Works even though the
+  native Settings "Battery usage" screen never populates on this device (it
+  additionally requires a full-charge signal the charging driver never
+  reports).
+- **Recents (BlackBerry key) remap option**: the dedicated recent-apps/
+  task-switcher key can now be reassigned to Ctrl alongside Currency and
+  Right Shift.
+- **IME Suggestion Shortcuts**: Ctrl+W/E/R picks suggestion 1/2/3 from the
+  physical keyboard's candidate strip (BlackBerry Keyboard, Harpocrat, and
+  similar). Only acts when a suggestion is actually showing.
+- **Round clock time picker for Extra Dim's schedule**: replaced the
+  scrollable hour-chip rows with a proper 24-hour dial, and the schedule now
+  supports any time of day (e.g. 00:35), not just whole hours.
+
+### Fixed
+- **Auto-focus getting stuck after losing focus mid-session** (e.g. tapping a
+  back arrow, touching the screen elsewhere in the same app): replaced a
+  "have we tried already" flag with a live check of whether a text field is
+  actually focused, so it naturally retries whenever focus is genuinely lost.
+- **Auto-focus not working in Gmail/Maps, or landing on the wrong element**:
+  the check for "is something already focused" was matching non-editable
+  widgets those apps focus by default (a list item, the map surface). Now
+  only counts an actual text field as "already focused."
+- **Auto-focus silently failing in some apps (needed two keypresses)**: the
+  previous approach re-simulated the triggering keypress after focusing,
+  which turned out unreliable - confirmed via logging that the character
+  never actually landed in some fields, and the simulated event didn't even
+  re-enter our own key handling like a real press does. Now sets the field's
+  text directly through the Accessibility API instead, sidestepping IME/
+  input-connection timing entirely.
+- **Dialer's physical letter keys typing the letter instead of the phone
+  digit** (a regression from the fix above): the generic text-insertion path
+  now maps letters to their phone-keypad digit (F → 6) when the target is
+  the dialer, matching the existing in-call shortcut mapping.
+- **Long delay switching apps that use the per-app keyboard block** (e.g. the
+  dialer), which could take up to ~3 seconds and made the first keypress
+  after switching apps get lost: IME switching now runs on its own dedicated
+  thread instead of sharing one with the slower auto-focus/dialpad polling
+  logic, cutting the real end-to-end delay to a few hundred milliseconds.
+- **In-call dialpad needing two presses for the first digit**: the digit
+  handler assumed the dialpad was already open; now it verifies the dialpad
+  actually finished opening (polling, not a fixed guess) before injecting.
+- **Key-remap corruption when switching source keys while enabled**: the
+  boot script unmounted the old keylayout override *before* unbinding the
+  driver, so the old bind-mount hadn't actually released yet when the script
+  went to copy the "original" file - reading through a stale or deleted
+  mount instead. Reordered to unbind first, matching the sequence already
+  used by the disable path.
+- **Slight lag on the lockscreen PIN pad**: ported the leaner approach from
+  the original `q25pininput` project - looking up the pressed digit's button
+  directly by resource id from the root, instead of first scoping into an
+  intermediate PIN-pad container via a manual tree walk.
+- **Misleading charge-cycle count** on the Battery Health card: the MTK gauge
+  driver reports a static, non-incrementing value (always 1) with no
+  alternate source on this hardware, so it's no longer shown (the
+  capacity-based health percentage, which is accurate, stays).
+- Leaked Dutch words in the Catalan and Spanish translations of the Key
+  Remap screen's description.
+- Missing translations for the Recents key-remap option and the IME
+  Suggestion Shortcuts screen, across all 7 supported languages.
+
+### Changed
+- **Normalized every screen's header** to a single row (back arrow + title),
+  matching the newer per-app-picker screens' style.
+- **Per-app picker screens** (Auto-focus, Per-App Keyboard Block, Per-App
+  Display Scaling): only the search field stays pinned while scrolling now;
+  the header, switch, and description scroll away with the list so more of
+  it is visible at once.
+
 ## [1.0-beta10] - 2026-07-05
 
 ### Fixed

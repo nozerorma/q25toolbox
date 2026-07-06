@@ -15,6 +15,7 @@
     <string name="title_ime_block">Bloqueo de teclado por aplicación</string>
     <string name="title_chat_composer">Enter para enviar en chat</string>
     <string name="title_calculator_input">Teclas de calculadora</string>
+    <string name="title_ime_suggestions">Atajos de sugerencias del teclado</string>
     <string name="title_bt_idle">Desactivar Bluetooth inactivo</string>
     <string name="title_telemetry">Bloqueo global de telemetría</string>
     <string name="title_extra_dim">Atenuación extra</string>
@@ -28,6 +29,7 @@
     <string name="subtitle_ime_block">Envía las teclas directamente a las apps elegidas</string>
     <string name="subtitle_chat_composer">Enter envía, Alt+Enter nueva línea en chats</string>
     <string name="subtitle_calculator_input">Envía números y operadores a la calculadora</string>
+    <string name="subtitle_ime_suggestions">Ctrl+W/E/R elige la sugerencia 1/2/3 del teclado</string>
     <string name="subtitle_bt_idle">Apaga el Bluetooth cuando esté inactivo</string>
     <string name="subtitle_telemetry">Desactiva Firebase Crashlytics en todo el sistema</string>
     <string name="subtitle_extra_dim">Reduce el brillo por debajo del mínimo del sistema</string>
@@ -45,6 +47,12 @@
     <string name="info_tap_to_open">Pulsa para abrir</string>
     <string name="info_enabled">Habilitado</string>
     <string name="info_disabled">Deshabilitado</string>
+    <string name="info_app">App</string>
+    <string name="info_app_version">Versión</string>
+    <string name="info_app_update">Actualización</string>
+    <string name="info_update_checking">Comprobando…</string>
+    <string name="info_update_up_to_date">Actualizado</string>
+    <string name="info_update_available">Actualización disponible: v%1$s (toca para ver)</string>
     <string name="info_device">Dispositivo</string>
     <string name="info_battery">Batería</string>
     <string name="info_model">Modelo</string>
@@ -69,6 +77,13 @@
     <string name="info_battery_volt">Voltaje</string>
     <string name="info_battery_tech">Tecnología</string>
     <string name="info_battery_capacity">Capacidad</string>
+    <string name="info_battery_usage_row">Desglose de uso</string>
+    <string name="info_battery_usage_hint">Toca para ver una estimación por app</string>
+
+    <!-- Battery Usage Screen -->
+    <string name="title_battery_usage">Uso de la batería</string>
+    <string name="battery_usage_desc">Uso estimado por app desde la última carga, leído directamente del propio modelo de energía del sistema mediante root. Esto funciona aunque la pantalla nativa de Ajustes de este dispositivo nunca se complete (además requiere una señal de carga completa que el controlador de carga de este dispositivo nunca informa).</string>
+    <string name="battery_usage_total">Total estimado: %1$s</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>
@@ -106,12 +121,14 @@
     <string name="a11y_banner_btn">Abrir Ajustes de Accesibilidad</string>
 
     <!-- Key Remap Screen -->
-    <string name="key_remap_desc">Onderschept o intercepta una tecla física libre en el stuurprogramma/controlador de hardware y la reasigna a Ctrl Derecho. Al ejecutarse a nivel de distribución de entrada del sistema operativo, funciona en todas partes (emuladores de terminal, clientes SSH, juegos y editores de texto). Vuelve a cargar el stuurprogramma del teclado al aplicar para que tenga efecto inmediato.</string>
+    <string name="key_remap_desc">Intercepta una tecla física libre en el controlador de hardware y la reasigna a Ctrl Derecho. Al ejecutarse a nivel de distribución de entrada del sistema operativo, funciona en todas partes (emuladores de terminal, clientes SSH, juegos y editores de texto). Vuelve a cargar el controlador del teclado al aplicar para que tenga efecto inmediato.</string>
     <string name="key_remap_source_title">Tecla origen</string>
     <string name="key_remap_currency_label">Tecla de moneda</string>
     <string name="key_remap_currency_desc">La tecla € / £ / $ al lado de Espacio. El firmware la mapea incorrectamente como acento grave — reasignarla a Ctrl no afecta a la escritura normal.</string>
     <string name="key_remap_rshift_label">Shift Derecho</string>
     <string name="key_remap_rshift_desc">La tecla Shift derecha. Shift Izquierdo sigue funcionando con normalidad para las mayúsculas.</string>
+    <string name="key_remap_recents_label">Recientes (tecla BlackBerry)</string>
+    <string name="key_remap_recents_desc">La tecla dedicada de apps recientes/cambio de tarea. Reasignarla a Ctrl hace que pierdas el atajo de hardware para recientes.</string>
     <string name="key_remap_enabled_label">Habilitado</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Enfoque automático de entrada</string>
@@ -125,4 +142,7 @@
     <string name="subtitle_in_call_shortcuts">Alterna silencio, altavoz y teclado en llamadas</string>
     <string name="in_call_shortcuts_desc">En la pantalla de llamada de la aplicación Teléfono de Google, use M para silenciar/activar el micrófono, $ para alternar el altavoz y 0–9 para abrir el teclado de marcación. No requiere root.</string>
     <string name="in_call_shortcuts_enabled_label">Habilitado</string>
+
+    <!-- IME Suggestions Screen -->
+    <string name="ime_suggestions_desc">Pulsa Ctrl+W, Ctrl+E o Ctrl+R para elegir la sugerencia 1, 2 o 3 de la barra de candidatos del teclado físico (BlackBerry Keyboard, Harpocrat y similares). Solo actúa cuando realmente se muestra una sugerencia, así que Ctrl+W/E/R siguen funcionando con normalidad en otros lugares (por ejemplo, para cerrar una pestaña del navegador). No requiere root.</string>
 </resources>

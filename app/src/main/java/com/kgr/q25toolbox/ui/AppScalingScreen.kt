@@ -87,13 +87,8 @@ fun AppScalingScreen(onBack: () -> Unit) {
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AppListTopBar(
-            title = Screen.AppScaling.title,
-            onBack = onBack,
-            showSystemApps = showSystemApps,
-            onToggleShowSystemApps = { showSystemApps = it },
-        )
-
+        // Only the search field stays pinned while scrolling - the header and description
+        // scroll away with the list so more of it is visible at once.
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
@@ -109,17 +104,20 @@ fun AppScalingScreen(onBack: () -> Unit) {
             ) { CircularProgressIndicator() }
 
             else -> {
-                Text(
-                    "${resById.size} scaled of ${list.size} apps",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    item(key = "_topbar") {
+                        AppListTopBar(
+                            title = Screen.AppScaling.title,
+                            onBack = onBack,
+                            showSystemApps = showSystemApps,
+                            onToggleShowSystemApps = { showSystemApps = it },
+                        )
+                    }
                     item(key = "_banner") { AccessibilityServiceBanner(serviceEnabled) }
                     item(key = "_desc") {
                         Text(
@@ -129,6 +127,13 @@ fun AppScalingScreen(onBack: () -> Unit) {
                                 "the 720×720 screen. The whole screen briefly relayouts on " +
                                 "entry/exit. Needs root.",
                             style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    item(key = "_count") {
+                        Text(
+                            "${resById.size} scaled of ${list.size} apps",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     items(filtered, key = { it.pkg }) { app ->

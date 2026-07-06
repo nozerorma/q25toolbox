@@ -90,24 +90,8 @@ fun ImeBlockScreen(onBack: () -> Unit) {
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AppListTopBar(
-            title = Screen.ImeBlock.title,
-            onBack = onBack,
-            showSystemApps = showSystemApps,
-            onToggleShowSystemApps = { showSystemApps = it },
-        )
-
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enable per-app block", modifier = Modifier.weight(1f))
-            Switch(
-                checked = enabled,
-                onCheckedChange = { checked ->
-                    enabled = checked
-                    prefs.edit().putBoolean(Q25AccessibilityService.KEY_IME_BLOCK, checked).apply()
-                }
-            )
-        }
-
+        // Only the search field stays pinned while scrolling - the header, switch, and
+        // description scroll away with the list so more of it is visible at once.
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
@@ -123,17 +107,32 @@ fun ImeBlockScreen(onBack: () -> Unit) {
             ) { CircularProgressIndicator() }
 
             else -> {
-                Text(
-                    "${selected.size} selected of ${list.size} apps",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    item(key = "_topbar") {
+                        AppListTopBar(
+                            title = Screen.ImeBlock.title,
+                            onBack = onBack,
+                            showSystemApps = showSystemApps,
+                            onToggleShowSystemApps = { showSystemApps = it },
+                        )
+                    }
+                    item(key = "_switch") {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Enable per-app block", modifier = Modifier.weight(1f))
+                            Switch(
+                                checked = enabled,
+                                onCheckedChange = { checked ->
+                                    enabled = checked
+                                    prefs.edit().putBoolean(Q25AccessibilityService.KEY_IME_BLOCK, checked).apply()
+                                }
+                            )
+                        }
+                    }
                     item(key = "_banner") { AccessibilityServiceBanner(serviceEnabled) }
                     item(key = "_desc") {
                         Text(
@@ -142,6 +141,13 @@ fun ImeBlockScreen(onBack: () -> Unit) {
                                 "selected app is open the IME is switched to a do-nothing " +
                                 "passthrough keyboard, then restored on the way out. Needs root.",
                             style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    item(key = "_count") {
+                        Text(
+                            "${selected.size} selected of ${list.size} apps",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     items(filtered, key = { it.pkg }) { app ->

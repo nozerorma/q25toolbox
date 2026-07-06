@@ -15,6 +15,7 @@
     <string name="title_ime_block">Bloqueio de teclado por app</string>
     <string name="title_chat_composer">Enter para enviar no chat</string>
     <string name="title_calculator_input">Teclas da calculadora</string>
+    <string name="title_ime_suggestions">Atalhos de sugestões do teclado</string>
     <string name="title_bt_idle">Desativar Bluetooth ocioso</string>
     <string name="title_telemetry">Bloqueio global de telemetria</string>
     <string name="title_extra_dim">Atenuação extra</string>
@@ -28,6 +29,7 @@
     <string name="subtitle_ime_block">Envia as teclas diretamente para os apps escolhidos</string>
     <string name="subtitle_chat_composer">Enter envia, Alt+Enter nova linha nos chats</string>
     <string name="subtitle_calculator_input">Envia números e operadores para a calculadora</string>
+    <string name="subtitle_ime_suggestions">Ctrl+W/E/R escolhe a sugestão 1/2/3 do teclado</string>
     <string name="subtitle_bt_idle">Desliga o Bluetooth quando estiver ocioso</string>
     <string name="subtitle_telemetry">Desativa o Firebase Crashlytics em todo o sistema</string>
     <string name="subtitle_extra_dim">Reduz o brilho abaixo do mínimo do sistema</string>
@@ -45,6 +47,12 @@
     <string name="info_tap_to_open">Toque para abrir</string>
     <string name="info_enabled">Ativado</string>
     <string name="info_disabled">Desativado</string>
+    <string name="info_app">App</string>
+    <string name="info_app_version">Versão</string>
+    <string name="info_app_update">Atualização</string>
+    <string name="info_update_checking">Verificando…</string>
+    <string name="info_update_up_to_date">Atualizado</string>
+    <string name="info_update_available">Atualização disponível: v%1$s (toque para ver)</string>
     <string name="info_device">Dispositivo</string>
     <string name="info_battery">Bateria</string>
     <string name="info_model">Modelo</string>
@@ -69,6 +77,13 @@
     <string name="info_battery_volt">Voltagem</string>
     <string name="info_battery_tech">Tecnologia</string>
     <string name="info_battery_capacity">Capacidade</string>
+    <string name="info_battery_usage_row">Detalhamento de uso</string>
+    <string name="info_battery_usage_hint">Toque para uma estimativa por app</string>
+
+    <!-- Battery Usage Screen -->
+    <string name="title_battery_usage">Uso da bateria</string>
+    <string name="battery_usage_desc">Uso estimado por app desde a última carga, lido diretamente do próprio modelo de energia do sistema via root. Isso funciona mesmo que a tela nativa de Configurações deste dispositivo nunca seja preenchida (ela exige também um sinal de carga completa que o driver de carregamento deste dispositivo nunca informa).</string>
+    <string name="battery_usage_total">Total estimado: %1$s</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>
@@ -112,6 +127,8 @@
     <string name="key_remap_currency_desc">A tecla € / £ / $ ao lado do Espaço. O firmware mapeia incorretamente como acento grave — remapeá-la para Ctrl não afeta a digitação normal.</string>
     <string name="key_remap_rshift_label">Shift Direito</string>
     <string name="key_remap_rshift_desc">A tecla Shift direita. O Shift Esquerdo continua funcionando normalmente para as maiúsculas.</string>
+    <string name="key_remap_recents_label">Recentes (tecla BlackBerry)</string>
+    <string name="key_remap_recents_desc">A tecla dedicada de apps recentes/troca de tarefas. Reatribuí-la ao Ctrl faz você perder o atalho de hardware para recentes.</string>
     <string name="key_remap_enabled_label">Ativado</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Foco automático de entrada</string>
@@ -125,4 +142,7 @@
     <string name="subtitle_in_call_shortcuts">Alterna mudo, alto-falante e teclado em chamadas</string>
     <string name="in_call_shortcuts_desc">Na tela de chamada do aplicativo Telefone do Google, use M para ativar/desativar o mudo do microfone, $ para alternar o alto-falante e 0–9 para abrir o teclado numérico. Não requer root.</string>
     <string name="in_call_shortcuts_enabled_label">Ativado</string>
+
+    <!-- IME Suggestions Screen -->
+    <string name="ime_suggestions_desc">Pressione Ctrl+W, Ctrl+E ou Ctrl+R para escolher a sugestão 1, 2 ou 3 da barra de candidatos do teclado físico (BlackBerry Keyboard, Harpocrat e similares). Só age quando uma sugestão está realmente sendo exibida, então Ctrl+W/E/R continuam funcionando normalmente em outros lugares (por exemplo, para fechar uma aba do navegador). Não requer root.</string>
 </resources>

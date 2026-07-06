@@ -104,10 +104,22 @@ while [ ! -f $SYS_FILE ]; do
   sleep 1
 done
 
-# Force unmount any stale mounts from previous boots/sessions
+# Unbind the driver FIRST if it's already bound (e.g. switching source key while
+# remap is enabled, not a fresh boot). This closes EventHub's file descriptor on
+# the currently bind-mounted layout file, which is required before the unmount
+# below can actually take effect - otherwise it stays lazily "unmounted but
+# still open", and the cp right after would read through the stale mount (or a
+# deleted-file dangling reference once rm -f runs), corrupting the copy instead
+# of getting the pristine original.
+if [ -d /sys/bus/i2c/drivers/Q25_keyboard ]; then
+  echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/unbind
+  sleep 1
+fi
+
+# Now safe to fully release any stale mount from a previous boot/session
 umount -l $SYS_FILE 2>/dev/null
 
-# Clean up tmp and copy original
+# Clean up tmp and copy the now-guaranteed-original system file
 rm -f $TMP_FILE
 cp $SYS_FILE $TMP_FILE
 
@@ -122,10 +134,8 @@ chcon u:object_r:system_file:s0 $TMP_FILE
 # Bind mount the modified keylayout system-wide
 mount --bind $TMP_FILE $SYS_FILE
 
-# Reload the driver if we are already booted (handles live apply)
+# Rebind the driver so EventHub reloads the (now modified) keylayout
 if [ -d /sys/bus/i2c/drivers/Q25_keyboard ]; then
-  echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/unbind
-  sleep 1
   echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/bind
 fi
         """.trimIndent()

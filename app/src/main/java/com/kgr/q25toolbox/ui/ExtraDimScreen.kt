@@ -1,15 +1,22 @@
 package com.kgr.q25toolbox.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,20 +28,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.kgr.q25toolbox.modules.ExtraDimController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private fun formatHour(hour: Int): String = when {
-    hour == 0 -> "12 AM"
-    hour < 12 -> "$hour AM"
-    hour == 12 -> "12 PM"
-    else -> "${hour - 12} PM"
+private fun formatMinutes(minutes: Int): String {
+    val h = minutes / 60
+    val m = minutes % 60
+    return "%02d:%02d".format(h, m)
 }
 
 @Composable
@@ -49,9 +54,11 @@ fun ExtraDimScreen(onBack: () -> Unit) {
 
     var scheduleEnabled by remember { mutableStateOf(false) }
     var scheduleRunning by remember { mutableStateOf(false) }
-    var startHour by remember { mutableIntStateOf(ExtraDimController.DEFAULT_START_HOUR) }
-    var endHour by remember { mutableIntStateOf(ExtraDimController.DEFAULT_END_HOUR) }
+    var startMinutes by remember { mutableIntStateOf(ExtraDimController.DEFAULT_START_MINUTES) }
+    var endMinutes by remember { mutableIntStateOf(ExtraDimController.DEFAULT_END_MINUTES) }
     var scheduleBusy by remember { mutableStateOf(false) }
+    var editingStart by remember { mutableStateOf(false) }
+    var editingEnd by remember { mutableStateOf(false) }
 
     fun applySchedule(newEnabled: Boolean, newStart: Int, newEnd: Int) {
         scheduleBusy = true
@@ -70,8 +77,8 @@ fun ExtraDimScreen(onBack: () -> Unit) {
             scheduleEnabled = ExtraDimController.isScheduleEnabled()
             scheduleRunning = ExtraDimController.isScheduleRunning()
             if (scheduleEnabled) {
-                startHour = ExtraDimController.persistedStartHour()
-                endHour = ExtraDimController.persistedEndHour()
+                startMinutes = ExtraDimController.persistedStartMinutes()
+                endMinutes = ExtraDimController.persistedEndMinutes()
             }
         }
     }
@@ -148,44 +155,85 @@ fun ExtraDimScreen(onBack: () -> Unit) {
             Switch(
                 checked = scheduleEnabled,
                 enabled = !scheduleBusy,
-                onCheckedChange = { applySchedule(it, startHour, endHour) }
+                onCheckedChange = { applySchedule(it, startMinutes, endMinutes) }
             )
         }
 
-        Text("Starts at", style = MaterialTheme.typography.titleSmall)
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.horizontalScroll(rememberScrollState())
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = !scheduleBusy) { editingStart = true }
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ExtraDimController.START_HOUR_OPTIONS.forEach { hour ->
-                FilterChip(
-                    selected = startHour == hour,
-                    enabled = !scheduleBusy,
-                    onClick = {
-                        startHour = hour
-                        if (scheduleEnabled) applySchedule(true, hour, endHour)
-                    },
-                    label = { Text(formatHour(hour)) }
-                )
-            }
+            Text("Starts at", style = MaterialTheme.typography.titleSmall)
+            Text(formatMinutes(startMinutes), style = MaterialTheme.typography.titleMedium)
         }
 
-        Text("Ends at", style = MaterialTheme.typography.titleSmall)
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.horizontalScroll(rememberScrollState())
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = !scheduleBusy) { editingEnd = true }
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ExtraDimController.END_HOUR_OPTIONS.forEach { hour ->
-                FilterChip(
-                    selected = endHour == hour,
-                    enabled = !scheduleBusy,
-                    onClick = {
-                        endHour = hour
-                        if (scheduleEnabled) applySchedule(true, startHour, hour)
-                    },
-                    label = { Text(formatHour(hour)) }
-                )
-            }
+            Text("Ends at", style = MaterialTheme.typography.titleSmall)
+            Text(formatMinutes(endMinutes), style = MaterialTheme.typography.titleMedium)
         }
     }
+
+    if (editingStart) {
+        TimePickerDialog(
+            initialMinutes = startMinutes,
+            onDismiss = { editingStart = false },
+            onConfirm = { newMinutes ->
+                startMinutes = newMinutes
+                editingStart = false
+                if (scheduleEnabled) applySchedule(true, newMinutes, endMinutes)
+            }
+        )
+    }
+
+    if (editingEnd) {
+        TimePickerDialog(
+            initialMinutes = endMinutes,
+            onDismiss = { editingEnd = false },
+            onConfirm = { newMinutes ->
+                endMinutes = newMinutes
+                editingEnd = false
+                if (scheduleEnabled) applySchedule(true, startMinutes, newMinutes)
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimePickerDialog(
+    initialMinutes: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit,
+) {
+    val state = rememberTimePickerState(
+        initialHour = initialMinutes / 60,
+        initialMinute = initialMinutes % 60,
+        is24Hour = true
+    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        // The dial needs more width than Compose's "platform default" dialog width
+        // budgets for, which was clipping the right side of the clock face -
+        // this is the standard fix for wide dialog content like TimePicker/DatePicker.
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.width(IntrinsicSize.Min),
+        text = { TimePicker(state = state) },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(state.hour * 60 + state.minute) }) { Text("OK") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }

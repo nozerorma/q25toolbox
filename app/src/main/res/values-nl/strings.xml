@@ -15,6 +15,7 @@
     <string name="title_ime_block">Toetsenbordblokkering per app</string>
     <string name="title_chat_composer">Chat Enter-om-te-verzenden</string>
     <string name="title_calculator_input">Rekenmachinetoetsen</string>
+    <string name="title_ime_suggestions">IME-suggestiesneltoetsen</string>
     <string name="title_bt_idle">Bluetooth automatisch uitschakelen</string>
     <string name="title_telemetry">Wereldwijde telemetrieblokkering</string>
     <string name="title_extra_dim">Extra dimmen</string>
@@ -29,6 +30,7 @@
     <string name="subtitle_ime_block">Toetsaanslagen direct naar gekozen apps sturen</string>
     <string name="subtitle_chat_composer">Enter verzendt, Alt+Enter nieuwe regel in chat-apps</string>
     <string name="subtitle_calculator_input">Cijfer- en operatortoetsen doorsturen naar de rekenmachine</string>
+    <string name="subtitle_ime_suggestions">Ctrl+W/E/R kiest toetsenbordsuggestie 1/2/3</string>
     <string name="subtitle_bt_idle">Schakel Bluetooth uit bij inactiviteit</string>
     <string name="subtitle_telemetry">Firebase Crashlytics systeembreed uitschakelen</string>
     <string name="subtitle_extra_dim">Helderheid verlagen onder het systeemminimum</string>
@@ -47,6 +49,12 @@
     <string name="info_tap_to_open">Tik om te openen</string>
     <string name="info_enabled">Ingeschakeld</string>
     <string name="info_disabled">Uitgeschakeld</string>
+    <string name="info_app">App</string>
+    <string name="info_app_version">Versie</string>
+    <string name="info_app_update">Update</string>
+    <string name="info_update_checking">Controleren…</string>
+    <string name="info_update_up_to_date">Up-to-date</string>
+    <string name="info_update_available">Update beschikbaar: v%1$s (tik om te bekijken)</string>
     <string name="info_device">Apparaat</string>
     <string name="info_battery">Batterij</string>
     <string name="info_model">Model</string>
@@ -71,6 +79,13 @@
     <string name="info_battery_volt">Voltage</string>
     <string name="info_battery_tech">Technologie</string>
     <string name="info_battery_capacity">Capaciteit</string>
+    <string name="info_battery_usage_row">Gebruiksoverzicht</string>
+    <string name="info_battery_usage_hint">Tik voor een schatting per app</string>
+
+    <!-- Battery Usage Screen -->
+    <string name="title_battery_usage">Batterijgebruik</string>
+    <string name="battery_usage_desc">Geschat batterijgebruik per app sinds de laatste keer opladen, rechtstreeks uitgelezen uit het eigen energiemodel van het systeem via root. Dit werkt ook al wordt het native Instellingen-scherm op dit toestel nooit gevuld (dat vereist bovendien een volledig-opgeladen-signaal dat de laaddriver van dit toestel nooit meldt).</string>
+    <string name="battery_usage_total">Geschat totaal: %1$s</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN IP: %1$s</string>
@@ -114,6 +129,8 @@
     <string name="key_remap_currency_desc">De € / £ / $-toets naast de spatiebalk. Momenteel door de firmware verkeerd toegewezen als backtick — toewijzing aan Ctrl heeft geen invloed op normaal typen.</string>
     <string name="key_remap_rshift_label">Rechter Shift</string>
     <string name="key_remap_rshift_desc">De rechter Shift-toets. Linker Shift werkt nog steeds normaal voor hoofdletters.</string>
+    <string name="key_remap_recents_label">Recente apps (BlackBerry-toets)</string>
+    <string name="key_remap_recents_desc">De speciale toets voor recente apps/taakwisselaar. Als je deze aan Ctrl toewijst, verlies je de hardwaresnelkoppeling voor recente apps.</string>
     <string name="key_remap_enabled_label">Ingeschakeld</string>
     <!-- Auto Focus Screen -->
     <string name="title_auto_focus">Automatisch invoerveld focussen</string>
@@ -127,4 +144,7 @@
     <string name="subtitle_in_call_shortcuts">Demping, luidspreker en toetsenbord schakelen tijdens oproepen</string>
     <string name="in_call_shortcuts_desc">Gebruik in het belscherm van de Google Telefoon-app M om het dempen in/uit te schakelen, $ om de luidspreker in/uit te schakelen en 0–9 om het toetsenbord te openen. Geen root vereist.</string>
     <string name="in_call_shortcuts_enabled_label">Ingeschakeld</string>
+
+    <!-- IME Suggestions Screen -->
+    <string name="ime_suggestions_desc">Druk op Ctrl+W, Ctrl+E of Ctrl+R om suggestie 1, 2 of 3 te kiezen uit de kandidatenbalk van het fysieke toetsenbord (BlackBerry Keyboard, Harpocrat en vergelijkbare). Werkt alleen als er daadwerkelijk een suggestie wordt getoond, dus Ctrl+W/E/R werken elders nog gewoon normaal (bijv. om een browsertabblad te sluiten). Geen root nodig.</string>
 </resources>

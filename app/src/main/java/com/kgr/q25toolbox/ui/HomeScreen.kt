@@ -79,7 +79,7 @@ fun HomeScreen() {
             if (current != null) {
                 DetailHost(current) { detail = null }
             } else when (tab) {
-                AppTab.Info -> InfoScreen()
+                AppTab.Info -> InfoScreen(onOpenBatteryUsage = { detail = Screen.BatteryUsage })
                 AppTab.Keyboard -> CategoryMenu(stringResource(R.string.tab_keyboard), keyboardScreens) { detail = it }
                 AppTab.System -> CategoryMenu(stringResource(R.string.tab_system), systemScreens) { detail = it }
                 AppTab.Network -> CategoryMenu(stringResource(R.string.tab_network), networkScreens) { detail = it }
@@ -105,6 +105,8 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.AppScaling -> AppScalingScreen(onBack)
         Screen.AutoFocus -> AutoFocusScreen(onBack)
         Screen.InCallShortcuts -> InCallShortcutsScreen(onBack)
+        Screen.ImeSuggestions -> ImeSuggestionsScreen(onBack)
+        Screen.BatteryUsage -> BatteryUsageScreen(onBack)
     }
 }
 
