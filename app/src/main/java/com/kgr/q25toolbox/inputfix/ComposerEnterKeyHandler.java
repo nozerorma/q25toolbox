@@ -17,6 +17,7 @@ public final class ComposerEnterKeyHandler {
             "org.telegram",
             "org.telegram.messenger",
             "org.thoughtcrime.securesms",
+            "com.wallapop",
             "ai.openai.chatgpt",
             "com.openai.chatgpt",
             "im.vector.app",

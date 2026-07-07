@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.os.BatteryManager
 import android.util.Log
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +21,7 @@ import com.kgr.q25toolbox.inputfix.CalculatorInputFix
 import com.kgr.q25toolbox.inputfix.ComposerEnterKeyHandler
 import com.kgr.q25toolbox.modules.AppScalingController
 import com.kgr.q25toolbox.modules.AutoFocusController
+import com.kgr.q25toolbox.modules.BatteryUsageController
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -84,6 +86,37 @@ class Q25AccessibilityService : AccessibilityService() {
         }
     }
 
+    // True once the configured reset threshold has been crossed for the current plug-in
+    // session, so a single crossing only triggers one reset (not one per broadcast) until the
+    // level drops back below the threshold (e.g. unplugged, or a fresh charge from lower).
+    private var batteryThresholdArmed = false
+
+    // Auto-resets battery usage stats once the level reaches the configured threshold while
+    // charging - a substitute for BATTERY_STATUS_FULL, which this device's charging driver
+    // never reports (see BatteryUsageController.resetStats doc).
+    private val batteryReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            intent ?: return
+            val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            if (level < 0 || scale <= 0) return
+            val percent = level * 100 / scale
+            val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+            val charging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL
+            val threshold = BatteryUsageController.getResetThreshold(this@Q25AccessibilityService)
+
+            if (charging && percent >= threshold) {
+                if (!batteryThresholdArmed) {
+                    batteryThresholdArmed = true
+                    worker.execute { BatteryUsageController.resetStats() }
+                }
+            } else if (percent < threshold) {
+                batteryThresholdArmed = false
+            }
+        }
+    }
+
     // Ported physical-key fixes from nozerorma/q25-input-helper. Each inspects
     // the foreground app itself and no-ops outside its target apps.
     private val composerHandler = ComposerEnterKeyHandler(
@@ -135,6 +168,7 @@ class Q25AccessibilityService : AccessibilityService() {
         }
 
         registerReceiver(screenOffReceiver, IntentFilter(Intent.ACTION_SCREEN_OFF))
+        registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
 
     private fun pinInputEnabled() = prefs?.getBoolean(KEY_PIN_INPUT, true) ?: true
@@ -836,6 +870,7 @@ class Q25AccessibilityService : AccessibilityService() {
         restoreScaling()
         prefs?.unregisterOnSharedPreferenceChangeListener(prefListener)
         try { unregisterReceiver(screenOffReceiver) } catch (_: Exception) {}
+        try { unregisterReceiver(batteryReceiver) } catch (_: Exception) {}
         worker.shutdown()
         super.onDestroy()
     }

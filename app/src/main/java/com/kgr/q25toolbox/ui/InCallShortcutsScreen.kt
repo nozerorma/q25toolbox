@@ -39,11 +39,6 @@ fun InCallShortcutsScreen(onBack: () -> Unit) {
     ScreenScaffold(title = stringResource(Screen.InCallShortcuts.titleRes), onBack = onBack) {
         AccessibilityServiceBanner(serviceEnabled)
 
-        Text(
-            stringResource(R.string.in_call_shortcuts_desc),
-            style = MaterialTheme.typography.bodySmall
-        )
-
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(R.string.in_call_shortcuts_enabled_label))
             Switch(
@@ -54,5 +49,11 @@ fun InCallShortcutsScreen(onBack: () -> Unit) {
                 }
             )
         }
+
+        DescriptionDivider()
+        Text(
+            stringResource(R.string.in_call_shortcuts_desc),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

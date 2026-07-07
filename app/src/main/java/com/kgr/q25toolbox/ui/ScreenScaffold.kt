@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,4 +55,19 @@ fun ScreenScaffold(
 
         content()
     }
+}
+
+/**
+ * Subtle separator placed above a module's description text, now that descriptions live at
+ * the bottom of the screen instead of the top - marks it as trailing disclaimer-like content
+ * rather than part of the controls above it.
+ *
+ * Deliberately carries no padding of its own: callers sit in containers that already space
+ * siblings evenly (a [Column]'s `spacedBy`, or an explicit wrapper matching a LazyColumn's own
+ * item spacing), so adding padding here would make the gap above the divider larger than the
+ * gap below it instead of matching.
+ */
+@Composable
+fun DescriptionDivider() {
+    HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f))
 }

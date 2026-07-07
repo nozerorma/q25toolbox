@@ -82,10 +82,14 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Utilizzo batteria</string>
-    <string name="battery_usage_desc">Utilizzo stimato per app, letto direttamente dal modello energetico del sistema tramite root. Funziona anche se la schermata nativa di Impostazioni di questo dispositivo non si popola mai (richiede inoltre un segnale di carica completa che il driver di carica di questo dispositivo non riporta mai) - ma per lo stesso motivo, questi numeri si accumulano su più cicli di carica invece di azzerarsi automaticamente, quindi il totale può risultare superiore alla capacità reale della batteria. Usa il pulsante di ripristino dopo una carica completa per azzerarlo.</string>
+    <string name="battery_usage_desc">Utilizzo stimato per app, letto direttamente dal modello energetico del sistema tramite root. Funziona anche se la schermata nativa di Impostazioni di questo dispositivo non si popola mai (richiede inoltre un segnale di carica completa che il driver di carica di questo dispositivo non riporta mai) - ma per lo stesso motivo, questi numeri si accumulerebbero su più cicli di carica invece di azzerarsi automaticamente. Ora si azzerano automaticamente al raggiungimento della soglia impostata nel menu ⋮ (100% predefinito), oppure puoi azzerarli manualmente con il pulsante di ripristino.</string>
     <string name="battery_usage_total">Totale stimato: %1$s</string>
     <string name="battery_usage_reset">Ripristina le statistiche di utilizzo della batteria</string>
     <string name="battery_usage_show_system">Mostra le app di sistema</string>
+    <string name="battery_usage_more_options">Altre opzioni</string>
+    <string name="battery_usage_set_threshold">Imposta soglia di ripristino automatico</string>
+    <string name="battery_usage_threshold_desc">Ripristina automaticamente le statistiche di utilizzo della batteria quando la carica raggiunge questo livello, poiché questo dispositivo non può rilevare una carica completa reale.</string>
+    <string name="battery_usage_threshold_value">%1$d%%</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>

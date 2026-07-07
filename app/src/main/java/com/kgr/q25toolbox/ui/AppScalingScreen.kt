@@ -119,16 +119,6 @@ fun AppScalingScreen(onBack: () -> Unit) {
                         )
                     }
                     item(key = "_banner") { AccessibilityServiceBanner(serviceEnabled) }
-                    item(key = "_desc") {
-                        Text(
-                            "Give an app a different resolution and the screen switches to " +
-                                "it while that app is open, then back to native when you " +
-                                "leave. Taller portrait sizes help apps that look cramped on " +
-                                "the 720×720 screen. The whole screen briefly relayouts on " +
-                                "entry/exit. Needs root.",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
                     item(key = "_count") {
                         Text(
                             "${resById.size} scaled of ${list.size} apps",
@@ -143,6 +133,19 @@ fun AppScalingScreen(onBack: () -> Unit) {
                             onPresetChange = { setRes(app.pkg, it) },
                             onCustom = { customFor = app.pkg }
                         )
+                    }
+                    item(key = "_desc") {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            DescriptionDivider()
+                            Text(
+                                "Give an app a different resolution and the screen switches to " +
+                                    "it while that app is open, then back to native when you " +
+                                    "leave. Taller portrait sizes help apps that look cramped on " +
+                                    "the 720×720 screen. The whole screen briefly relayouts on " +
+                                    "entry/exit. Needs root.",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
                 }
             }

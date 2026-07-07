@@ -50,13 +50,6 @@ fun KeyRemapScreen(onBack: () -> Unit) {
     ScreenScaffold(title = stringResource(Screen.KeyRemap.titleRes), onBack = onBack) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
-                    stringResource(R.string.key_remap_desc),
-                    style = MaterialTheme.typography.bodySmall
-                )
-
-                HorizontalDivider()
-
                 Text(stringResource(R.string.key_remap_source_title), style = MaterialTheme.typography.titleSmall)
 
                 Column(modifier = Modifier.selectableGroup()) {
@@ -137,6 +130,12 @@ fun KeyRemapScreen(onBack: () -> Unit) {
                         }
                     )
                 }
+
+                DescriptionDivider()
+                Text(
+                    stringResource(R.string.key_remap_desc),
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
 
             if (busy) {

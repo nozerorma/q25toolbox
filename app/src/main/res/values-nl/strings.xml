@@ -84,10 +84,14 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Batterijgebruik</string>
-    <string name="battery_usage_desc">Geschat batterijgebruik per app, rechtstreeks uitgelezen uit het eigen energiemodel van het systeem via root. Dit werkt ook al wordt het native Instellingen-scherm op dit toestel nooit gevuld (dat vereist bovendien een volledig-opgeladen-signaal dat de laaddriver van dit toestel nooit meldt) - maar om dezelfde reden stapelen deze cijfers zich op over meerdere laadcycli in plaats van automatisch te resetten, waardoor het totaal hoger kan uitkomen dan de werkelijke batterijcapaciteit. Gebruik de reset-knop na een volledige lading om dit op nul te zetten.</string>
+    <string name="battery_usage_desc">Geschat batterijgebruik per app, rechtstreeks uitgelezen uit het eigen energiemodel van het systeem via root. Dit werkt ook al wordt het native Instellingen-scherm op dit toestel nooit gevuld (dat vereist bovendien een volledig-opgeladen-signaal dat de laaddriver van dit toestel nooit meldt) - maar om dezelfde reden zouden deze cijfers zich anders opstapelen over meerdere laadcycli in plaats van automatisch te resetten. Ze resetten nu automatisch zodra het opladen de in het ⋮-menu ingestelde drempel bereikt (standaard 100%), of je kunt ze zelf resetten met de reset-knop.</string>
     <string name="battery_usage_total">Geschat totaal: %1$s</string>
     <string name="battery_usage_reset">Batterijgebruikstatistieken resetten</string>
     <string name="battery_usage_show_system">Systeemapps tonen</string>
+    <string name="battery_usage_more_options">Meer opties</string>
+    <string name="battery_usage_set_threshold">Automatische resetdrempel instellen</string>
+    <string name="battery_usage_threshold_desc">Reset de batterijgebruikstatistieken automatisch zodra het opladen dit niveau bereikt, omdat dit toestel geen echte volledige lading kan detecteren.</string>
+    <string name="battery_usage_threshold_value">%1$d%%</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN IP: %1$s</string>

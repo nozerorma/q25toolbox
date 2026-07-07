@@ -54,13 +54,6 @@ fun TelemetryScreen(onBack: () -> Unit) {
     }
 
     ScreenScaffold(title = Screen.Telemetry.title, onBack = onBack) {
-        Text(
-            "Globally deactivates Firebase Crashlytics collection system-wide. " +
-            "This halts background crash logs packaging and upload triggers, saving mobile data, " +
-            "RAM, and wakeup cycles.",
-            style = MaterialTheme.typography.bodySmall
-        )
-
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -132,5 +125,13 @@ fun TelemetryScreen(onBack: () -> Unit) {
         statusMessage?.let {
             Text(it, style = MaterialTheme.typography.bodySmall)
         }
+
+        DescriptionDivider()
+        Text(
+            "Globally deactivates Firebase Crashlytics collection system-wide. " +
+            "This halts background crash logs packaging and upload triggers, saving mobile data, " +
+            "RAM, and wakeup cycles.",
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

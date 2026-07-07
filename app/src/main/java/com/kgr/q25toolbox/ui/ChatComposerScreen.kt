@@ -37,16 +37,6 @@ fun ChatComposerScreen(onBack: () -> Unit) {
     ScreenScaffold(title = Screen.ChatComposer.title, onBack = onBack) {
         AccessibilityServiceBanner(serviceEnabled)
 
-        Text(
-            "In supported chat and messaging apps, press Enter to send the " +
-                "message and Alt+Enter (or Shift+Enter) to add a new line - so a " +
-                "physical Enter posts instead of inserting a linebreak. Works in " +
-                "Messages, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, " +
-                "ChatGPT and Perplexity. No root needed - uses the accessibility " +
-                "service only.",
-            style = MaterialTheme.typography.bodySmall
-        )
-
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Enabled")
             Switch(
@@ -57,5 +47,16 @@ fun ChatComposerScreen(onBack: () -> Unit) {
                 }
             )
         }
+
+        DescriptionDivider()
+        Text(
+            "In supported chat and messaging apps, press Enter to send the " +
+                "message and Alt+Enter (or Shift+Enter) to add a new line - so a " +
+                "physical Enter posts instead of inserting a linebreak. Works in " +
+                "Messages, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, " +
+                "Wallapop, ChatGPT and Perplexity. No root needed - uses the " +
+                "accessibility service only.",
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

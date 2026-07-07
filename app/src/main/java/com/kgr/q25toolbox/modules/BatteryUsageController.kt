@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import com.kgr.q25toolbox.core.RootShell
+import com.kgr.q25toolbox.service.Q25AccessibilityService
 
 /** One UID's estimated share of battery use since last charge. */
 data class AppPowerUsage(
@@ -27,6 +28,9 @@ data class AppPowerUsage(
  */
 object BatteryUsageController {
 
+    const val KEY_RESET_THRESHOLD = "battery_usage_reset_threshold"
+    const val DEFAULT_RESET_THRESHOLD = 100
+
     private val PWI_UID_LINE = Regex("""^9,(-?\d+),l,pwi,uid,([0-9.eE+-]+),""")
 
     private val KNOWN_SYSTEM_UIDS = mapOf(
@@ -49,6 +53,17 @@ object BatteryUsageController {
     fun resetStats() {
         RootShell.run("dumpsys batterystats --reset")
     }
+
+    /** Battery percentage (1-100) at which the service auto-resets stats while charging. */
+    fun getResetThreshold(context: Context): Int =
+        prefs(context).getInt(KEY_RESET_THRESHOLD, DEFAULT_RESET_THRESHOLD)
+
+    fun setResetThreshold(context: Context, percent: Int) {
+        prefs(context).edit().putInt(KEY_RESET_THRESHOLD, percent.coerceIn(1, 100)).apply()
+    }
+
+    private fun prefs(context: Context) =
+        context.getSharedPreferences(Q25AccessibilityService.PREFS, Context.MODE_PRIVATE)
 
     /** Reads and aggregates per-UID power estimates. Requires root; run off the main thread. */
     fun readUsage(context: Context): List<AppPowerUsage> {

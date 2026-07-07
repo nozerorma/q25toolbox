@@ -40,10 +40,6 @@ fun Dt2wScreen(onBack: () -> Unit) {
     }
 
     ScreenScaffold(title = stringResource(Screen.Dt2w.titleRes), onBack = onBack) {
-        Text(
-            stringResource(R.string.dt2w_desc),
-            style = MaterialTheme.typography.bodySmall
-        )
         val stateStr = if (enabled) stringResource(R.string.dt2w_on) else stringResource(R.string.dt2w_off)
         val bootNotice = if (enabled && !running) stringResource(R.string.dt2w_boot_notice) else ""
         Text(stringResource(R.string.dt2w_state, "$stateStr$bootNotice"))
@@ -71,5 +67,11 @@ fun Dt2wScreen(onBack: () -> Unit) {
         statusMessage?.let {
             Text(it, style = MaterialTheme.typography.bodySmall)
         }
+
+        DescriptionDivider()
+        Text(
+            stringResource(R.string.dt2w_desc),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

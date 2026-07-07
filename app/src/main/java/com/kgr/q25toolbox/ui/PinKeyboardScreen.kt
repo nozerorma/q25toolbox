@@ -37,11 +37,6 @@ fun PinKeyboardScreen(onBack: () -> Unit) {
     ScreenScaffold(title = stringResource(Screen.PinKeyboard.titleRes), onBack = onBack) {
         AccessibilityServiceBanner(serviceEnabled)
 
-        Text(
-            stringResource(R.string.pin_desc),
-            style = MaterialTheme.typography.bodySmall
-        )
-
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(R.string.generic_enabled))
             Switch(
@@ -52,5 +47,11 @@ fun PinKeyboardScreen(onBack: () -> Unit) {
                 }
             )
         }
+
+        DescriptionDivider()
+        Text(
+            stringResource(R.string.pin_desc),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

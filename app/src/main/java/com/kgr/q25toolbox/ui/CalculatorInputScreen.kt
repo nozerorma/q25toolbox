@@ -37,15 +37,6 @@ fun CalculatorInputScreen(onBack: () -> Unit) {
     ScreenScaffold(title = Screen.CalculatorInput.title, onBack = onBack) {
         AccessibilityServiceBanner(serviceEnabled)
 
-        Text(
-            "In the AOSP/Google Calculator, route physical keys to the calculator " +
-                "buttons: digits (or W E R / S D F / Z X C / Q for 1-9, 0), plus " +
-                "operators - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, " +
-                "T/Y = ( ), Sym/Alt toggles scientific mode, Backspace deletes. " +
-                "No root needed - uses the accessibility service only.",
-            style = MaterialTheme.typography.bodySmall
-        )
-
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Enabled")
             Switch(
@@ -56,5 +47,15 @@ fun CalculatorInputScreen(onBack: () -> Unit) {
                 }
             )
         }
+
+        DescriptionDivider()
+        Text(
+            "In the AOSP/Google Calculator, route physical keys to the calculator " +
+                "buttons: digits (or W E R / S D F / Z X C / Q for 1-9, 0), plus " +
+                "operators - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, " +
+                "T/Y = ( ), Sym/Alt toggles scientific mode, Backspace deletes. " +
+                "No root needed - uses the accessibility service only.",
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

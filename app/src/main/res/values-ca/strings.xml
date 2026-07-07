@@ -82,10 +82,14 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Ús de la bateria</string>
-    <string name="battery_usage_desc">Ús estimat per aplicació, llegit directament del model d\'energia del sistema mitjançant root. Això funciona encara que la pantalla nativa d\'Ajustos d\'aquest dispositiu mai es completi (necessita a més un senyal de càrrega completa que el controlador de càrrega d\'aquest dispositiu mai informa) - però pel mateix motiu, aquestes xifres s\'acumulen a través de diversos cicles de càrrega en lloc de reiniciar-se automàticament, de manera que el total pot acabar sent més alt que la capacitat real de la bateria. Fes servir el botó de reinici després d\'una càrrega completa per posar-lo a zero.</string>
+    <string name="battery_usage_desc">Ús estimat per aplicació, llegit directament del model d\'energia del sistema mitjançant root. Això funciona encara que la pantalla nativa d\'Ajustos d\'aquest dispositiu mai es completi (necessita a més un senyal de càrrega completa que el controlador de càrrega d\'aquest dispositiu mai informa) - però pel mateix motiu, aquestes xifres s\'acumularien a través de diversos cicles de càrrega en lloc de reiniciar-se automàticament. Ara es reinicien automàticament quan la càrrega arriba al llindar configurat al menú ⋮ (100% per defecte), o pots reiniciar-les manualment amb el botó de reinici.</string>
     <string name="battery_usage_total">Total estimat: %1$s</string>
     <string name="battery_usage_reset">Reinicia les estadístiques d\'ús de la bateria</string>
     <string name="battery_usage_show_system">Mostra les apps del sistema</string>
+    <string name="battery_usage_more_options">Més opcions</string>
+    <string name="battery_usage_set_threshold">Configura el llindar de reinici automàtic</string>
+    <string name="battery_usage_threshold_desc">Reinicia automàticament les estadístiques d\'ús de la bateria quan la càrrega arribi a aquest nivell, ja que aquest dispositiu no pot detectar una càrrega completa real.</string>
+    <string name="battery_usage_threshold_value">%1$d%%</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>

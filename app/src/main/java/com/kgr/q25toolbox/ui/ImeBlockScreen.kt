@@ -134,15 +134,6 @@ fun ImeBlockScreen(onBack: () -> Unit) {
                         }
                     }
                     item(key = "_banner") { AccessibilityServiceBanner(serviceEnabled) }
-                    item(key = "_desc") {
-                        Text(
-                            "In the selected apps, physical key presses go straight to the " +
-                                "app instead of through the keyboard - handy for games. While a " +
-                                "selected app is open the IME is switched to a do-nothing " +
-                                "passthrough keyboard, then restored on the way out. Needs root.",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
                     item(key = "_count") {
                         Text(
                             "${selected.size} selected of ${list.size} apps",
@@ -181,6 +172,18 @@ fun ImeBlockScreen(onBack: () -> Unit) {
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
+                        }
+                    }
+                    item(key = "_desc") {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            DescriptionDivider()
+                            Text(
+                                "In the selected apps, physical key presses go straight to the " +
+                                    "app instead of through the keyboard - handy for games. While a " +
+                                    "selected app is open the IME is switched to a do-nothing " +
+                                    "passthrough keyboard, then restored on the way out. Needs root.",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     }
                 }

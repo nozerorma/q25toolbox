@@ -82,10 +82,14 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Akkunutzung</string>
-    <string name="battery_usage_desc">Geschätzter Akkuverbrauch pro App, direkt aus dem eigenen Energiemodell des Systems per Root ausgelesen. Dies funktioniert, obwohl der native Einstellungen-Bildschirm auf diesem Gerät nie befüllt wird (er erfordert zusätzlich ein Vollladesignal, das der Ladetreiber dieses Geräts nie meldet) - aber aus demselben Grund summieren sich diese Zahlen über mehrere Ladezyklen auf, statt automatisch zurückgesetzt zu werden, sodass die Summe am Ende höher sein kann als die tatsächliche Akkukapazität. Nutze den Zurücksetzen-Button nach einer vollen Ladung, um sie auf null zu setzen.</string>
+    <string name="battery_usage_desc">Geschätzter Akkuverbrauch pro App, direkt aus dem eigenen Energiemodell des Systems per Root ausgelesen. Dies funktioniert, obwohl der native Einstellungen-Bildschirm auf diesem Gerät nie befüllt wird (er erfordert zusätzlich ein Vollladesignal, das der Ladetreiber dieses Geräts nie meldet) - aber aus demselben Grund würden sich diese Zahlen sonst über mehrere Ladezyklen aufsummieren, statt automatisch zurückgesetzt zu werden. Sie werden jetzt automatisch zurückgesetzt, sobald der im ⋮-Menü festgelegte Schwellenwert erreicht wird (Standard 100 %), oder du setzt sie manuell mit dem Zurücksetzen-Button zurück.</string>
     <string name="battery_usage_total">Geschätzt insgesamt: %1$s</string>
     <string name="battery_usage_reset">Akkunutzungsstatistik zurücksetzen</string>
     <string name="battery_usage_show_system">System-Apps anzeigen</string>
+    <string name="battery_usage_more_options">Weitere Optionen</string>
+    <string name="battery_usage_set_threshold">Automatischen Reset-Schwellenwert festlegen</string>
+    <string name="battery_usage_threshold_desc">Setzt die Akkunutzungsstatistik automatisch zurück, sobald der Ladestand dieses Niveau erreicht, da dieses Gerät keine echte Vollladung erkennen kann.</string>
+    <string name="battery_usage_threshold_value">%1$d %%</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN-IP: %1$s</string>

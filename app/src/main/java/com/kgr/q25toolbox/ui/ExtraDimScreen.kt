@@ -84,12 +84,6 @@ fun ExtraDimScreen(onBack: () -> Unit) {
     }
 
     ScreenScaffold(title = Screen.ExtraDim.title, onBack = onBack) {
-        Text(
-            "Reduces the screen brightness below the system's standard minimum level. " +
-            "Perfect for reading in low light and saving battery at night.",
-            style = MaterialTheme.typography.bodySmall
-        )
-
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Extra Dim Activated")
             Switch(
@@ -182,6 +176,13 @@ fun ExtraDimScreen(onBack: () -> Unit) {
             Text("Ends at", style = MaterialTheme.typography.titleSmall)
             Text(formatMinutes(endMinutes), style = MaterialTheme.typography.titleMedium)
         }
+
+        DescriptionDivider()
+        Text(
+            "Reduces the screen brightness below the system's standard minimum level. " +
+            "Perfect for reading in low light and saving battery at night.",
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 
     if (editingStart) {

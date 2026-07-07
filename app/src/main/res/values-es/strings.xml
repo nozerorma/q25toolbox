@@ -82,10 +82,14 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Uso de la batería</string>
-    <string name="battery_usage_desc">Uso estimado por app, leído directamente del propio modelo de energía del sistema mediante root. Esto funciona aunque la pantalla nativa de Ajustes de este dispositivo nunca se complete (además requiere una señal de carga completa que el controlador de carga de este dispositivo nunca informa) - pero por el mismo motivo, estas cifras se acumulan a lo largo de varios ciclos de carga en lugar de reiniciarse automáticamente, así que el total puede acabar siendo mayor que la capacidad real de la batería. Usa el botón de reinicio tras una carga completa para ponerlo a cero.</string>
+    <string name="battery_usage_desc">Uso estimado por app, leído directamente del propio modelo de energía del sistema mediante root. Esto funciona aunque la pantalla nativa de Ajustes de este dispositivo nunca se complete (además requiere una señal de carga completa que el controlador de carga de este dispositivo nunca informa) - pero por el mismo motivo, estas cifras se acumularían a lo largo de varios ciclos de carga en lugar de reiniciarse automáticamente. Ahora se reinician automáticamente al alcanzar el umbral configurado en el menú ⋮ (100% por defecto), o puedes reiniciarlas manualmente con el botón de reinicio.</string>
     <string name="battery_usage_total">Total estimado: %1$s</string>
     <string name="battery_usage_reset">Reiniciar estadísticas de uso de batería</string>
     <string name="battery_usage_show_system">Mostrar apps del sistema</string>
+    <string name="battery_usage_more_options">Más opciones</string>
+    <string name="battery_usage_set_threshold">Configurar umbral de reinicio automático</string>
+    <string name="battery_usage_threshold_desc">Reinicia automáticamente las estadísticas de uso de batería cuando la carga alcance este nivel, ya que este dispositivo no puede detectar una carga completa real.</string>
+    <string name="battery_usage_threshold_value">%1$d%%</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>

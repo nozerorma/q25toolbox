@@ -84,10 +84,14 @@
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Battery Usage</string>
-    <string name="battery_usage_desc">Estimated per-app battery use, read directly from the system\'s own power model via root. This works even though the native Settings screen for this device never populates (it additionally requires a full-charge signal this device\'s charging driver never reports) - but for the same reason, these numbers accumulate across multiple charge cycles instead of resetting automatically, so the total can end up higher than the battery\'s actual capacity. Use the reset button after a full charge to zero it out.</string>
+    <string name="battery_usage_desc">Estimated per-app battery use, read directly from the system\'s own power model via root. This works even though the native Settings screen for this device never populates (it additionally requires a full-charge signal this device\'s charging driver never reports) - but for the same reason, these numbers would otherwise accumulate across multiple charge cycles instead of resetting automatically. Stats now auto-reset once charging reaches the threshold set in the ⋮ menu (default 100%), or you can reset manually any time with the reset button.</string>
     <string name="battery_usage_total">Total estimated: %1$s</string>
     <string name="battery_usage_reset">Reset battery usage stats</string>
     <string name="battery_usage_show_system">Show system apps</string>
+    <string name="battery_usage_more_options">More options</string>
+    <string name="battery_usage_set_threshold">Set auto-reset threshold</string>
+    <string name="battery_usage_threshold_desc">Automatically reset battery usage stats once charging reaches this level, since this device can\'t detect an actual full charge.</string>
+    <string name="battery_usage_threshold_value">%1$d%%</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">WLAN IP: %1$s</string>

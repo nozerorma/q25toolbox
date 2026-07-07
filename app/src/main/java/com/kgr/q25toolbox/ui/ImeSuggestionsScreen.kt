@@ -39,11 +39,6 @@ fun ImeSuggestionsScreen(onBack: () -> Unit) {
     ScreenScaffold(title = Screen.ImeSuggestions.title, onBack = onBack) {
         AccessibilityServiceBanner(serviceEnabled)
 
-        Text(
-            stringResource(R.string.ime_suggestions_desc),
-            style = MaterialTheme.typography.bodySmall
-        )
-
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(stringResource(R.string.generic_enabled))
             Switch(
@@ -54,5 +49,11 @@ fun ImeSuggestionsScreen(onBack: () -> Unit) {
                 }
             )
         }
+
+        DescriptionDivider()
+        Text(
+            stringResource(R.string.ime_suggestions_desc),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

@@ -125,12 +125,6 @@ fun AutoFocusScreen(onBack: () -> Unit) {
                         }
                     }
                     item(key = "_banner") { AccessibilityServiceBanner(serviceEnabled) }
-                    item(key = "_desc") {
-                        Text(
-                            stringResource(R.string.auto_focus_long_desc),
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
                     item(key = "_count") {
                         Text(
                             stringResource(R.string.auto_focus_selected_count, selected.size, list.size),
@@ -169,6 +163,15 @@ fun AutoFocusScreen(onBack: () -> Unit) {
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
+                        }
+                    }
+                    item(key = "_desc") {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            DescriptionDivider()
+                            Text(
+                                stringResource(R.string.auto_focus_long_desc),
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     }
                 }

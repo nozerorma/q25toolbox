@@ -55,12 +55,6 @@ fun BtIdleScreen(onBack: () -> Unit) {
     }
 
     ScreenScaffold(title = Screen.BtIdle.title, onBack = onBack) {
-        Text(
-            "Turns Bluetooth off after a period with no device connected, so an idle " +
-                "radio can't hold the system awake overnight. Connecting earbuds, a " +
-                "watch or a speaker resets the timer.",
-            style = MaterialTheme.typography.bodySmall
-        )
         Text("State: ${if (enabled) "On" else "Off"}${if (enabled && !running) " (starts at next boot)" else ""}")
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -90,5 +84,13 @@ fun BtIdleScreen(onBack: () -> Unit) {
         statusMessage?.let {
             Text(it, style = MaterialTheme.typography.bodySmall)
         }
+
+        DescriptionDivider()
+        Text(
+            "Turns Bluetooth off after a period with no device connected, so an idle " +
+                "radio can't hold the system awake overnight. Connecting earbuds, a " +
+                "watch or a speaker resets the timer.",
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }

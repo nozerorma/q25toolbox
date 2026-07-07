@@ -1,4 +1,4 @@
-val appVersionName = "1.0-beta12"
+val appVersionName = "1.0-beta13"
 
 plugins {
     id("com.android.application")
@@ -17,7 +17,7 @@ android {
         applicationId = "com.kgr.q25toolbox"
         minSdk = 28
         targetSdk = 34
-        versionCode = 15
+        versionCode = 16
         versionName = appVersionName
 
         ndk { abiFilters += "arm64-v8a" }
