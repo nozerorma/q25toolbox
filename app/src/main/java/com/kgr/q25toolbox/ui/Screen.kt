@@ -46,7 +46,11 @@ val keyboardScreens = listOf(
 
 /** Screens listed under the System tab. */
 val systemScreens = listOf(
-    Screen.Dt2w,
+    // Dt2w intentionally omitted - the software DT2W daemon has repeatedly
+    // degraded SystemUI/input dispatch after extended runtime (multiple
+    // rewrites, same symptom), so the entry point is hidden. Controller/
+    // screen code and the daemon script are kept in the repo in case this
+    // is revisited with a different approach.
     Screen.ExtraDim,
     Screen.AppScaling,
     Screen.AutoFocus,

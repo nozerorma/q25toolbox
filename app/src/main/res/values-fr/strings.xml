@@ -85,6 +85,7 @@
     <string name="battery_usage_desc">Utilisation estimée par appli, lue directement depuis le modèle d\'énergie du système via root. Cela fonctionne même si l\'écran natif des Paramètres de cet appareil ne se remplit jamais (il nécessite en plus un signal de charge complète que le contrôleur de charge de cet appareil ne signale jamais) - mais pour la même raison, ces chiffres s\'accumulent sur plusieurs cycles de charge au lieu de se réinitialiser automatiquement, donc le total peut finir par dépasser la capacité réelle de la batterie. Utilisez le bouton de réinitialisation après une charge complète pour le remettre à zéro.</string>
     <string name="battery_usage_total">Total estimé : %1$s</string>
     <string name="battery_usage_reset">Réinitialiser les statistiques d\'utilisation de la batterie</string>
+    <string name="battery_usage_show_system">Afficher les applis système</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">Adresse IP WLAN : %1$s</string>

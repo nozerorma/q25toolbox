@@ -1,6 +1,7 @@
 package com.kgr.q25toolbox.modules
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import com.kgr.q25toolbox.core.RootShell
 
@@ -11,6 +12,7 @@ data class AppPowerUsage(
     val packageName: String?,
     val mAh: Double,
     val percentOfTotal: Double,
+    val isSystemApp: Boolean,
 )
 
 /**
@@ -65,13 +67,14 @@ object BatteryUsageController {
         return perUid.entries
             .filter { it.value > 0.0 }
             .map { (uid, mah) ->
-                val (label, pkg) = resolveUid(pm, uid)
-                AppPowerUsage(uid, label, pkg, mah, mah / total * 100.0)
+                val (label, pkg, isSystem) = resolveUid(pm, uid)
+                AppPowerUsage(uid, label, pkg, mah, mah / total * 100.0, isSystem)
             }
             .sortedByDescending { it.mAh }
     }
 
-    private fun resolveUid(pm: PackageManager, uid: Int): Pair<String, String?> {
+    /** Label, package name (if any), and whether the UID is a system component/app. */
+    private fun resolveUid(pm: PackageManager, uid: Int): Triple<String, String?, Boolean> {
         val packages = try {
             pm.getPackagesForUid(uid)
         } catch (_: Exception) {
@@ -79,13 +82,19 @@ object BatteryUsageController {
         }
         val pkg = packages?.firstOrNull()
         if (pkg != null) {
-            val label = try {
-                pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
+            val appInfo = try {
+                pm.getApplicationInfo(pkg, 0)
             } catch (_: Exception) {
-                pkg
+                null
             }
-            return label to pkg
+            val label = appInfo?.let { pm.getApplicationLabel(it).toString() } ?: pkg
+            val isSystem = appInfo?.let {
+                (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0 ||
+                    (it.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+            } ?: true
+            return Triple(label, pkg, isSystem)
         }
-        return (KNOWN_SYSTEM_UIDS[uid] ?: "uid $uid") to null
+        // No package for this UID at all (kernel/hardware component) - always a system item.
+        return Triple(KNOWN_SYSTEM_UIDS[uid] ?: "uid $uid", null, true)
     }
 }

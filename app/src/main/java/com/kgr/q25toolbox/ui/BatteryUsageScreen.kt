@@ -17,6 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +47,7 @@ fun BatteryUsageScreen(onBack: () -> Unit) {
     val scope = rememberCoroutineScope()
     var usage by remember { mutableStateOf<List<AppPowerUsage>?>(null) }
     var refreshToken by remember { mutableIntStateOf(0) }
+    var showSystemApps by remember { mutableStateOf(false) }
 
     LaunchedEffect(refreshToken) {
         usage = null
@@ -87,6 +89,18 @@ fun BatteryUsageScreen(onBack: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                stringResource(R.string.battery_usage_show_system),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f)
+            )
+            Switch(checked = showSystemApps, onCheckedChange = { showSystemApps = it })
+        }
+
         when (val list = usage) {
             null -> Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -95,6 +109,7 @@ fun BatteryUsageScreen(onBack: () -> Unit) {
 
             else -> {
                 val totalMah = list.sumOf { it.mAh }
+                val visible = if (showSystemApps) list else list.filterNot { it.isSystemApp }
                 Text(
                     stringResource(R.string.battery_usage_total, formatMah(totalMah)),
                     style = MaterialTheme.typography.bodyMedium
@@ -103,7 +118,7 @@ fun BatteryUsageScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    items(list, key = { it.uid }) { app -> AppUsageRow(app) }
+                    items(visible, key = { it.uid }) { app -> AppUsageRow(app) }
                 }
             }
         }

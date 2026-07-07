@@ -85,6 +85,7 @@
     <string name="battery_usage_desc">Uso estimado por app, lido diretamente do próprio modelo de energia do sistema via root. Isso funciona mesmo que a tela nativa de Configurações deste dispositivo nunca seja preenchida (ela exige também um sinal de carga completa que o driver de carregamento deste dispositivo nunca informa) - mas pelo mesmo motivo, esses números se acumulam ao longo de vários ciclos de carga em vez de reiniciar automaticamente, então o total pode acabar maior que a capacidade real da bateria. Use o botão de reinício após uma carga completa para zerá-lo.</string>
     <string name="battery_usage_total">Total estimado: %1$s</string>
     <string name="battery_usage_reset">Reiniciar estatísticas de uso da bateria</string>
+    <string name="battery_usage_show_system">Mostrar apps do sistema</string>
 
     <!-- Wireless ADB Screen -->
     <string name="wadb_wlan_ip">IP WLAN: %1$s</string>
