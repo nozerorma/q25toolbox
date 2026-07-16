@@ -7,6 +7,7 @@
     <string name="tab_keyboard">Tastiera</string>
     <string name="tab_system">Sistema</string>
     <string name="tab_network">Rete</string>
+    <string name="tab_settings">Impostazioni</string>
 
     <!-- Screen Titles -->
     <string name="title_wireless_adb">ADB Wireless Persistente</string>
@@ -79,6 +80,33 @@
     <string name="info_battery_capacity">Capacità</string>
     <string name="info_battery_usage_row">Ripartizione utilizzo</string>
     <string name="info_battery_usage_hint">Tocca per una stima per app</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_section_updates">Aggiornamenti</string>
+    <string name="settings_section_quick_access">Accesso rapido</string>
+    <string name="settings_section_contributors">Collaboratori</string>
+    <string name="settings_section_about">Informazioni</string>
+    <string name="settings_current_version">Versione attuale</string>
+    <string name="settings_check_now">Controlla ora</string>
+    <string name="settings_checking">Ricerca aggiornamenti…</string>
+    <string name="settings_up_to_date">Sei aggiornato.</string>
+    <string name="settings_update_available">Aggiornamento disponibile: %1$s</string>
+    <string name="settings_download_install">Scarica e installa</string>
+    <string name="settings_downloading">Scaricamento aggiornamento…</string>
+    <string name="settings_installing">Installazione…</string>
+    <string name="settings_installed">%1$s installato. Riavvia l\'app per completare.</string>
+    <string name="settings_install_failed_hint">pm install non riuscito — controlla logcat con tag Q25TB-Updater</string>
+    <string name="settings_quick_access_a11y_title">Servizio di accessibilità</string>
+    <string name="settings_quick_access_a11y_subtitle">Attiva le funzioni di accessibilità di Q25 Toolbox</string>
+    <string name="settings_quick_access_ime_title">Metodo di input</string>
+    <string name="settings_quick_access_ime_subtitle">Attiva le funzioni IME della tastiera fisica</string>
+    <string name="settings_contributors_loading">Caricamento collaboratori…</string>
+    <string name="settings_contributors_error">Impossibile caricare i collaboratori: %1$s</string>
+    <string name="settings_contributors_empty">Nessun dato sui collaboratori disponibile.</string>
+    <string name="settings_contributions">%1$d commit</string>
+    <string name="settings_about_version">Q25 Toolbox v%1$s</string>
+    <string name="settings_about_repo">github.com/nozerorma/q25toolbox</string>
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Utilizzo batteria</string>

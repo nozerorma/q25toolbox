@@ -7,6 +7,7 @@
     <string name="tab_keyboard">Toetsenbord</string>
     <string name="tab_system">Systeem</string>
     <string name="tab_network">Netwerk</string>
+    <string name="tab_settings">Instellingen</string>
 
     <!-- Screen Titles -->
     <string name="title_wireless_adb">Permanente draadloze ADB</string>
@@ -81,6 +82,33 @@
     <string name="info_battery_capacity">Capaciteit</string>
     <string name="info_battery_usage_row">Gebruiksoverzicht</string>
     <string name="info_battery_usage_hint">Tik voor een schatting per app</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Instellingen</string>
+    <string name="settings_section_updates">Updates</string>
+    <string name="settings_section_quick_access">Snelle toegang</string>
+    <string name="settings_section_contributors">Bijdragers</string>
+    <string name="settings_section_about">Over</string>
+    <string name="settings_current_version">Huidige versie</string>
+    <string name="settings_check_now">Nu controleren</string>
+    <string name="settings_checking">Controleren op updates…</string>
+    <string name="settings_up_to_date">Je bent up-to-date.</string>
+    <string name="settings_update_available">Update beschikbaar: %1$s</string>
+    <string name="settings_download_install">Downloaden &amp; installeren</string>
+    <string name="settings_downloading">Update wordt gedownload…</string>
+    <string name="settings_installing">Installeren…</string>
+    <string name="settings_installed">%1$s geïnstalleerd. Herstart de app om te voltooien.</string>
+    <string name="settings_install_failed_hint">pm install mislukt — bekijk logcat-tag Q25TB-Updater</string>
+    <string name="settings_quick_access_a11y_title">Toegankelijkheidsservice</string>
+    <string name="settings_quick_access_a11y_subtitle">Schakel de toegankelijkheidsfuncties van Q25 Toolbox in</string>
+    <string name="settings_quick_access_ime_title">Invoermethode</string>
+    <string name="settings_quick_access_ime_subtitle">Schakel de IME-functies van het fysieke toetsenbord in</string>
+    <string name="settings_contributors_loading">Bijdragers laden…</string>
+    <string name="settings_contributors_error">Kon bijdragers niet laden: %1$s</string>
+    <string name="settings_contributors_empty">Geen gegevens over bijdragers beschikbaar.</string>
+    <string name="settings_contributions">%1$d commits</string>
+    <string name="settings_about_version">Q25 Toolbox v%1$s</string>
+    <string name="settings_about_repo">github.com/nozerorma/q25toolbox</string>
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Batterijgebruik</string>

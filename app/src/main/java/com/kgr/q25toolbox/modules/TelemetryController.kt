@@ -37,8 +37,11 @@ object TelemetryController {
             val result = AssetInstaller.installFromAsset(context, TEMPLATE_ASSET, TARGET) { raw ->
                 raw.replace("__INTERVAL_MIN__", INTERVAL_MIN.toString())
             }
-            // Launch live, detached, so blocking starts now without a reboot.
-            RootShell.run("nohup sh $TARGET >/dev/null 2>&1 &")
+            // Launch live, detached, so blocking starts now without a reboot. setsid
+            // detaches into its own session so it doesn't get dragged down when the
+            // invoking root shell (a transient libsu session) is later recycled -
+            // see ExtraDimController for the same fix and why it was needed.
+            RootShell.run("nohup setsid sh $TARGET </dev/null >/dev/null 2>&1 &")
             result
         } else {
             AssetInstaller.removeFile(TARGET)

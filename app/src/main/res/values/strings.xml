@@ -7,6 +7,7 @@
     <string name="tab_keyboard">Keyboard</string>
     <string name="tab_system">System</string>
     <string name="tab_network">Network</string>
+    <string name="tab_settings">Settings</string>
 
     <!-- Screen Titles -->
     <string name="title_wireless_adb">Persistent Wireless ADB</string>
@@ -81,6 +82,33 @@
     <string name="info_battery_capacity">Capacity</string>
     <string name="info_battery_usage_row">Usage breakdown</string>
     <string name="info_battery_usage_hint">Tap for a per-app estimate</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_updates">Updates</string>
+    <string name="settings_section_quick_access">Quick Access</string>
+    <string name="settings_section_contributors">Contributors</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_current_version">Current version</string>
+    <string name="settings_check_now">Check now</string>
+    <string name="settings_checking">Checking for updates…</string>
+    <string name="settings_up_to_date">You\'re up to date.</string>
+    <string name="settings_update_available">Update available: %1$s</string>
+    <string name="settings_download_install">Download &amp; install</string>
+    <string name="settings_downloading">Downloading update…</string>
+    <string name="settings_installing">Installing…</string>
+    <string name="settings_installed">Installed %1$s. Restart the app to finish.</string>
+    <string name="settings_install_failed_hint">pm install failed — check logcat tag Q25TB-Updater</string>
+    <string name="settings_quick_access_a11y_title">Accessibility Service</string>
+    <string name="settings_quick_access_a11y_subtitle">Enable Q25 Toolbox\'s accessibility features</string>
+    <string name="settings_quick_access_ime_title">Input Method</string>
+    <string name="settings_quick_access_ime_subtitle">Enable the physical-keyboard IME features</string>
+    <string name="settings_contributors_loading">Loading contributors…</string>
+    <string name="settings_contributors_error">Couldn\'t load contributors: %1$s</string>
+    <string name="settings_contributors_empty">No contributor data available.</string>
+    <string name="settings_contributions">%1$d commits</string>
+    <string name="settings_about_version">Q25 Toolbox v%1$s</string>
+    <string name="settings_about_repo">github.com/nozerorma/q25toolbox</string>
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Battery Usage</string>

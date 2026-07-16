@@ -22,8 +22,10 @@ import com.kgr.q25toolbox.inputfix.ComposerEnterKeyHandler
 import com.kgr.q25toolbox.modules.AppScalingController
 import com.kgr.q25toolbox.modules.AutoFocusController
 import com.kgr.q25toolbox.modules.BatteryUsageController
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -136,6 +138,9 @@ class Q25AccessibilityService : AccessibilityService() {
     @Volatile private var imeBlockApplied = false // last show_ime value we pushed (true = suppressed)
     @Volatile private var foregroundPkg: String? = null // last seen foreground app package
     private var consumedAutofocusKeycode = -1
+    // Set right before a focus-and-type attempt starts waiting, so onAccessibilityEvent can
+    // wake it the instant the target field actually gets input focus (see onKeyEvent / onAccessibilityEvent).
+    @Volatile private var focusLatch: CountDownLatch? = null
     private var prefs: SharedPreferences? = null
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -196,6 +201,27 @@ class Q25AccessibilityService : AccessibilityService() {
         if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
             if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
                 autoOpenDialpad()
+            }
+        }
+
+        // Wake up a pending auto-focus wait (see onKeyEvent) as soon as the field it's
+        // waiting on actually receives input focus, instead of it finding out only on
+        // its next poll tick.
+        focusLatch?.let { latch ->
+            if (event.eventType == AccessibilityEvent.TYPE_VIEW_FOCUSED ||
+                event.eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED ||
+                event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED ||
+                event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+                rootInActiveWindow?.let { r ->
+                    try {
+                        val focused = r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+                        val isEditable = focused?.let { AutoFocusController.isEditableTextField(it) } ?: false
+                        focused?.recycle()
+                        if (isEditable) latch.countDown()
+                    } finally {
+                        r.recycle()
+                    }
+                }
             }
         }
     }
@@ -353,6 +379,95 @@ class Q25AccessibilityService : AccessibilityService() {
             }
         }
 
+        // In-call shortcuts for Google Phone / Dialer: currency key (Speaker), M key (Mute), digits (Dialpad).
+        // Must run BEFORE auto-focus below: both gate only on foreground package (dialer), and
+        // auto-focus's printable-key check (M, digits, the currency key's '`' are all printable)
+        // would otherwise steal the key first whenever the in-call screen has any unfocused
+        // editable node in its tree, silently swallowing mute/speaker/dialpad presses instead of
+        // acting on them. This block already scopes itself tightly to the actual in-call action
+        // bar via the checkables.size >= 3 guard, so it naturally no-ops (and falls through to
+        // auto-focus) on other dialer screens like the pre-call dial-a-number or contact search.
+        if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
+            val root = rootInActiveWindow
+            if (root != null) {
+                try {
+                    val checkables = mutableListOf<AccessibilityNodeInfo>()
+                    findCheckables(root, checkables)
+                    try {
+                        // Require the full expected in-call toggle set (keypad, mute, speaker) -
+                        // the standalone pre-call dial-a-number screen isn't guaranteed to have
+                        // zero checkables, and matching on just "any" let this block misfire
+                        // there, double-handling keys that auto-focus's own generic search-box
+                        // logic was already correctly handling for that screen.
+                        if (checkables.size >= 3) {
+                            val isCurrencyKey = kc == KeyEvent.KEYCODE_CTRL_RIGHT || kc == KeyEvent.KEYCODE_GRAVE
+                            val isMKey = kc == KeyEvent.KEYCODE_M
+
+                            if (isCurrencyKey) {
+                                // Short press currency key -> Toggle Speaker (index 2)
+                                if (event.action == KeyEvent.ACTION_UP) {
+                                    if (checkables.size > 2) {
+                                        checkables[2].performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                    }
+                                }
+                                return true // Consume currency key event
+                            }
+
+                            if (isMKey) {
+                                // Press M key -> Toggle Mute (index 1)
+                                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                                    if (checkables.size > 1) {
+                                        checkables[1].performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                    }
+                                }
+                                return true // Consume M key event
+                            }
+
+                            val injectKc = getDialerKeycode(kc)
+                            if (injectKc != null) {
+                                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                                    val keypadNode = checkables[0]
+                                    if (keypadNode.isChecked) {
+                                        // Common case: autoOpenDialpad() already opened it earlier,
+                                        // so the digits field should already exist - insert straight away.
+                                        findDialerDigitsField(root)?.let { insertDialerDigit(it, kc) }
+                                    } else {
+                                        // Dialpad hasn't visibly opened yet - autoOpenDialpad()'s
+                                        // click is async and can lose this race for the very first
+                                        // digit. Poll for the digits field to actually exist instead
+                                        // of guessing a fixed delay or falling back to "input keyevent"
+                                        // (unreliable this soon after a focus/visibility transition -
+                                        // same reason auto-focus below uses ACTION_SET_TEXT instead).
+                                        keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                                        worker.execute {
+                                            var digits: AccessibilityNodeInfo? = null
+                                            for (attempt in 1..10) {
+                                                Thread.sleep(50)
+                                                digits = rootInActiveWindow?.let { r ->
+                                                    try {
+                                                        findDialerDigitsField(r)
+                                                    } finally {
+                                                        r.recycle()
+                                                    }
+                                                }
+                                                if (digits != null) break
+                                            }
+                                            digits?.let { insertDialerDigit(it, kc) }
+                                        }
+                                    }
+                                }
+                                return true // Consume dialpad digit events
+                            }
+                        }
+                    } finally {
+                        checkables.forEach { it.recycle() }
+                    }
+                } finally {
+                    root.recycle()
+                }
+            }
+        }
+
         // Key-triggered AutoFocus: Focus input field and type key once any printable key is pressed
         // on an unfocused field. Gated on a cheap, native-backed "does anything already have input
         // focus?" check rather than a per-app-session "have we tried already" flag - the latter
@@ -378,34 +493,41 @@ class Q25AccessibilityService : AccessibilityService() {
                                         // Some search boxes (Maps, Gmail) actually activate via
                                         // ACTION_CLICK (opening a full search overlay/activity),
                                         // ignoring ACTION_FOCUS entirely - so don't gate on its
-                                        // return value, just fire both and poll for real input
+                                        // return value, just fire both and wait for real input
                                         // focus to land before injecting the triggering key.
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                                         consumedAutofocusKeycode = kc
+                                        // onAccessibilityEvent counts this down the instant the target field
+                                        // actually receives input focus, so the common case wakes in a few ms
+                                        // instead of waiting out a fixed poll interval. The 1s budget below is
+                                        // only a safety net for apps where that never cleanly fires (matches
+                                        // the previous worst-case wait, just no longer the typical one).
+                                        val latch = CountDownLatch(1)
+                                        focusLatch = latch
                                         worker.execute {
-                                            var hasInputFocus = false
-                                            for (attempt in 1..10) {
-                                                Thread.sleep(100)
-                                                hasInputFocus = rootInActiveWindow?.let { r ->
-                                                    try {
-                                                        // Must specifically be the editable field, not just
-                                                        // any focus holder - Gmail's search transition (a
-                                                        // full overlay/activity, unlike Maps' inline omnibox)
-                                                        // briefly hands input focus to intermediate widgets
-                                                        // (e.g. the overlay's toolbar/back button) before the
-                                                        // real search box gets it, and injecting too early
-                                                        // against one of those drops the keystroke entirely.
-                                                        val focused = r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
-                                                        val isEditable = focused?.let { AutoFocusController.isEditableTextField(it) } ?: false
-                                                        focused?.recycle()
-                                                        isEditable
-                                                    } finally {
-                                                        r.recycle()
-                                                    }
-                                                } ?: false
-                                                if (hasInputFocus) break
+                                            val landedInTime = try {
+                                                latch.await(1000, TimeUnit.MILLISECONDS)
+                                            } catch (_: InterruptedException) {
+                                                false
                                             }
+                                            focusLatch = null
+                                            // Must specifically be the editable field, not just any focus
+                                            // holder - Gmail's search transition (a full overlay/activity,
+                                            // unlike Maps' inline omnibox) briefly hands input focus to
+                                            // intermediate widgets (e.g. the overlay's toolbar/back button)
+                                            // before the real search box gets it, and injecting too early
+                                            // against one of those drops the keystroke entirely.
+                                            val hasInputFocus = landedInTime && (rootInActiveWindow?.let { r ->
+                                                try {
+                                                    val focused = r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+                                                    val isEditable = focused?.let { AutoFocusController.isEditableTextField(it) } ?: false
+                                                    focused?.recycle()
+                                                    isEditable
+                                                } finally {
+                                                    r.recycle()
+                                                }
+                                            } ?: false)
                                             if (hasInputFocus) Thread.sleep(150)
                                             // Re-injecting via "input keyevent" turned out unreliable
                                             // here: it reports shell-level success, but confirmed via
@@ -462,93 +584,6 @@ class Q25AccessibilityService : AccessibilityService() {
                 }
             }
         }
-
-        // In-call shortcuts for Google Phone / Dialer: currency key (Speaker), M key (Mute), digits (Dialpad)
-        if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
-            val root = rootInActiveWindow
-            if (root != null) {
-                try {
-                    val checkables = mutableListOf<AccessibilityNodeInfo>()
-                    findCheckables(root, checkables)
-                    try {
-                        // Require the full expected in-call toggle set (keypad, mute, speaker) -
-                        // the standalone pre-call dial-a-number screen isn't guaranteed to have
-                        // zero checkables, and matching on just "any" let this block misfire
-                        // there, double-handling keys that auto-focus's own generic search-box
-                        // logic was already correctly handling for that screen.
-                        if (checkables.size >= 3) {
-                            val isCurrencyKey = kc == KeyEvent.KEYCODE_CTRL_RIGHT || kc == KeyEvent.KEYCODE_GRAVE
-                            val isMKey = kc == KeyEvent.KEYCODE_M
-
-                            if (isCurrencyKey) {
-                                // Short press currency key -> Toggle Speaker (index 2)
-                                if (event.action == KeyEvent.ACTION_UP) {
-                                    if (checkables.size > 2) {
-                                        checkables[2].performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                                    }
-                                }
-                                return true // Consume currency key event
-                            }
-
-                            if (isMKey) {
-                                // Press M key -> Toggle Mute (index 1)
-                                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                                    if (checkables.size > 1) {
-                                        checkables[1].performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                                    }
-                                }
-                                return true // Consume M key event
-                            }
-
-                            val injectKc = getDialerKeycode(kc)
-                            if (injectKc != null) {
-                                if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                                    val keypadNode = checkables[0]
-                                    if (keypadNode.isChecked) {
-                                        // Common case: autoOpenDialpad() already opened it earlier,
-                                        // so just inject straight away.
-                                        injectDialerKey(injectKc)
-                                    } else {
-                                        // Dialpad hasn't visibly opened yet - autoOpenDialpad()'s
-                                        // click is async and can lose this race for the very first
-                                        // digit. Poll for it to actually finish opening instead of
-                                        // guessing a fixed delay.
-                                        keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                                        worker.execute {
-                                            for (attempt in 1..10) {
-                                                Thread.sleep(50)
-                                                val opened = rootInActiveWindow?.let { r ->
-                                                    try {
-                                                        val cs = mutableListOf<AccessibilityNodeInfo>()
-                                                        findCheckables(r, cs)
-                                                        try {
-                                                            cs.isNotEmpty() && cs[0].isChecked
-                                                        } finally {
-                                                            cs.forEach { it.recycle() }
-                                                        }
-                                                    } finally {
-                                                        r.recycle()
-                                                    }
-                                                } ?: false
-                                                if (opened) break
-                                            }
-                                            RootShell.run("input keyevent $injectKc")
-                                        }
-                                    }
-                                }
-                                return true // Consume dialpad digit events
-                            }
-                        }
-                    } finally {
-                        checkables.forEach { it.recycle() }
-                    }
-                } finally {
-                    root.recycle()
-                }
-            }
-        }
-
-
 
         // Ported q25-input-helper fixes. Each checks the foreground app itself,
         // so they're safe to call for every key and no-op elsewhere. Calculator
@@ -637,9 +672,37 @@ class Q25AccessibilityService : AccessibilityService() {
         else -> null
     }
 
-    private fun injectDialerKey(kcCode: Int) {
-        worker.execute {
-            RootShell.run("input keyevent $kcCode")
+    /**
+     * Finds the in-call dialpad's actual phone-number EditText, the same node
+     * [isDialpadDigitsField] checks for. Caller must recycle the returned node.
+     */
+    private fun findDialerDigitsField(root: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+        for (id in arrayOf("com.google.android.dialer:id/digits", "com.google.android.apps.dialer:id/digits")) {
+            val nodes = root.findAccessibilityNodeInfosByViewId(id)
+            if (nodes != null && nodes.isNotEmpty()) {
+                for (i in 1 until nodes.size) nodes[i].recycle()
+                return nodes[0]
+            }
+        }
+        return null
+    }
+
+    /**
+     * Appends [kc]'s mapped digit to the dialpad's number field directly through the
+     * accessibility API, recycling [target] when done. "input keyevent" was tried here first
+     * but is unreliable this soon after the dialpad's open/visibility transition - the same
+     * reason auto-focus's own text insertion below uses ACTION_SET_TEXT instead of key injection.
+     */
+    private fun insertDialerDigit(target: AccessibilityNodeInfo, kc: Int) {
+        try {
+            val digit = dialerDigitChar(kc) ?: return
+            val current = if (target.isShowingHintText) "" else (target.text?.toString() ?: "")
+            val args = Bundle().apply {
+                putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, current + digit)
+            }
+            target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
+        } finally {
+            target.recycle()
         }
     }
 

@@ -79,6 +79,13 @@ fun ExtraDimScreen(onBack: () -> Unit) {
             if (scheduleEnabled) {
                 startMinutes = ExtraDimController.persistedStartMinutes()
                 endMinutes = ExtraDimController.persistedEndMinutes()
+                // The daemon can die mid-session (e.g. the root shell that
+                // launched it got recycled) with nothing else noticing - self-heal
+                // here instead of just reporting "not running" passively.
+                if (!scheduleRunning) {
+                    ExtraDimController.setScheduleEnabled(context, true, startMinutes, endMinutes)
+                    scheduleRunning = ExtraDimController.isScheduleRunning()
+                }
             }
         }
     }

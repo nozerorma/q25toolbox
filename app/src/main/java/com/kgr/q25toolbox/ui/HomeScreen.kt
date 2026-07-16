@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -27,10 +28,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kgr.q25toolbox.R
+import com.kgr.q25toolbox.settings.SettingsScreen
+import androidx.compose.runtime.LaunchedEffect
 
 /**
  * Top-level navigation: a bottom bar with Info / Keyboard / System sections.
@@ -41,6 +44,22 @@ import com.kgr.q25toolbox.R
 fun HomeScreen() {
     var tab by remember { mutableStateOf(AppTab.Info) }
     var detail by remember { mutableStateOf<Screen?>(null) }
+
+    // Hoisted above the `when(tab)` branches (which are disposed/recreated on every
+    // tab switch, losing their own `remember` state) so revisiting Info doesn't
+    // flash back to empty cards and re-fetch every time - the "wonky, pops up" jank.
+    val infoState = remember { InfoState() }
+    val infoScrollState = rememberScrollState()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) { infoState.refresh(context) }
+
+    val currentVersionName = remember {
+        try {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: ""
+        } catch (_: Exception) {
+            ""
+        }
+    }
 
     BackHandler(enabled = detail != null) { detail = null }
 
@@ -71,6 +90,12 @@ fun HomeScreen() {
                     icon = { Icon(Icons.Filled.Wifi, contentDescription = null) },
                     label = { Text(stringResource(AppTab.Network.labelRes)) }
                 )
+                NavigationBarItem(
+                    selected = tab == AppTab.Settings,
+                    onClick = { tab = AppTab.Settings; detail = null },
+                    icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                    label = { Text(stringResource(AppTab.Settings.labelRes)) }
+                )
             }
         }
     ) { padding ->
@@ -79,10 +104,15 @@ fun HomeScreen() {
             if (current != null) {
                 DetailHost(current) { detail = null }
             } else when (tab) {
-                AppTab.Info -> InfoScreen(onOpenBatteryUsage = { detail = Screen.BatteryUsage })
+                AppTab.Info -> InfoScreen(
+                    state = infoState,
+                    scrollState = infoScrollState,
+                    onOpenBatteryUsage = { detail = Screen.BatteryUsage }
+                )
                 AppTab.Keyboard -> CategoryMenu(stringResource(R.string.tab_keyboard), keyboardScreens) { detail = it }
                 AppTab.System -> CategoryMenu(stringResource(R.string.tab_system), systemScreens) { detail = it }
                 AppTab.Network -> CategoryMenu(stringResource(R.string.tab_network), networkScreens) { detail = it }
+                AppTab.Settings -> SettingsScreen(currentVersionName = currentVersionName)
             }
         }
     }

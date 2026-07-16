@@ -7,6 +7,7 @@
     <string name="tab_keyboard">Teclat</string>
     <string name="tab_system">Sistema</string>
     <string name="tab_network">Xarxa</string>
+    <string name="tab_settings">Configuració</string>
 
     <!-- Screen Titles -->
     <string name="title_wireless_adb">ADB Inalàmbric Persistent</string>
@@ -79,6 +80,33 @@
     <string name="info_battery_capacity">Capacitat</string>
     <string name="info_battery_usage_row">Desglossament d\'ús</string>
     <string name="info_battery_usage_hint">Toca per veure una estimació per aplicació</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Configuració</string>
+    <string name="settings_section_updates">Actualitzacions</string>
+    <string name="settings_section_quick_access">Accés ràpid</string>
+    <string name="settings_section_contributors">Col·laboradors</string>
+    <string name="settings_section_about">Quant a</string>
+    <string name="settings_current_version">Versió actual</string>
+    <string name="settings_check_now">Comprova ara</string>
+    <string name="settings_checking">Comprovant actualitzacions…</string>
+    <string name="settings_up_to_date">Estàs al dia.</string>
+    <string name="settings_update_available">Actualització disponible: %1$s</string>
+    <string name="settings_download_install">Descarrega i instal·la</string>
+    <string name="settings_downloading">Descarregant actualització…</string>
+    <string name="settings_installing">Instal·lant…</string>
+    <string name="settings_installed">S\'ha instal·lat %1$s. Reinicia l\'app per acabar.</string>
+    <string name="settings_install_failed_hint">pm install ha fallat — consulta logcat amb l\'etiqueta Q25TB-Updater</string>
+    <string name="settings_quick_access_a11y_title">Servei d\'accessibilitat</string>
+    <string name="settings_quick_access_a11y_subtitle">Activa les funcions d\'accessibilitat de Q25 Toolbox</string>
+    <string name="settings_quick_access_ime_title">Mètode d\'entrada</string>
+    <string name="settings_quick_access_ime_subtitle">Activa les funcions d\'IME del teclat físic</string>
+    <string name="settings_contributors_loading">Carregant col·laboradors…</string>
+    <string name="settings_contributors_error">No s\'han pogut carregar els col·laboradors: %1$s</string>
+    <string name="settings_contributors_empty">No hi ha dades de col·laboradors disponibles.</string>
+    <string name="settings_contributions">%1$d commits</string>
+    <string name="settings_about_version">Q25 Toolbox v%1$s</string>
+    <string name="settings_about_repo">github.com/nozerorma/q25toolbox</string>
 
     <!-- Battery Usage Screen -->
     <string name="title_battery_usage">Ús de la bateria</string>

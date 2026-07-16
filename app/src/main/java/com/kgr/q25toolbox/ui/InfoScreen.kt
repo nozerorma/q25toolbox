@@ -3,12 +3,9 @@ package com.kgr.q25toolbox.ui
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.BatteryManager
 import android.os.Build
-import android.provider.Settings
-import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,114 +27,60 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.core.RootShell
-import com.kgr.q25toolbox.modules.UpdateChecker
-import com.kgr.q25toolbox.modules.UpdateInfo
-import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private data class Row(val label: String, val value: String)
+internal data class Row(val label: String, val value: String)
+
+/**
+ * Fetched once from [HomeScreen] (which survives tab switches), rather than
+ * inside this composable - re-fetching (and flashing back to empty cards)
+ * every time the user merely revisits the Info tab was the "wonky, pops up"
+ * symptom, since `when(tab)`'s branches are disposed/recreated on every
+ * switch and lose their own `remember` state.
+ */
+internal class InfoState {
+    var device: List<Row> by mutableStateOf(emptyList())
+    var battery: List<Row> by mutableStateOf(emptyList())
+}
+
+internal suspend fun InfoState.refresh(context: Context) {
+    battery = readBatteryRows(context)
+    withContext(Dispatchers.IO) {
+        // buildDeviceRows() shells out to getprop via Runtime.exec, which blocks
+        // for real process-fork time - keep it (and the root sysfs read) off the
+        // main thread rather than in the calling LaunchedEffect's default dispatcher.
+        val deviceRows = buildDeviceRows(context)
+        val health = readBatteryHealthRows(context)
+        withContext(Dispatchers.Main) {
+            device = deviceRows
+            if (health.isNotEmpty()) battery = battery + health
+        }
+    }
+}
 
 @Composable
-fun InfoScreen(onOpenBatteryUsage: () -> Unit) {
-    val context = LocalContext.current
-
-    var rootOk by remember { mutableStateOf<Boolean?>(null) }
-    var a11yOk by remember { mutableStateOf(false) }
-    var imeOk by remember { mutableStateOf(false) }
-    var device by remember { mutableStateOf<List<Row>>(emptyList()) }
-    var battery by remember { mutableStateOf<List<Row>>(emptyList()) }
-    val currentVersion = remember {
-        try {
-            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: ""
-        } catch (_: Exception) {
-            ""
-        }
-    }
-    var updateCheckDone by remember { mutableStateOf(false) }
-    var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
-
-    LaunchedEffect(Unit) {
-        a11yOk = isQ25AccessibilityServiceEnabled(context)
-        imeOk = isQ25ImeEnabled(context)
-        device = buildDeviceRows(context)
-        battery = readBatteryRows(context)
-        withContext(Dispatchers.IO) {
-            val r = RootShell.isRootAvailable()
-            val health = readBatteryHealthRows(context)
-            val update = UpdateChecker.checkForUpdate(currentVersion)
-            withContext(Dispatchers.Main) {
-                rootOk = r
-                if (health.isNotEmpty()) battery = battery + health
-                updateInfo = update
-                updateCheckDone = true
-            }
-        }
-    }
+internal fun InfoScreen(state: InfoState, scrollState: ScrollState, onOpenBatteryUsage: () -> Unit) {
+    val device = state.device
+    val battery = state.battery
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
-
-        InfoCard(stringResource(R.string.info_access)) {
-            StatusRow(
-                stringResource(R.string.info_root_access),
-                when (rootOk) {
-                    null -> stringResource(R.string.info_root_checking)
-                    true -> stringResource(R.string.info_root_granted)
-                    else -> stringResource(R.string.info_root_not_granted)
-                },
-                when (rootOk) { null -> NEUTRAL; true -> OK; else -> BAD },
-                onClick = { openRootManager(context) }
-            )
-            StatusRow(
-                stringResource(R.string.info_a11y_service),
-                if (a11yOk) stringResource(R.string.info_enabled) else stringResource(R.string.info_disabled),
-                if (a11yOk) OK else BAD,
-                onClick = { openAccessibilitySettings(context) }
-            )
-            StatusRow(
-                stringResource(R.string.info_ime_service),
-                if (imeOk) stringResource(R.string.info_enabled) else stringResource(R.string.info_disabled),
-                if (imeOk) OK else BAD,
-                onClick = { openInputMethodSettings(context) }
-            )
-        }
-
-        InfoCard(stringResource(R.string.info_app)) {
-            LabelValue(Row(stringResource(R.string.info_app_version), currentVersion))
-            StatusRow(
-                stringResource(R.string.info_app_update),
-                when {
-                    !updateCheckDone -> stringResource(R.string.info_update_checking)
-                    updateInfo != null -> stringResource(R.string.info_update_available, updateInfo!!.latestVersion)
-                    else -> stringResource(R.string.info_update_up_to_date)
-                },
-                when {
-                    !updateCheckDone -> NEUTRAL
-                    updateInfo != null -> UPDATE
-                    else -> OK
-                },
-                onClick = updateInfo?.let { info -> { openUrl(context, info.htmlUrl) } }
-            )
-        }
 
         InfoCard(stringResource(R.string.info_device)) { device.forEach { LabelValue(it) } }
 
@@ -154,10 +96,7 @@ fun InfoScreen(onOpenBatteryUsage: () -> Unit) {
     }
 }
 
-private val OK = Color(0xFF81C784)
-private val BAD = Color(0xFFE57373)
 private val NEUTRAL = Color(0xFFB0B0B0)
-private val UPDATE = Color(0xFF64B5F6)
 
 @Composable
 private fun InfoCard(title: String, content: @Composable () -> Unit) {
@@ -208,80 +147,6 @@ private fun BatteryUsageEntryRow(onClick: () -> Unit) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-}
-
-@Composable
-private fun StatusRow(
-    label: String,
-    value: String,
-    color: Color,
-    hint: String? = null,
-    onClick: (() -> Unit)? = null
-) {
-    Column(
-        modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
-    ) {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = NEUTRAL)
-        Text(value, style = MaterialTheme.typography.bodyMedium, color = color)
-        if (!hint.isNullOrEmpty()) {
-            Text(hint, style = MaterialTheme.typography.bodySmall, color = NEUTRAL)
-        }
-    }
-}
-
-private fun isQ25ImeEnabled(context: Context): Boolean {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return false
-    val imeId = "${context.packageName}/.service.Q25PassthroughIme"
-    return imm.enabledInputMethodList.any { it.id == imeId }
-}
-
-private fun openRootManager(context: Context) {
-    val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-    val launchableApps = context.packageManager.queryIntentActivities(launcherIntent, PackageManager.MATCH_DEFAULT_ONLY)
-
-    val detectedRootManager = launchableApps.asSequence()
-        .map { it.activityInfo }
-        .firstOrNull { activityInfo ->
-            val packageName = activityInfo.packageName.lowercase()
-            val label = activityInfo.loadLabel(context.packageManager).toString().lowercase()
-            packageName.contains("magisk") ||
-                packageName.contains("kernelsu") ||
-                packageName.contains("apatch") ||
-                label.contains("magisk") ||
-                label.contains("kernelsu") ||
-                label.contains("apatch")
-        }
-
-    if (detectedRootManager != null) {
-        val intent = Intent(Intent.ACTION_MAIN)
-            .addCategory(Intent.CATEGORY_LAUNCHER)
-            .setClassName(detectedRootManager.packageName, detectedRootManager.name)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
-        return
-    }
-
-    val settingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-        data = Uri.parse("package:${context.packageName}")
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-    context.startActivity(settingsIntent)
-}
-
-private fun openAccessibilitySettings(context: Context) {
-    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(intent)
-}
-
-private fun openInputMethodSettings(context: Context) {
-    val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(intent)
-}
-
-private fun openUrl(context: Context, url: String) {
-    if (url.isEmpty()) return
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(intent)
 }
 
 private fun getprop(key: String): String = try {

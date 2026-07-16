@@ -4,6 +4,44 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.0-beta14] - 2026-07-17
+
+### Added
+- **Settings tab**: a new bottom-nav section with an Updates card (real
+  download + install-as-root, not just a "new version" link, with proper
+  version ordering so e.g. `beta9` isn't misjudged newer than `beta14`), a
+  Quick Access section (Accessibility Service / Input Method shortcuts, moved
+  out of Info), a Contributors row pulled live from GitHub, and an About
+  section. Ported from Key2Toolbox.
+- Settings tab translated across all 7 supported languages.
+
+### Fixed
+- **In-call Mute/Speaker occasionally not responding**: auto-focus ran before
+  the in-call shortcuts handler and could swallow the M/currency-key press
+  first whenever the call screen had any unfocused editable node in its tree.
+  In-call shortcuts now gets first refusal on the in-call action bar; other
+  dialer screens (pre-call dial pad, contact search) still fall through to
+  auto-focus as before.
+- **Dialpad digit presses sometimes not registering**: digit routing injected
+  keys via `input keyevent`, which is unreliable immediately after the
+  dialpad's open/visibility transition. Now inserts directly through the
+  accessibility API (`ACTION_SET_TEXT`), the same reliable path auto-focus's
+  own text insertion already used.
+- **Extra Dim's night schedule silently stopping for good**: the watchdog's
+  PID-lock check could false-positive on an unrelated process that reused the
+  same PID after a reboot, causing the daemon to see "already running" and
+  exit immediately - permanently, since nothing else was watching. Lock check
+  now also confirms `/proc/$PID/cmdline` still names the same script, the
+  daemon detaches via `setsid` so it survives its launching root shell being
+  recycled, and the Extra Dim screen self-heals (relaunches) if it finds the
+  daemon dead on open.
+- **Global Telemetry Block** had the identical watchdog-death bug as Extra
+  Dim above - same fix applied (PID+cmdline lock, `setsid`, self-heal).
+- **Info tab flashing empty and re-fetching every time you switched away and
+  back**: its device/battery data lived inside the tab's `when` branch, which
+  gets disposed and recreated on every switch. State (and scroll position)
+  now survives at the `HomeScreen` level instead.
+
 ## [1.0-beta11] - 2026-07-06
 
 ### Added

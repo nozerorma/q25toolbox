@@ -8,8 +8,17 @@
 # Android's own Night Light schedule behaves with manual overrides.
 
 LOCK=/data/adb/.extra_dim_schedule.lock
-if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
-    exit 0
+# Belt-and-braces PID lock: unlike a plain "kill -0 $PID" check (which can
+# false-positive on an unrelated process that has since reused the same PID),
+# this also confirms /proc/$PID/cmdline still names this same script before
+# treating the lock as held. (toybox's flock -n on this device's /system/bin/sh
+# was tried instead and consistently returned "Bad file descriptor" even for a
+# freshly exec'd fd, so it isn't usable here.)
+if [ -f "$LOCK" ]; then
+    OLD_PID=$(cat "$LOCK" 2>/dev/null)
+    if [ -n "$OLD_PID" ] && grep -q extra_dim_schedule "/proc/$OLD_PID/cmdline" 2>/dev/null; then
+        exit 0
+    fi
 fi
 echo $$ > "$LOCK"
 

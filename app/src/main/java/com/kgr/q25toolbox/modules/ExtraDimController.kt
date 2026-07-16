@@ -72,7 +72,12 @@ object ExtraDimController {
                 raw.replace("__START_MINUTES__", startMinutes.toString())
                    .replace("__END_MINUTES__", endMinutes.toString())
             }
-            RootShell.run("nohup sh $SCHEDULE_TARGET >/dev/null 2>&1 &")
+            // setsid detaches the daemon into its own session so it doesn't get
+            // dragged down when the invoking root shell (a transient libsu
+            // session, not a real login shell) is later recycled or torn down -
+            // a bare "nohup ... &" was found dead on next inspection despite
+            // nohup alone working for this purpose on desktop Linux.
+            RootShell.run("nohup setsid sh $SCHEDULE_TARGET </dev/null >/dev/null 2>&1 &")
             result
         } else {
             AssetInstaller.removeFile(SCHEDULE_TARGET)

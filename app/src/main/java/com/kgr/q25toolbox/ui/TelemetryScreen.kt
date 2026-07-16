@@ -50,6 +50,13 @@ fun TelemetryScreen(onBack: () -> Unit) {
             enabled = TelemetryController.isPersisted()
             totalApps = TelemetryController.totalAffectedApps()
             blockedApps = TelemetryController.totalBlockedApps()
+            // Same class of bug as Extra Dim's schedule daemon: the watchdog can die
+            // mid-session (e.g. the root shell that launched it got recycled) with
+            // nothing else noticing - self-heal here instead of leaving telemetry
+            // silently unblocked until the next reboot.
+            if (enabled && !TelemetryController.isRunning()) {
+                TelemetryController.setEnabled(context, true)
+            }
         }
     }
 

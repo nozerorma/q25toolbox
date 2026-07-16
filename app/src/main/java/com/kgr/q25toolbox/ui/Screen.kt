@@ -32,6 +32,7 @@ enum class AppTab(@StringRes val labelRes: Int) {
     Keyboard(R.string.tab_keyboard),
     System(R.string.tab_system),
     Network(R.string.tab_network),
+    Settings(R.string.tab_settings),
 }
 
 /** Screens listed under the Keyboard tab. */
