@@ -7,9 +7,20 @@ import com.kgr.q25toolbox.core.RootShell
 /**
  * Hardware-level key remapping for the Q25 keyboard.
  *
- * It overrides the system's keylayout file `/system/usr/keylayout/Q25_keyboard.kl`
- * using a bind mount from `/data/local/tmp/Q25_keyboard.kl` in the master mount
- * namespace (`su -M`).
+ * It overrides the keylayout file `Q25_keyboard.kl` using a bind mount from
+ * `/data/local/tmp/Q25_keyboard.kl` in the master mount namespace (`su -M`).
+ *
+ * The file's actual partition differs by ROM: stock BenOS ships it under
+ * `/system/usr/keylayout/`, while a Treble-compliant build (e.g. the
+ * unofficial LineageOS port, device tree `device/xelex/Q25`) ships it under
+ * `/vendor/usr/keylayout/` instead - confirmed via that device tree's
+ * `device.mk` (`PRODUCT_COPY_FILES` targets `$(TARGET_COPY_OUT_VENDOR)`).
+ * Rather than hardcode one and silently no-op on the other (the original bug:
+ * always targeting `/system`, so the boot script's "wait for the file" loop
+ * spun forever on a Lineage build), every script here probes both at runtime
+ * and uses whichever actually exists - including its matching SELinux label
+ * (`system_file` vs `vendor_file`), since the wrong one could make the
+ * bind-mounted copy unreadable by system_server/EventHub under enforcing.
  *
  * Live reload is achieved by unbinding and rebinding the Q25_keyboard i2c driver.
  * Persistence across boots is managed via `/data/adb/service.d/key_remap.sh`.
@@ -21,7 +32,26 @@ object KeyRemapController {
 
     private const val BOOT_SCRIPT = "/data/adb/service.d/key_remap.sh"
     private const val TMP_FILE = "/data/local/tmp/Q25_keyboard.kl"
-    private const val SYS_FILE = "/system/usr/keylayout/Q25_keyboard.kl"
+    private const val SYSTEM_FILE = "/system/usr/keylayout/Q25_keyboard.kl"
+    private const val VENDOR_FILE = "/vendor/usr/keylayout/Q25_keyboard.kl"
+
+    /**
+     * Resolves to whichever of [SYSTEM_FILE] / [VENDOR_FILE] exists on this device, setting
+     * $SYS_FILE and $SELABEL for the rest of the script to use. Waits (rather than failing
+     * outright) since this can run at boot before either partition's overlay is mounted yet.
+     */
+    private val resolveSysFile = """
+        while [ ! -f $SYSTEM_FILE ] && [ ! -f $VENDOR_FILE ]; do
+          sleep 1
+        done
+        if [ -f $SYSTEM_FILE ]; then
+          SYS_FILE=$SYSTEM_FILE
+          SELABEL=u:object_r:system_file:s0
+        else
+          SYS_FILE=$VENDOR_FILE
+          SELABEL=u:object_r:vendor_file:s0
+        fi
+    """.trimIndent()
 
     enum class SourceKey(
         val label: String,
@@ -80,11 +110,14 @@ object KeyRemapController {
         } else {
             // Delete boot script
             RootShell.run("rm -f $BOOT_SCRIPT")
-            // Clean up the mount and reload the driver to restore defaults
+            // Clean up the mount and reload the driver to restore defaults. Unmounts both
+            // candidate paths unconditionally (whichever wasn't ever bind-mounted just no-ops)
+            // rather than re-resolving which one applies - simpler and just as safe for cleanup.
             RootShell.run(
                 "su -M -c 'echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/unbind" +
                 " ; sleep 1" +
-                " ; umount -l $SYS_FILE" +
+                " ; umount -l $SYSTEM_FILE 2>/dev/null" +
+                " ; umount -l $VENDOR_FILE 2>/dev/null" +
                 " ; echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/bind" +
                 " ; rm -f $TMP_FILE'"
             )
@@ -93,16 +126,21 @@ object KeyRemapController {
     }
 
     private fun generateBootScript(source: SourceKey): String {
+        // $sysFileVar/$selabelVar are shell-side references to the variables resolveSysFile
+        // sets, not Kotlin ones - built as plain strings so they paste into the script as
+        // literal `$SYS_FILE`/`$SELABEL` for the shell to expand at runtime.
+        val sysFileVar = "\$SYS_FILE"
+        val selabelVar = "\$SELABEL"
         // The column padding between scancode and keycode in the layout file varies with the
         // scancode's digit width (e.g. "54    SHIFT_RIGHT" vs "580   APP_SWITCH"), so match on
         // one-or-more whitespace rather than a fixed run of spaces.
-        val sedCommand = "sed -E \"s/key ${source.scancode}[[:space:]]+${source.originalKeycode}/key ${source.scancode} CTRL_RIGHT/\" $SYS_FILE > $TMP_FILE.tmp"
+        val sedCommand =
+            "sed -E \"s/key ${source.scancode}[[:space:]]+${source.originalKeycode}/key ${source.scancode} CTRL_RIGHT/\" $sysFileVar > $TMP_FILE.tmp"
         return """
 #!/system/bin/sh
-# Wait for the system partition layout file to be available
-while [ ! -f $SYS_FILE ]; do
-  sleep 1
-done
+# Resolve which partition actually has the layout file on this ROM (also waits for it
+# to be available - this can run at boot before either overlay is mounted yet).
+$resolveSysFile
 
 # Unbind the driver FIRST if it's already bound (e.g. switching source key while
 # remap is enabled, not a fresh boot). This closes EventHub's file descriptor on
@@ -117,22 +155,23 @@ if [ -d /sys/bus/i2c/drivers/Q25_keyboard ]; then
 fi
 
 # Now safe to fully release any stale mount from a previous boot/session
-umount -l $SYS_FILE 2>/dev/null
+umount -l $sysFileVar 2>/dev/null
 
-# Clean up tmp and copy the now-guaranteed-original system file
+# Clean up tmp and copy the now-guaranteed-original file
 rm -f $TMP_FILE
-cp $SYS_FILE $TMP_FILE
+cp $sysFileVar $TMP_FILE
 
 # Remap the target key
 $sedCommand
 cat $TMP_FILE.tmp > $TMP_FILE
 rm -f $TMP_FILE.tmp
 
-# Set the SELinux label to system_file so system_server/EventHub can read it
-chcon u:object_r:system_file:s0 $TMP_FILE
+# Label it to match its target partition (system_file or vendor_file) so
+# system_server/EventHub can read it under enforcing.
+chcon $selabelVar $TMP_FILE
 
-# Bind mount the modified keylayout system-wide
-mount --bind $TMP_FILE $SYS_FILE
+# Bind mount the modified keylayout over the original
+mount --bind $TMP_FILE $sysFileVar
 
 # Rebind the driver so EventHub reloads the (now modified) keylayout
 if [ -d /sys/bus/i2c/drivers/Q25_keyboard ]; then
