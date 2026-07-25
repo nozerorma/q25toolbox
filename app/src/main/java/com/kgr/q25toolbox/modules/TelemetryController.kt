@@ -29,9 +29,23 @@ object TelemetryController {
         RootShell.run("pgrep -f $SCRIPT_NAME >/dev/null 2>&1 && echo yes || echo no")
             .outString.trim() == "yes"
 
+    /**
+     * Whether the installed daemon is both alive AND running the script we'd install
+     * today - see [AssetInstaller.matchesAsset] for why a bare "is it running" check
+     * isn't enough. Confirmed in practice: a device's block_telemetry.sh was still
+     * running the pre-hardening PID-lock check from an older build, invisibly, since
+     * the process itself never dies either way.
+     */
+    fun isHealthy(context: Context): Boolean =
+        isRunning() && AssetInstaller.matchesAsset(context, TEMPLATE_ASSET, TARGET) { raw ->
+            raw.replace("__INTERVAL_MIN__", INTERVAL_MIN.toString())
+        }
+
     fun setEnabled(context: Context, enabled: Boolean): ShellResult {
         // Stop any running daemon and clear its lock so we don't stack instances.
-        RootShell.run("pkill -f $SCRIPT_NAME 2>/dev/null; rm -f $LOCK")
+        // "pkill -f" was found unreliable on this device's toybox build - it can report
+        // success without actually killing the match. kill+pgrep does actually work.
+        RootShell.run("kill \$(pgrep -f $SCRIPT_NAME) 2>/dev/null; rm -f $LOCK")
 
         return if (enabled) {
             val result = AssetInstaller.installFromAsset(context, TEMPLATE_ASSET, TARGET) { raw ->

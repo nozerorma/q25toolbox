@@ -18,8 +18,10 @@
     <string name="title_calculator_input">Calculator Keys</string>
     <string name="title_ime_suggestions">IME Suggestion Shortcuts</string>
     <string name="title_bt_idle">Auto-disable Bluetooth</string>
+    <string name="title_location_idle">Auto-disable Location</string>
     <string name="title_telemetry">Global Telemetry Block</string>
     <string name="title_extra_dim">Extra Dimming</string>
+    <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Per-App Display Scaling</string>
     <string name="title_key_remap">Key Remap</string>
 
@@ -33,8 +35,10 @@
     <string name="subtitle_calculator_input">Route number &amp; operator keys to the calculator</string>
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R picks keyboard suggestion 1/2/3</string>
     <string name="subtitle_bt_idle">Turn off Bluetooth when idle</string>
+    <string name="subtitle_location_idle">Turn off Location when idle</string>
     <string name="subtitle_telemetry">Disable Firebase Crashlytics system-wide</string>
     <string name="subtitle_extra_dim">Reduce brightness below system minimum</string>
+    <string name="subtitle_besloudness">Speaker loudness enhancement, on a schedule</string>
     <string name="subtitle_app_scaling">Force phone layout on misbehaving apps</string>
     <string name="subtitle_key_remap">Map a spare key to Right Ctrl</string>
 
@@ -179,6 +183,16 @@
     <string name="subtitle_in_call_shortcuts">Toggle mute, speaker, and keypad in calls</string>
     <string name="in_call_shortcuts_desc">On the Google Phone call screen, use M to mute/unmute, $ to toggle the speaker, and 0–9 to open the dialer keypad. No root required.</string>
     <string name="in_call_shortcuts_enabled_label">Enabled</string>
+
+    <!-- Call Screen & Keyboard Recovery Screen -->
+    <string name="title_call_screen_recovery">Proximity Sensor Workarounds</string>
+    <string name="subtitle_call_screen_recovery">Fix screen/keyboard issues from a bad proximity sensor</string>
+    <string name="call_recovery_auto_recover_label">Auto-recover after calls</string>
+    <string name="call_recovery_auto_recover_desc">If the screen is still off a few seconds after a call genuinely ends, force it back on. Safe to leave on - it\'s a no-op if the screen already came back on its own. Deliberately doesn\'t also respawn the keyboard automatically anymore - see below.</string>
+    <string name="call_recovery_respawn_button">Respawn keyboard now</string>
+    <string name="call_recovery_respawn_success">Keyboard driver unbound and rebound.</string>
+    <string name="call_recovery_respawn_failed">Respawn failed - check root access.</string>
+    <string name="call_recovery_desc">A stuck-near proximity sensor after a call has, in practice, also been observed taking the physical keyboard down with it, not just leaving the screen dark - this button covers that case manually. It\'s kept manual rather than automatic on purpose: pairing it with a forced screen wake was found to race the display driver and crash the kernel, so it\'s not run automatically anymore.</string>
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Press Ctrl+W, Ctrl+E, or Ctrl+R to pick suggestion 1, 2, or 3 from the physical keyboard\'s candidate strip (BlackBerry Keyboard, Harpocrat, and similar). Only acts when a suggestion is actually showing, so Ctrl+W/E/R still behave normally elsewhere (e.g. closing a browser tab). No root required.</string>

@@ -18,8 +18,10 @@
     <string name="title_calculator_input">Tasti calcolatrice</string>
     <string name="title_ime_suggestions">Scorciatoie suggerimenti IME</string>
     <string name="title_bt_idle">Disattiva Bluetooth inattivo</string>
+    <string name="title_location_idle">Disattiva Posizione inattiva</string>
     <string name="title_telemetry">Blocco globale telemetria</string>
     <string name="title_extra_dim">Attenuazione extra</string>
+    <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Ridimensionamento schermo per app</string>
     <string name="title_key_remap">Rimappa tasto</string>
 
@@ -32,8 +34,10 @@
     <string name="subtitle_calculator_input">Invia numeri e operatori alla calcolatrice</string>
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R sceglie il suggerimento 1/2/3 della tastiera</string>
     <string name="subtitle_bt_idle">Spegne il Bluetooth quando inattivo</string>
+    <string name="subtitle_location_idle">Spegne la Posizione quando inattiva</string>
     <string name="subtitle_telemetry">Disattiva Firebase Crashlytics a livello di sistema</string>
     <string name="subtitle_extra_dim">Riduce la luminosità sotto il minimo del sistema</string>
+    <string name="subtitle_besloudness">Potenziamento della sonorità dell\'altoparlante, pianificabile</string>
     <string name="subtitle_app_scaling">Forza il layout del telefono su app incompatibili</string>
     <string name="subtitle_key_remap">Assegna un tasto libero a Ctrl Destro</string>
 
@@ -176,6 +180,16 @@
     <string name="subtitle_in_call_shortcuts">Alterna silenziamento, altoparlante e tastierino in chiamata</string>
     <string name="in_call_shortcuts_desc">Nella schermata di chiamata dell\'applicazione Telefono di Google, usa M per disattivare/riattivare il microfono, $ per attivare/disattivare l\'altoparlante e 0–9 per aprire il tastierino numerico. Non richiede root.</string>
     <string name="in_call_shortcuts_enabled_label">Abilitato</string>
+
+    <!-- Call Screen & Keyboard Recovery Screen -->
+    <string name="title_call_screen_recovery">Soluzioni per il sensore di prossimità</string>
+    <string name="subtitle_call_screen_recovery">Risolve problemi di schermo/tastiera causati da un sensore di prossimità difettoso</string>
+    <string name="call_recovery_auto_recover_label">Ripristino automatico dopo le chiamate</string>
+    <string name="call_recovery_auto_recover_desc">Se lo schermo è ancora spento alcuni secondi dopo la fine effettiva di una chiamata, viene riacceso forzatamente. Può essere lasciato attivo senza rischi - non fa nulla se lo schermo si è già riacceso da solo. Non riavvia più deliberatamente anche la tastiera automaticamente - vedi sotto.</string>
+    <string name="call_recovery_respawn_button">Riavvia la tastiera ora</string>
+    <string name="call_recovery_respawn_success">Driver della tastiera scollegato e ricollegato.</string>
+    <string name="call_recovery_respawn_failed">Riavvio non riuscito - controlla l\'accesso root.</string>
+    <string name="call_recovery_desc">Un sensore di prossimità bloccato su \"vicino\" dopo una chiamata, in pratica, è stato osservato anche far cadere la tastiera fisica insieme a sé, non solo lasciare lo schermo spento - questo pulsante copre quel caso manualmente. Resta volontariamente manuale invece che automatico: abbinarlo a un risveglio forzato dello schermo ha causato una race condition con il driver del display e mandato in crash il kernel, quindi non viene più eseguito automaticamente.</string>
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Premi Ctrl+W, Ctrl+E o Ctrl+R per scegliere il suggerimento 1, 2 o 3 dalla barra dei candidati della tastiera fisica (BlackBerry Keyboard, Harpocrat e simili). Agisce solo quando è effettivamente mostrato un suggerimento, quindi Ctrl+W/E/R continuano a funzionare normalmente altrove (ad es. per chiudere una scheda del browser). Non richiede root.</string>

@@ -17,51 +17,51 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.kgr.q25toolbox.modules.BtIdleController
+import com.kgr.q25toolbox.modules.LocationIdleController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun BtIdleScreen(onBack: () -> Unit) {
+fun LocationIdleScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     var enabled by remember { mutableStateOf(false) }
     var running by remember { mutableStateOf(false) }
-    var minutes by remember { mutableIntStateOf(BtIdleController.DEFAULT_TIMEOUT) }
+    var minutes by remember { mutableIntStateOf(LocationIdleController.DEFAULT_TIMEOUT) }
     var busy by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
 
     fun apply(newEnabled: Boolean, newMinutes: Int) {
         busy = true
         scope.launch(Dispatchers.IO) {
-            BtIdleController.setEnabled(context, newEnabled, newMinutes)
-            enabled = BtIdleController.isPersisted()
-            running = BtIdleController.isRunning()
+            LocationIdleController.setEnabled(context, newEnabled, newMinutes)
+            enabled = LocationIdleController.isPersisted()
+            running = LocationIdleController.isRunning()
             busy = false
             statusMessage = if (newEnabled)
-                "Bluetooth will turn off after $newMinutes min with nothing connected."
-            else "Auto-disable off. Bluetooth stays as you set it."
+                "Location will turn off after $newMinutes min with no active GPS fix."
+            else "Auto-disable off. Location stays as you set it."
         }
     }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            enabled = BtIdleController.isPersisted()
-            running = BtIdleController.isRunning()
-            BtIdleController.persistedTimeout()?.let { minutes = it }
+            enabled = LocationIdleController.isPersisted()
+            running = LocationIdleController.isRunning()
+            LocationIdleController.persistedTimeout()?.let { minutes = it }
             // Self-heal a dead OR stale (content-mismatched) daemon - see
             // ExtraDimController/ExtraDimScreen for why a bare "is it running"
             // check isn't enough.
-            if (enabled && !BtIdleController.isHealthy(context, minutes)) {
-                BtIdleController.setEnabled(context, true, minutes)
-                running = BtIdleController.isRunning()
+            if (enabled && !LocationIdleController.isHealthy(context, minutes)) {
+                LocationIdleController.setEnabled(context, true, minutes)
+                running = LocationIdleController.isRunning()
             }
         }
     }
 
-    ScreenScaffold(title = Screen.BtIdle.title, onBack = onBack) {
+    ScreenScaffold(title = Screen.LocationIdle.title, onBack = onBack) {
         Text("State: ${if (enabled) "On" else "Off"}${if (enabled && !running) " (starts at next boot)" else ""}")
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -75,7 +75,7 @@ fun BtIdleScreen(onBack: () -> Unit) {
 
         Text("Turn off after", style = MaterialTheme.typography.titleSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            BtIdleController.TIMEOUT_OPTIONS.forEach { opt ->
+            LocationIdleController.TIMEOUT_OPTIONS.forEach { opt ->
                 FilterChip(
                     selected = minutes == opt,
                     enabled = !busy,
@@ -94,9 +94,10 @@ fun BtIdleScreen(onBack: () -> Unit) {
 
         DescriptionDivider()
         Text(
-            "Turns Bluetooth off after a period with no device connected, so an idle " +
-                "radio can't hold the system awake overnight. Connecting earbuds, a " +
-                "watch or a speaker resets the timer.",
+            "Turns Location off after a period with no active GPS fix (navigation, " +
+                "ride-hailing pickup, camera geotag, ...). Background low-power location " +
+                "checks from Google Play services don't count as \"active\" and won't keep " +
+                "resetting the timer.",
             style = MaterialTheme.typography.bodySmall
         )
     }

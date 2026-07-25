@@ -18,8 +18,10 @@
     <string name="title_calculator_input">Rekenmachinetoetsen</string>
     <string name="title_ime_suggestions">IME-suggestiesneltoetsen</string>
     <string name="title_bt_idle">Bluetooth automatisch uitschakelen</string>
+    <string name="title_location_idle">Locatie automatisch uitschakelen</string>
     <string name="title_telemetry">Wereldwijde telemetrieblokkering</string>
     <string name="title_extra_dim">Extra dimmen</string>
+    <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Schermschaling per app</string>
     <string name="title_key_remap">Toetstoewijzing</string>
 
@@ -33,8 +35,10 @@
     <string name="subtitle_calculator_input">Cijfer- en operatortoetsen doorsturen naar de rekenmachine</string>
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R kiest toetsenbordsuggestie 1/2/3</string>
     <string name="subtitle_bt_idle">Schakel Bluetooth uit bij inactiviteit</string>
+    <string name="subtitle_location_idle">Schakel Locatie uit bij inactiviteit</string>
     <string name="subtitle_telemetry">Firebase Crashlytics systeembreed uitschakelen</string>
     <string name="subtitle_extra_dim">Helderheid verlagen onder het systeemminimum</string>
+    <string name="subtitle_besloudness">Luidsprekerluidheid-verbetering, met tijdschema</string>
     <string name="subtitle_app_scaling">Telefoonlay-out afdwingen voor slecht werkende apps</string>
     <string name="subtitle_key_remap">Wijs een reserve-toets toe aan Rechter Ctrl</string>
 
@@ -178,6 +182,16 @@
     <string name="subtitle_in_call_shortcuts">Demping, luidspreker en toetsenbord schakelen tijdens oproepen</string>
     <string name="in_call_shortcuts_desc">Gebruik in het belscherm van de Google Telefoon-app M om het dempen in/uit te schakelen, $ om de luidspreker in/uit te schakelen en 0–9 om het toetsenbord te openen. Geen root vereist.</string>
     <string name="in_call_shortcuts_enabled_label">Ingeschakeld</string>
+
+    <!-- Call Screen & Keyboard Recovery Screen -->
+    <string name="title_call_screen_recovery">Oplossingen voor de nabijheidssensor</string>
+    <string name="subtitle_call_screen_recovery">Lost scherm-/toetsenbordproblemen op door een slechte nabijheidssensor</string>
+    <string name="call_recovery_auto_recover_label">Automatisch herstel na gesprekken</string>
+    <string name="call_recovery_auto_recover_desc">Als het scherm nog een paar seconden uit is nadat een gesprek echt is beëindigd, wordt het geforceerd weer ingeschakeld. Kan veilig aan blijven staan - het doet niets als het scherm al vanzelf weer aan is gegaan. Herstart het toetsenbord bewust niet meer automatisch - zie hieronder.</string>
+    <string name="call_recovery_respawn_button">Toetsenbord nu herstarten</string>
+    <string name="call_recovery_respawn_success">Toetsenbordstuurprogramma losgekoppeld en opnieuw gekoppeld.</string>
+    <string name="call_recovery_respawn_failed">Herstart mislukt - controleer roottoegang.</string>
+    <string name="call_recovery_desc">Een nabijheidssensor die na een gesprek vastzit op \'dichtbij\' heeft in de praktijk ook het fysieke toetsenbord meegesleurd, niet alleen het scherm donker gelaten - deze knop dekt dat geval handmatig af. Blijft bewust handmatig in plaats van automatisch: het combineren met een geforceerd scherm-ontwaken bleek te resulteren in een race condition met het schermstuurprogramma en een kernelcrash, dus wordt het niet meer automatisch uitgevoerd.</string>
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Druk op Ctrl+W, Ctrl+E of Ctrl+R om suggestie 1, 2 of 3 te kiezen uit de kandidatenbalk van het fysieke toetsenbord (BlackBerry Keyboard, Harpocrat en vergelijkbare). Werkt alleen als er daadwerkelijk een suggestie wordt getoond, dus Ctrl+W/E/R werken elders nog gewoon normaal (bijv. om een browsertabblad te sluiten). Geen root nodig.</string>

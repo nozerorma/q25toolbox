@@ -14,11 +14,14 @@ sealed class Screen(@StringRes val titleRes: Int, @StringRes val subtitleRes: In
     data object ChatComposer : Screen(R.string.title_chat_composer, R.string.subtitle_chat_composer)
     data object CalculatorInput : Screen(R.string.title_calculator_input, R.string.subtitle_calculator_input)
     data object BtIdle : Screen(R.string.title_bt_idle, R.string.subtitle_bt_idle)
+    data object LocationIdle : Screen(R.string.title_location_idle, R.string.subtitle_location_idle)
     data object Telemetry : Screen(R.string.title_telemetry, R.string.subtitle_telemetry)
     data object ExtraDim : Screen(R.string.title_extra_dim, R.string.subtitle_extra_dim)
+    data object BesLoudness : Screen(R.string.title_besloudness, R.string.subtitle_besloudness)
     data object AppScaling : Screen(R.string.title_app_scaling, R.string.subtitle_app_scaling)
     data object AutoFocus : Screen(R.string.title_auto_focus, R.string.subtitle_auto_focus)
     data object InCallShortcuts : Screen(R.string.title_in_call_shortcuts, R.string.subtitle_in_call_shortcuts)
+    data object CallScreenRecovery : Screen(R.string.title_call_screen_recovery, R.string.subtitle_call_screen_recovery)
     data object ImeSuggestions : Screen(R.string.title_ime_suggestions, R.string.subtitle_ime_suggestions)
     data object BatteryUsage : Screen(R.string.title_battery_usage)
 
@@ -53,9 +56,11 @@ val systemScreens = listOf(
     // screen code and the daemon script are kept in the repo in case this
     // is revisited with a different approach.
     Screen.ExtraDim,
+    Screen.BesLoudness,
     Screen.AppScaling,
     Screen.AutoFocus,
     Screen.InCallShortcuts,
+    Screen.CallScreenRecovery,
 )
 
 /** Screens listed under the Network tab. */
@@ -63,4 +68,5 @@ val networkScreens = listOf(
     Screen.Telemetry,
     Screen.WirelessAdb,
     Screen.BtIdle,
+    Screen.LocationIdle,
 )

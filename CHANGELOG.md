@@ -4,6 +4,51 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.1] - 2026-07-25
+
+First release out of beta.
+
+### Added
+- **BesLoudness** (`BesLoudnessController`): a new System-tab module toggling
+  the vendor speaker loudness-enhancement DSP, with the same manual
+  toggle + optional night schedule pattern as Extra Dim. Uses
+  `AudioManager.setParameters("SetBesLoudnessStatus=0/1")` - the actual
+  live control confirmed by watching `logcat` against the stock Settings
+  "Sound Enhancement" screen - not the vendor persist prop that looked like
+  the obvious target but does nothing audible. The schedule daemon is a
+  plain shell script that can't call `AudioManager` itself, so it hands off
+  to the app via `am broadcast` to a new `BesLoudnessReceiver`.
+- **Auto-disable Location** (`LocationIdleController`): mirrors Bluetooth
+  Auto-Disable for Location, same configurable idle timeout.
+- **Proximity Sensor Workarounds** screen: auto-recovers the screen a few
+  seconds after a call genuinely ends (checked against `dumpsys telecom`,
+  not just window visibility) if it's still dark, plus a manual "Respawn
+  keyboard now" action for when a stuck proximity sensor also takes the
+  physical keyboard's i2c driver down with it. The two are deliberately not
+  paired automatically - doing so was found to crash the kernel.
+- App logo (reusing the launcher glyph, tinted to the Material You theme)
+  atop the Settings tab.
+
+### Fixed
+- **Daemon self-heal only checked "is it alive," not "is it current"**: a
+  watchdog left running an older build's script looks identical to a healthy
+  one from the outside (it holds its PID lock and loops forever either way),
+  so it could silently stop enforcing anything after an app update and never
+  get flagged. Extra Dim, BesLoudness, Global Telemetry Block, Bluetooth
+  Auto-Disable, and Location Auto-Disable now compare the installed script's
+  actual content against what today's app would install
+  (`AssetInstaller.matchesAsset`), and a new `DaemonMaintenance.sweep()`
+  runs this check for every enabled module once per app launch - not just
+  when a user happens to open that module's own screen - and removes
+  daemons left behind by features that are now hidden (DT2W).
+- `bt_idle.sh` / `dt2w.sh` watchdogs: same PID+cmdline lock hardening Extra
+  Dim/Telemetry got in 1.0-beta14, closing the same false-positive-on-reused-
+  PID failure mode there too.
+- Keyboard sometimes stopped responding after a proximity-sensor-stuck call;
+  root-caused to a kernel crash from pairing the keyboard's i2c respawn with
+  a forced screen wake in the same automatic pass - see Proximity Sensor
+  Workarounds above.
+
 ## [1.0-beta14] - 2026-07-17
 
 ### Added

@@ -18,8 +18,10 @@
     <string name="title_calculator_input">Touches de calculatrice</string>
     <string name="title_ime_suggestions">Raccourcis de suggestions IME</string>
     <string name="title_bt_idle">Désactiver Bluetooth inactif</string>
+    <string name="title_location_idle">Désactiver Localisation inactive</string>
     <string name="title_telemetry">Blocage global de télémétrie</string>
     <string name="title_extra_dim">Assombrissement supplémentaire</string>
+    <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Mise à l\'échelle de l\'écran par app</string>
     <string name="title_key_remap">Mappage de touche</string>
 
@@ -32,8 +34,10 @@
     <string name="subtitle_calculator_input">Envoie les chiffres et opérateurs à la calculatrice</string>
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R choisit la suggestion 1/2/3 du clavier</string>
     <string name="subtitle_bt_idle">Éteint le Bluetooth lorsqu\'il est inactif</string>
+    <string name="subtitle_location_idle">Éteint la localisation lorsqu\'elle est inactive</string>
     <string name="subtitle_telemetry">Désactive Firebase Crashlytics sur tout le système</string>
     <string name="subtitle_extra_dim">Réduit la luminosité sous le minimum système</string>
+    <string name="subtitle_besloudness">Amélioration de la sonie du haut-parleur, programmable</string>
     <string name="subtitle_app_scaling">Force la disposition téléphone sur les apps incompatibles</string>
     <string name="subtitle_key_remap">Attribue une touche libre à Ctrl Droit</string>
 
@@ -176,6 +180,16 @@
     <string name="subtitle_in_call_shortcuts">Basculer sourdine, haut-parleur et clavier en appels</string>
     <string name="in_call_shortcuts_desc">Dans l\'écran d\'appel de l\'application Téléphone de Google, utilisez M pour couper/activer le micro, $ pour basculer le haut-parleur et 0–9 pour ouvrir le pavé numérique. Root non requis.</string>
     <string name="in_call_shortcuts_enabled_label">Activé</string>
+
+    <!-- Call Screen & Keyboard Recovery Screen -->
+    <string name="title_call_screen_recovery">Contournements du capteur de proximité</string>
+    <string name="subtitle_call_screen_recovery">Corrige les problèmes d\'écran/clavier dus à un capteur de proximité défectueux</string>
+    <string name="call_recovery_auto_recover_label">Récupération automatique après les appels</string>
+    <string name="call_recovery_auto_recover_desc">Si l\'écran est encore éteint quelques secondes après la fin réelle d\'un appel, il est rallumé de force. Peut être laissé activé sans risque - cela ne fait rien si l\'écran s\'est déjà rallumé tout seul. Ne relance délibérément plus le clavier automatiquement - voir ci-dessous.</string>
+    <string name="call_recovery_respawn_button">Relancer le clavier maintenant</string>
+    <string name="call_recovery_respawn_success">Pilote du clavier détaché puis rattaché.</string>
+    <string name="call_recovery_respawn_failed">Échec du redémarrage - vérifiez l\'accès root.</string>
+    <string name="call_recovery_desc">Un capteur de proximité bloqué sur « proche » après un appel a, en pratique, aussi été observé en train de faire tomber le clavier physique avec lui, pas seulement laisser l\'écran éteint - ce bouton couvre ce cas manuellement. Il reste volontairement manuel plutôt qu\'automatique : l\'associer à un réveil forcé de l\'écran a provoqué une situation de concurrence avec le pilote d\'affichage et fait planter le noyau, il ne s\'exécute donc plus automatiquement.</string>
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Appuyez sur Ctrl+W, Ctrl+E ou Ctrl+R pour choisir la suggestion 1, 2 ou 3 dans la barre de candidats du clavier physique (BlackBerry Keyboard, Harpocrat et similaires). N\'agit que lorsqu\'une suggestion est réellement affichée, donc Ctrl+W/E/R continuent de fonctionner normalement ailleurs (par ex. pour fermer un onglet de navigateur). Aucun root requis.</string>

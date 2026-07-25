@@ -60,6 +60,7 @@ class Q25AccessibilityService : AccessibilityService() {
         const val KEY_SCALING_APPS = "scaling_apps"       // StringSet "pkg=width" for per-app resolution
         const val KEY_IN_CALL_SHORTCUTS = "in_call_shortcuts_enabled"
         const val KEY_IME_SUGGESTIONS = "ime_suggestions_enabled" // Ctrl+W/E/R picks IME suggestion 1/2/3
+        const val KEY_CALL_SCREEN_RECOVERY = "call_screen_recovery_enabled" // force-wake if still dark after a call ends
 
 
         // Our do-nothing IME: while it's active, physical key presses go straight
@@ -137,6 +138,7 @@ class Q25AccessibilityService : AccessibilityService() {
 
     @Volatile private var imeBlockApplied = false // last show_ime value we pushed (true = suppressed)
     @Volatile private var foregroundPkg: String? = null // last seen foreground app package
+    @Volatile private var callActive = false // true while the actual in-call action bar is up
     private var consumedAutofocusKeycode = -1
     // Set right before a focus-and-type attempt starts waiting, so onAccessibilityEvent can
     // wake it the instant the target field actually gets input focus (see onKeyEvent / onAccessibilityEvent).
@@ -184,6 +186,7 @@ class Q25AccessibilityService : AccessibilityService() {
     private fun imeBlockApps(): Set<String> =
         prefs?.getStringSet(KEY_IME_BLOCK_APPS, emptySet()) ?: emptySet()
     private fun inCallShortcutsEnabled() = prefs?.getBoolean(KEY_IN_CALL_SHORTCUTS, false) ?: false
+    private fun callScreenRecoveryEnabled() = prefs?.getBoolean(KEY_CALL_SCREEN_RECOVERY, true) ?: true
 
 
     // ------------------------------------------------------- Foreground tracking
@@ -201,6 +204,34 @@ class Q25AccessibilityService : AccessibilityService() {
         if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
             if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
                 autoOpenDialpad()
+            }
+        }
+
+        // Track call start/end for the post-call screen recovery below, independently of
+        // in-call shortcuts (someone might want the recovery without the mute/speaker/dialpad
+        // shortcuts, or vice versa).
+        if (callScreenRecoveryEnabled() && event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            val inCallUiVisible = isGoogleDialerForeground() && isInCallActionBarUp()
+            if (inCallUiVisible && !callActive) {
+                callActive = true
+            } else if (!inCallUiVisible && callActive) {
+                // The in-call screen isn't visible right now, but that alone doesn't mean the
+                // call ended - the user may have just backgrounded it (switched to another app
+                // mid-call), which looks identical from here to a real hangup. Confirm against
+                // the actual telecom call state before treating this as a real end and running
+                // recovery: a false positive here previously fired the keyboard i2c respawn
+                // WHILE a call was still live, racing the real proximity-driven display
+                // transition and crashing the kernel (bbqX0kbd_disp_notifier_callback null
+                // deref) instead of preventing anything.
+                worker.execute {
+                    val stillOnCall = RootShell.run("dumpsys telecom").outString.let { out ->
+                        out.contains("state=ACTIVE") || out.contains("state=DIALING") || out.contains("state=RINGING")
+                    }
+                    if (!stillOnCall) {
+                        callActive = false
+                        scheduleCallEndScreenRecovery()
+                    }
+                }
             }
         }
 
@@ -753,6 +784,44 @@ class Q25AccessibilityService : AccessibilityService() {
         }
     }
 
+    /** Same "is this actually the in-call action bar" signal [autoOpenDialpad] uses. */
+    private fun isInCallActionBarUp(): Boolean {
+        val root = rootInActiveWindow ?: return false
+        try {
+            val checkables = mutableListOf<AccessibilityNodeInfo>()
+            findCheckables(root, checkables)
+            try {
+                return checkables.size >= 3
+            } finally {
+                checkables.forEach { it.recycle() }
+            }
+        } finally {
+            root.recycle()
+        }
+    }
+
+    /**
+     * If the screen is still off a few seconds after a call genuinely ends, force it back on.
+     * Harmless no-op if the screen already came back on its own.
+     *
+     * Deliberately does NOT also respawn the keyboard's i2c binding here anymore: an unbind/
+     * rebind re-registers the keyboard driver's display notifier, and pairing that with a
+     * forced wake (its own display transition) right next to it is exactly the kind of
+     * collision that crashed the kernel (bbqX0kbd_disp_notifier_callback null deref) when this
+     * used to fire automatically - including, before the telecom-state check above existed, on
+     * every mid-call app switch, not just real hangups. "Respawn keyboard" stays available as a
+     * deliberate, standalone manual action instead.
+     */
+    private fun scheduleCallEndScreenRecovery() {
+        worker.execute {
+            Thread.sleep(5000)
+            val pm = getSystemService(POWER_SERVICE) as? android.os.PowerManager
+            if (pm != null && !pm.isInteractive) {
+                Log.d("Q25Toolbox", "Screen still off 5s after call end - forcing wake")
+                RootShell.run("input keyevent KEYCODE_WAKEUP")
+            }
+        }
+    }
 
     /**
      * Clicks the Nth clickable TextView in the IME window (its suggestion strip) - confirmed on

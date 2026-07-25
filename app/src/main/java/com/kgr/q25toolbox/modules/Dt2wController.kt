@@ -34,11 +34,16 @@ object Dt2wController {
      * Any running instance is stopped first so a re-enable can't stack instances.
      */
     fun setEnabled(context: Context, enabled: Boolean): ShellResult {
-        RootShell.run("pkill -f $SCRIPT_NAME 2>/dev/null; rm -f $LOCK")
+        // "pkill -f" was found unreliable on this device's toybox build - it can report
+        // success without actually killing the match. kill+pgrep does actually work.
+        RootShell.run("kill \$(pgrep -f $SCRIPT_NAME) 2>/dev/null; rm -f $LOCK")
 
         return if (enabled) {
             val result = AssetInstaller.installFromAsset(context, SCRIPT_NAME, TARGET)
-            RootShell.run("nohup sh $TARGET >/dev/null 2>&1 &")
+            // setsid detaches into its own session so it doesn't get dragged down when the
+            // invoking root shell (a transient libsu session) is later recycled - see
+            // ExtraDimController for the same fix and why it was needed.
+            RootShell.run("nohup setsid sh $TARGET </dev/null >/dev/null 2>&1 &")
             result
         } else {
             AssetInstaller.removeFile(TARGET)

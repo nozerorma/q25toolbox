@@ -73,4 +73,29 @@ object AssetInstaller {
 
     fun readFile(path: String): String =
         RootShell.run("cat '$path' 2>/dev/null").outString
+
+    /**
+     * Whether [targetPath] already contains exactly what [installFromAsset] would
+     * write right now for [assetName]/[transform] - i.e. whether a running daemon
+     * is executing today's script, not one left behind by an older app build.
+     *
+     * This matters because a bare "is the process alive" check can't tell the two
+     * apart: a stale script loops forever and holds its own PID lock exactly like a
+     * healthy one, so it never looks dead and never gets replaced - it just quietly
+     * stops doing whatever the newer version was supposed to do. Found in practice
+     * on a device where the Extra Dim schedule daemon was a leftover pre-scheduling
+     * build (looping with no actual on/off logic) and block_telemetry.sh was a
+     * leftover pre-hardening build (weaker PID-reuse check) - both alive, both
+     * silently outdated, neither caught by a liveness-only check.
+     */
+    fun matchesAsset(
+        context: Context,
+        assetName: String,
+        targetPath: String,
+        transform: ((String) -> String)? = null
+    ): Boolean {
+        val raw = context.assets.open(assetName).bufferedReader().use { it.readText() }
+        val expected = (transform?.invoke(raw) ?: raw).trimEnd()
+        return readFile(targetPath).trimEnd() == expected
+    }
 }

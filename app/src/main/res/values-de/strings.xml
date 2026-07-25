@@ -18,8 +18,10 @@
     <string name="title_calculator_input">Taschenrechnertasten</string>
     <string name="title_ime_suggestions">IME-Vorschlag-Tastenkombinationen</string>
     <string name="title_bt_idle">Bluetooth bei Inaktivität deaktivieren</string>
+    <string name="title_location_idle">Standort bei Inaktivität deaktivieren</string>
     <string name="title_telemetry">Globale Telemetrieblockierung</string>
     <string name="title_extra_dim">Extra Dimmung</string>
+    <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Bildschirmskalierung pro App</string>
     <string name="title_key_remap">Tastenbelegung</string>
 
@@ -32,8 +34,10 @@
     <string name="subtitle_calculator_input">Leitet Zahlen- und Operatortasten an den Taschenrechner weiter</string>
     <string name="subtitle_ime_suggestions">Strg+W/E/R wählt Tastaturvorschlag 1/2/3</string>
     <string name="subtitle_bt_idle">Schaltet Bluetooth bei Inaktivität aus</string>
+    <string name="subtitle_location_idle">Schaltet den Standort bei Inaktivität aus</string>
     <string name="subtitle_telemetry">Deaktiviert Firebase Crashlytics systemweit</string>
     <string name="subtitle_extra_dim">Reduziert die Helligkeit unter das Systemminimum</string>
+    <string name="subtitle_besloudness">Lautsprecher-Lautheitsverstärkung, zeitgesteuert</string>
     <string name="subtitle_app_scaling">Erzwingt Telefon-Layout bei inkompatiblen Apps</string>
     <string name="subtitle_key_remap">Belegt eine freie Taste als rechte Strg-Taste</string>
 
@@ -176,6 +180,16 @@
     <string name="subtitle_in_call_shortcuts">Stummschaltung, Lautsprecher und Tastatur in Anrufen umschalten</string>
     <string name="in_call_shortcuts_desc">Verwenden Sie im Anruferbildschirm der Google Telefon-App M zum Stummschalten/Aktivieren, $ zum Ein-/Ausschalten des Lautsprechers und 0–9 zum Öffnen der Wähltastatur. Kein Root erforderlich.</string>
     <string name="in_call_shortcuts_enabled_label">Aktiviert</string>
+
+    <!-- Call Screen & Keyboard Recovery Screen -->
+    <string name="title_call_screen_recovery">Umgehungen für den Näherungssensor</string>
+    <string name="subtitle_call_screen_recovery">Behebt Bildschirm-/Tastaturprobleme durch einen defekten Näherungssensor</string>
+    <string name="call_recovery_auto_recover_label">Automatische Wiederherstellung nach Anrufen</string>
+    <string name="call_recovery_auto_recover_desc">Wenn der Bildschirm einige Sekunden nach dem tatsächlichen Ende eines Anrufs noch aus ist, wird er zwangsweise wieder eingeschaltet. Kann gefahrlos aktiviert bleiben - es passiert nichts, wenn der Bildschirm bereits von selbst wieder angegangen ist. Startet die Tastatur absichtlich nicht mehr automatisch neu - siehe unten.</string>
+    <string name="call_recovery_respawn_button">Tastatur jetzt neu starten</string>
+    <string name="call_recovery_respawn_success">Tastaturtreiber getrennt und neu verbunden.</string>
+    <string name="call_recovery_respawn_failed">Neustart fehlgeschlagen - Root-Zugriff überprüfen.</string>
+    <string name="call_recovery_desc">Ein nach einem Anruf auf „nah\u201c hängender Näherungssensor hat in der Praxis auch schon die physische Tastatur mit sich gerissen, nicht nur den Bildschirm dunkel gelassen - dieser Button deckt diesen Fall manuell ab. Er bleibt absichtlich manuell statt automatisch: die Kombination mit einem erzwungenen Bildschirm-Aufwachen führte nachweislich zu einer Race Condition mit dem Display-Treiber und einem Kernel-Absturz, daher läuft er nicht mehr automatisch.</string>
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Drücke Strg+W, Strg+E oder Strg+R, um Vorschlag 1, 2 oder 3 aus der Vorschlagsleiste der physischen Tastatur (BlackBerry Keyboard, Harpocrat und ähnliche) auszuwählen. Wirkt nur, wenn tatsächlich ein Vorschlag angezeigt wird, sodass Strg+W/E/R anderswo normal funktionieren (z. B. zum Schließen eines Browser-Tabs). Kein Root erforderlich.</string>

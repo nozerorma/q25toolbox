@@ -12,8 +12,15 @@
 # also started live by the app. A pid lock keeps a single instance.
 
 LOCK=/data/adb/.bt_idle.lock
-if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
-    exit 0
+# Belt-and-braces PID lock: unlike a plain "kill -0 $PID" check (which can
+# false-positive on an unrelated process that has since reused the same PID),
+# this also confirms /proc/$PID/cmdline still names this same script before
+# treating the lock as held.
+if [ -f "$LOCK" ]; then
+    OLD_PID=$(cat "$LOCK" 2>/dev/null)
+    if [ -n "$OLD_PID" ] && grep -q bt_idle "/proc/$OLD_PID/cmdline" 2>/dev/null; then
+        exit 0
+    fi
 fi
 echo $$ > "$LOCK"
 

@@ -2,18 +2,15 @@ package com.kgr.q25toolbox.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.kgr.q25toolbox.modules.ExtraDimController
+import com.kgr.q25toolbox.modules.BesLoudnessController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,19 +32,18 @@ private fun formatMinutes(minutes: Int): String {
 }
 
 @Composable
-fun ExtraDimScreen(onBack: () -> Unit) {
+fun BesLoudnessScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var activated by remember { mutableStateOf(false) }
-    var level by remember { mutableFloatStateOf(50f) }
+    var enabled by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
 
     var scheduleEnabled by remember { mutableStateOf(false) }
     var scheduleRunning by remember { mutableStateOf(false) }
-    var startMinutes by remember { mutableIntStateOf(ExtraDimController.DEFAULT_START_MINUTES) }
-    var endMinutes by remember { mutableIntStateOf(ExtraDimController.DEFAULT_END_MINUTES) }
+    var startMinutes by remember { mutableIntStateOf(BesLoudnessController.DEFAULT_START_MINUTES) }
+    var endMinutes by remember { mutableIntStateOf(BesLoudnessController.DEFAULT_END_MINUTES) }
     var scheduleBusy by remember { mutableStateOf(false) }
     var editingStart by remember { mutableStateOf(false) }
     var editingEnd by remember { mutableStateOf(false) }
@@ -55,72 +51,45 @@ fun ExtraDimScreen(onBack: () -> Unit) {
     fun applySchedule(newEnabled: Boolean, newStart: Int, newEnd: Int) {
         scheduleBusy = true
         scope.launch(Dispatchers.IO) {
-            ExtraDimController.setScheduleEnabled(context, newEnabled, newStart, newEnd)
-            scheduleEnabled = ExtraDimController.isScheduleEnabled()
-            scheduleRunning = ExtraDimController.isScheduleRunning()
+            BesLoudnessController.setScheduleEnabled(context, newEnabled, newStart, newEnd)
+            scheduleEnabled = BesLoudnessController.isScheduleEnabled()
+            scheduleRunning = BesLoudnessController.isScheduleRunning()
             scheduleBusy = false
         }
     }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            activated = ExtraDimController.isActivated()
-            level = ExtraDimController.getDimmingLevel().toFloat()
-            scheduleEnabled = ExtraDimController.isScheduleEnabled()
-            scheduleRunning = ExtraDimController.isScheduleRunning()
+            enabled = BesLoudnessController.isEnabled(context)
+            scheduleEnabled = BesLoudnessController.isScheduleEnabled()
+            scheduleRunning = BesLoudnessController.isScheduleRunning()
             if (scheduleEnabled) {
-                startMinutes = ExtraDimController.persistedStartMinutes()
-                endMinutes = ExtraDimController.persistedEndMinutes()
-                // The daemon can die mid-session (e.g. the root shell that launched it
-                // got recycled), or be alive but running a stale script left over from
-                // an older app version (which a bare "is it running" check can't see -
-                // it loops forever either way). Self-heal on either case instead of
-                // just reporting "not running" passively.
-                if (!ExtraDimController.isScheduleHealthy(context, startMinutes, endMinutes)) {
-                    ExtraDimController.setScheduleEnabled(context, true, startMinutes, endMinutes)
-                    scheduleRunning = ExtraDimController.isScheduleRunning()
+                startMinutes = BesLoudnessController.persistedStartMinutes()
+                endMinutes = BesLoudnessController.persistedEndMinutes()
+                // Self-heal a dead OR stale (content-mismatched) daemon - see
+                // ExtraDimController/ExtraDimScreen for why a bare "is it running"
+                // check isn't enough.
+                if (!BesLoudnessController.isScheduleHealthy(context, startMinutes, endMinutes)) {
+                    BesLoudnessController.setScheduleEnabled(context, true, startMinutes, endMinutes)
+                    scheduleRunning = BesLoudnessController.isScheduleRunning()
                 }
             }
         }
     }
 
-    ScreenScaffold(title = Screen.ExtraDim.title, onBack = onBack) {
+    ScreenScaffold(title = Screen.BesLoudness.title, onBack = onBack) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Extra Dim Activated")
+            Text("BesLoudness Enabled")
             Switch(
-                checked = activated,
+                checked = enabled,
                 enabled = !busy,
                 onCheckedChange = { enable ->
                     busy = true
                     scope.launch(Dispatchers.IO) {
-                        ExtraDimController.setActivated(enable)
-                        activated = ExtraDimController.isActivated()
+                        BesLoudnessController.setEnabled(context, enable)
+                        enabled = BesLoudnessController.isEnabled(context)
                         busy = false
-                        statusMessage = if (enable) "Extra Dimming activated." else "Extra Dimming deactivated."
-                    }
-                }
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text("Dimming Intensity: ${level.toInt()}%", style = MaterialTheme.typography.titleSmall)
-            Slider(
-                value = level,
-                enabled = !busy,
-                valueRange = 0f..100f,
-                onValueChange = { level = it },
-                onValueChangeFinished = {
-                    busy = true
-                    scope.launch(Dispatchers.IO) {
-                        ExtraDimController.setDimmingLevel(level.toInt())
-                        level = ExtraDimController.getDimmingLevel().toFloat()
-                        busy = false
-                        statusMessage = "Dimming intensity set to ${level.toInt()}%"
+                        statusMessage = if (enable) "BesLoudness enabled." else "BesLoudness disabled."
                     }
                 }
             )
@@ -131,12 +100,12 @@ fun ExtraDimScreen(onBack: () -> Unit) {
         }
 
         Text(
-            "Auto Night Dim",
+            "Auto Schedule",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            "Automatically turns Extra Dim on at the start time and off at the " +
+            "Automatically turns BesLoudness on at the start time and off at the " +
             "end time every day, without needing the app open.",
             style = MaterialTheme.typography.bodySmall
         )
@@ -180,8 +149,9 @@ fun ExtraDimScreen(onBack: () -> Unit) {
 
         DescriptionDivider()
         Text(
-            "Reduces the screen brightness below the system's standard minimum level. " +
-            "Perfect for reading in low light and saving battery at night.",
+            "Toggles the vendor speaker loudness-enhancement DSP stage, the same " +
+            "one behind Settings' own \"Sound Enhancement\" screen. Applies " +
+            "immediately, including to whatever's already playing.",
             style = MaterialTheme.typography.bodySmall
         )
     }

@@ -6,24 +6,24 @@ import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.core.ShellResult
 
 /**
- * Auto-disable Bluetooth when idle.
+ * Auto-disable Location when idle, mirroring [BtIdleController].
  *
- * A leftover-on / always-bonded Bluetooth radio holds hal_bluetooth_lock and
- * prevents deep sleep (a major overnight drain), even with nothing actively
- * connected. This installs a small root watchdog daemon
- * (/data/adb/service.d/bt_idle.sh from bt_idle_template.sh) that turns Bluetooth
- * off after [DEFAULT_TIMEOUT]/chosen minutes with no device connected.
+ * Installs a small root watchdog daemon (/data/adb/service.d/location_idle.sh
+ * from location_idle_template.sh) that turns Location off after [DEFAULT_TIMEOUT]/
+ * chosen minutes with the GPS provider continuously idle (see the template for
+ * why that - not GMS's near-always-registered background listeners - is the
+ * right "actively in use" signal).
  *
- * Root-script based, so the app needs no Bluetooth / foreground-service /
+ * Root-script based, so the app needs no location / foreground-service /
  * boot-receiver permissions. The script persists across reboots via service.d
  * and is also launched live here on enable.
  */
-object BtIdleController {
+object LocationIdleController {
 
-    private const val SCRIPT_NAME = "bt_idle.sh"
+    private const val SCRIPT_NAME = "location_idle.sh"
     private const val TARGET = "/data/adb/service.d/$SCRIPT_NAME"
-    private const val TEMPLATE_ASSET = "bt_idle_template.sh"
-    private const val LOCK = "/data/adb/.bt_idle.lock"
+    private const val TEMPLATE_ASSET = "location_idle_template.sh"
+    private const val LOCK = "/data/adb/.location_idle.lock"
 
     val TIMEOUT_OPTIONS = listOf(5, 10, 15, 30, 60)
     const val DEFAULT_TIMEOUT = 15

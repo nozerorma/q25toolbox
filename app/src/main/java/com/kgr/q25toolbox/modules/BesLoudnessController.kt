@@ -1,38 +1,56 @@
 package com.kgr.q25toolbox.modules
 
 import android.content.Context
+import android.media.AudioManager
 import com.kgr.q25toolbox.core.AssetInstaller
 import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.core.ShellResult
 
-object ExtraDimController {
+/**
+ * Toggles MediaTek's BesLoudness speaker loudness-enhancement DSP stage.
+ *
+ * The vendor persist prop `persist.vendor.audiohal.besloudness_state`
+ * (referenced by /vendor/etc/audio_param/SoundEnhancement_AudioParam.xml)
+ * looked like the control this app should write, but setprop-ing it did
+ * nothing audible - confirmed live on device via logcat while watching the
+ * stock Settings "Sound Enhancement" toggle: it calls
+ * `AudioManager.setParameters("SetBesLoudnessStatus=0/1")`, which the HAL
+ * (AudioALSAStreamManager) applies immediately to the mtk_bessound DSP lib -
+ * no restart needed - and separately persists into that same XML file via
+ * `setBesLoudnessStateToXML()`. A freshly-opened stream (different PID in the
+ * log) then reads it straight back out of the XML on its own. So the actual
+ * control surface is that AudioManager call, not the persist prop, which
+ * this app never needed to touch at all.
+ *
+ * [applyLive] is called both from here (manual toggle, in-process) and from
+ * [BesLoudnessReceiver] (the root schedule daemon below, which is a plain
+ * shell script and can't call Android APIs directly, so it asks the app to
+ * do it via `am broadcast`).
+ */
+object BesLoudnessController {
 
-    fun isActivated(): Boolean {
-        val out = RootShell.run("settings get secure reduce_bright_colors_activated").outString.trim()
-        return out == "1"
+    private const val KEY_SET = "SetBesLoudnessStatus"
+    private const val KEY_GET = "GetBesLoudnessStatus"
+
+    fun isEnabled(context: Context): Boolean {
+        val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val raw = am.getParameters(KEY_GET) ?: return false
+        return raw.substringAfter('=', raw).trim() == "1"
     }
 
-    fun getDimmingLevel(): Int {
-        val out = RootShell.run("settings get secure reduce_bright_colors_level").outString.trim()
-        return out.toIntOrNull() ?: 50  // Default to 50% if not set
+    fun applyLive(context: Context, enabled: Boolean) {
+        val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        am.setParameters("$KEY_SET=${if (enabled) 1 else 0}")
     }
 
-    fun setActivated(activated: Boolean): ShellResult {
-        val valStr = if (activated) "1" else "0"
-        return RootShell.run("settings put secure reduce_bright_colors_activated $valStr")
-    }
-
-    fun setDimmingLevel(level: Int): ShellResult {
-        val clamped = level.coerceIn(0, 100)
-        return RootShell.run("settings put secure reduce_bright_colors_level $clamped")
-    }
+    fun setEnabled(context: Context, enabled: Boolean) = applyLive(context, enabled)
 
     // ------------------------------------------------------------- Schedule
 
-    private const val SCHEDULE_SCRIPT_NAME = "extra_dim_schedule.sh"
+    private const val SCHEDULE_SCRIPT_NAME = "besloudness_schedule.sh"
     private const val SCHEDULE_TARGET = "/data/adb/service.d/$SCHEDULE_SCRIPT_NAME"
-    private const val SCHEDULE_TEMPLATE_ASSET = "extra_dim_schedule_template.sh"
-    private const val SCHEDULE_LOCK = "/data/adb/.extra_dim_schedule.lock"
+    private const val SCHEDULE_TEMPLATE_ASSET = "besloudness_schedule_template.sh"
+    private const val SCHEDULE_LOCK = "/data/adb/.besloudness_schedule.lock"
 
     // Minutes since midnight (0..1439), so the schedule supports any time of day
     // (e.g. 00:35), not just whole hours.
@@ -61,9 +79,7 @@ object ExtraDimController {
     /**
      * Whether the installed daemon is both alive AND running the script we'd install
      * today - see [AssetInstaller.matchesAsset] for why a bare "is it running" check
-     * isn't enough. This happened in practice: a leftover daemon on-device was doing
-     * nothing but holding its lock, so Extra Dim toggled on/off at whatever some other
-     * process/manual toggle did, not the configured window.
+     * isn't enough (a stale script loops forever too, silently enforcing nothing).
      */
     fun isScheduleHealthy(context: Context, startMinutes: Int, endMinutes: Int): Boolean =
         isScheduleRunning() && AssetInstaller.matchesAsset(context, SCHEDULE_TEMPLATE_ASSET, SCHEDULE_TARGET) { raw ->
@@ -73,16 +89,13 @@ object ExtraDimController {
 
     /**
      * Enables (installs + launches) or disables (stops + removes) the schedule
-     * watchdog, which turns Extra Dim on/off at [startMinutes]/[endMinutes] (each
+     * watchdog, which turns BesLoudness on/off at [startMinutes]/[endMinutes] (each
      * minutes-since-midnight) every day. Any running instance is stopped first so
      * a changed window takes effect immediately.
      */
     fun setScheduleEnabled(context: Context, enabled: Boolean, startMinutes: Int, endMinutes: Int): ShellResult {
-        // "pkill -f" was found unreliable on this device's toybox build - it can report
-        // success without actually terminating the match, leaving the old daemon alive
-        // with its old schedule baked in (and the new instance's own lock check then
-        // refuses to start, since the "old" one genuinely is still running). kill+pgrep
-        // does actually work.
+        // "pkill -f" was found unreliable on this device's toybox build - see
+        // ExtraDimController for the same fix and why it was needed.
         RootShell.run("kill \$(pgrep -f $SCHEDULE_SCRIPT_NAME) 2>/dev/null; rm -f $SCHEDULE_LOCK")
 
         return if (enabled) {
@@ -93,8 +106,7 @@ object ExtraDimController {
             // setsid detaches the daemon into its own session so it doesn't get
             // dragged down when the invoking root shell (a transient libsu
             // session, not a real login shell) is later recycled or torn down -
-            // a bare "nohup ... &" was found dead on next inspection despite
-            // nohup alone working for this purpose on desktop Linux.
+            // same fix as ExtraDimController's schedule daemon.
             RootShell.run("nohup setsid sh $SCHEDULE_TARGET </dev/null >/dev/null 2>&1 &")
             result
         } else {

@@ -18,8 +18,10 @@
     <string name="title_calculator_input">Teclas da calculadora</string>
     <string name="title_ime_suggestions">Atalhos de sugestões do teclado</string>
     <string name="title_bt_idle">Desativar Bluetooth ocioso</string>
+    <string name="title_location_idle">Desativar Localização ociosa</string>
     <string name="title_telemetry">Bloqueio global de telemetria</string>
     <string name="title_extra_dim">Atenuação extra</string>
+    <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Escalonamento de tela por app</string>
     <string name="title_key_remap">Mapear tecla</string>
 
@@ -32,8 +34,10 @@
     <string name="subtitle_calculator_input">Envia números e operadores para a calculadora</string>
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R escolhe a sugestão 1/2/3 do teclado</string>
     <string name="subtitle_bt_idle">Desliga o Bluetooth quando estiver ocioso</string>
+    <string name="subtitle_location_idle">Desliga a Localização quando estiver ociosa</string>
     <string name="subtitle_telemetry">Desativa o Firebase Crashlytics em todo o sistema</string>
     <string name="subtitle_extra_dim">Reduz o brilho abaixo do mínimo do sistema</string>
+    <string name="subtitle_besloudness">Melhoria de sonoridade do alto-falante, com agendamento</string>
     <string name="subtitle_app_scaling">Força o layout de celular em apps incompatíveis</string>
     <string name="subtitle_key_remap">Atribui uma tecla livre ao Ctrl Direito</string>
 
@@ -176,6 +180,16 @@
     <string name="subtitle_in_call_shortcuts">Alterna mudo, alto-falante e teclado em chamadas</string>
     <string name="in_call_shortcuts_desc">Na tela de chamada do aplicativo Telefone do Google, use M para ativar/desativar o mudo do microfone, $ para alternar o alto-falante e 0–9 para abrir o teclado numérico. Não requer root.</string>
     <string name="in_call_shortcuts_enabled_label">Ativado</string>
+
+    <!-- Call Screen & Keyboard Recovery Screen -->
+    <string name="title_call_screen_recovery">Soluções para o sensor de proximidade</string>
+    <string name="subtitle_call_screen_recovery">Corrige problemas de ecrã/teclado causados por um sensor de proximidade defeituoso</string>
+    <string name="call_recovery_auto_recover_label">Recuperação automática após chamadas</string>
+    <string name="call_recovery_auto_recover_desc">Se o ecrã ainda estiver desligado alguns segundos depois de uma chamada terminar mesmo, força-o a ligar novamente. Pode deixar-se ativado sem risco - não faz nada se o ecrã já se tiver ligado sozinho. Deliberadamente já não reinicia também o teclado automaticamente - ver abaixo.</string>
+    <string name="call_recovery_respawn_button">Reiniciar o teclado agora</string>
+    <string name="call_recovery_respawn_success">Controlador do teclado desvinculado e revinculado.</string>
+    <string name="call_recovery_respawn_failed">Reinício falhou - verifique o acesso root.</string>
+    <string name="call_recovery_desc">Um sensor de proximidade preso em \"perto\" depois de uma chamada, na prática, também já foi observado a levar o teclado físico consigo, não só a deixar o ecrã escuro - este botão cobre esse caso manualmente. Mantém-se manual em vez de automático de propósito: combiná-lo com um despertar forçado do ecrã revelou-se uma condição de corrida com o controlador do ecrã que bloqueava o kernel, por isso deixou de ser executado automaticamente.</string>
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Pressione Ctrl+W, Ctrl+E ou Ctrl+R para escolher a sugestão 1, 2 ou 3 da barra de candidatos do teclado físico (BlackBerry Keyboard, Harpocrat e similares). Só age quando uma sugestão está realmente sendo exibida, então Ctrl+W/E/R continuam funcionando normalmente em outros lugares (por exemplo, para fechar uma aba do navegador). Não requer root.</string>

@@ -3,6 +3,7 @@ package com.kgr.q25toolbox.modules
 import android.content.SharedPreferences
 import android.util.Log
 import com.kgr.q25toolbox.core.RootShell
+import com.kgr.q25toolbox.core.ShellResult
 
 /**
  * Hardware-level key remapping for the Q25 keyboard.
@@ -124,6 +125,21 @@ object KeyRemapController {
             Log.d("KeyRemapController", "Cleared remaps and restored defaults")
         }
     }
+
+    /**
+     * Unbinds and rebinds the Q25_keyboard i2c driver without touching any keylayout
+     * remap/mount - a plain "power cycle the driver" recovery action, for when the physical
+     * keyboard stops responding (observed after the phone's proximity sensor gets stuck
+     * during/after a call - see Q25AccessibilityService's call-screen recovery). Any active
+     * remap's bind mount is untouched by an unbind/rebind (it's a VFS construct independent
+     * of the i2c driver being bound), so this is safe to call regardless of whether Key
+     * Remap is enabled.
+     */
+    fun respawnKeyboard(): ShellResult = RootShell.run(
+        "su -M -c 'echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/unbind" +
+        " ; sleep 1" +
+        " ; echo 6-001f > /sys/bus/i2c/drivers/Q25_keyboard/bind'"
+    )
 
     private fun generateBootScript(source: SourceKey): String {
         // $sysFileVar/$selabelVar are shell-side references to the variables resolveSysFile

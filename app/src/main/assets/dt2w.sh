@@ -27,8 +27,15 @@
 # spawning `cat`. The only subprocess left is the (rare) actual wake action.
 
 LOCK=/data/adb/.dt2w.lock
-if [ -f "$LOCK" ] && kill -0 "$(cat "$LOCK" 2>/dev/null)" 2>/dev/null; then
-    exit 0
+# Belt-and-braces PID lock: unlike a plain "kill -0 $PID" check (which can
+# false-positive on an unrelated process that has since reused the same PID),
+# this also confirms /proc/$PID/cmdline still names this same script before
+# treating the lock as held.
+if [ -f "$LOCK" ]; then
+    OLD_PID=$(cat "$LOCK" 2>/dev/null)
+    if [ -n "$OLD_PID" ] && grep -q dt2w "/proc/$OLD_PID/cmdline" 2>/dev/null; then
+        exit 0
+    fi
 fi
 echo $$ > "$LOCK"
 

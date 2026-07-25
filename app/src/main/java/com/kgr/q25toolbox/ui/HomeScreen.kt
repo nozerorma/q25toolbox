@@ -32,8 +32,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kgr.q25toolbox.R
+import com.kgr.q25toolbox.modules.DaemonMaintenance
 import com.kgr.q25toolbox.settings.SettingsScreen
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Top-level navigation: a bottom bar with Info / Keyboard / System sections.
@@ -52,6 +55,12 @@ fun HomeScreen() {
     val infoScrollState = rememberScrollState()
     val context = LocalContext.current
     LaunchedEffect(Unit) { infoState.refresh(context) }
+    // Repairs/removes daemon scripts for every module here, once per launch, instead
+    // of relying on the user to open each module's own screen to trigger its self-heal
+    // - see DaemonMaintenance for why that matters.
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) { DaemonMaintenance.sweep(context) }
+    }
 
     val currentVersionName = remember {
         try {
@@ -130,11 +139,14 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.ChatComposer -> ChatComposerScreen(onBack)
         Screen.CalculatorInput -> CalculatorInputScreen(onBack)
         Screen.BtIdle -> BtIdleScreen(onBack)
+        Screen.LocationIdle -> LocationIdleScreen(onBack)
         Screen.Telemetry -> TelemetryScreen(onBack)
         Screen.ExtraDim -> ExtraDimScreen(onBack)
+        Screen.BesLoudness -> BesLoudnessScreen(onBack)
         Screen.AppScaling -> AppScalingScreen(onBack)
         Screen.AutoFocus -> AutoFocusScreen(onBack)
         Screen.InCallShortcuts -> InCallShortcutsScreen(onBack)
+        Screen.CallScreenRecovery -> CallScreenRecoveryScreen(onBack)
         Screen.ImeSuggestions -> ImeSuggestionsScreen(onBack)
         Screen.BatteryUsage -> BatteryUsageScreen(onBack)
     }

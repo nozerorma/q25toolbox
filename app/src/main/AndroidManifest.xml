@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <!-- List launchable apps for the per-app keyboard-block picker. -->
     <queries>
@@ -52,6 +53,10 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
+
+        <receiver
+            android:name=".modules.BesLoudnessReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

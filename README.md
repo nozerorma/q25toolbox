@@ -10,9 +10,11 @@ bottom-bar sections:
 - **Keyboard** — key remapping, lockscreen PIN entry on the physical
   keyboard, per-app keyboard block, chat Enter-to-send, calculator-key
   routing, and IME suggestion shortcuts.
-- **System** — extra dimming (with an optional night schedule), per-app
-  display scaling, auto-focus input, and in-call shortcuts.
-- **Network** — telemetry blocking, wireless ADB, and Bluetooth auto-disable.
+- **System** — extra dimming, BesLoudness speaker enhancement (both with an
+  optional night schedule), per-app display scaling, auto-focus input,
+  in-call shortcuts, and proximity-sensor workarounds.
+- **Network** — telemetry blocking, wireless ADB, and Bluetooth/Location
+  auto-disable.
 - **Settings** — update checking (with in-app download + install), quick
   links to the Accessibility/Input Method system settings, contributors, and
   about.
@@ -37,14 +39,20 @@ under Settings → Accessibility - each of their screens shows a banner with a
 direct link there if it isn't. Reinstalling the app resets this, so it needs
 re-enabling after every fresh install.
 
-Two boot-time daemons (Extra Dim's schedule, Global Telemetry Block) run
-detached (`setsid`) and are guarded by a PID lock that also verifies
+The boot-time daemons (Extra Dim's schedule, BesLoudness's schedule, Global
+Telemetry Block, Bluetooth Auto-Disable, Location Auto-Disable) run detached
+(`setsid`) and are guarded by a PID lock that also verifies
 `/proc/$PID/cmdline` still names the same script - not just `kill -0`, which
 can false-positive once an unrelated process reuses a stale PID after
-reboot. Their screens self-heal (relaunch the daemon) if they find it dead
-on open. Bluetooth Auto-Disable's watchdog still uses the plain `kill -0`
-form and hasn't hit the same failure mode yet, but is a candidate for the
-same fix if it does.
+reboot. A dead daemon isn't the only failure mode, though: one left running
+whatever an older app version installed looks identical to a healthy one
+from the outside (it holds its lock and loops forever either way), so
+`DaemonMaintenance.sweep()` runs once per app launch (from the home screen,
+before any tab is picked) and compares each installed script's actual
+content against what today's app
+would install, reinstalling anything stale - not just anything dead. It also
+removes daemons left behind by features that are now hidden or removed (see
+DT2W below). Each module's own screen does the same narrower check on open.
 
 ## Signing with your existing keystore
 
@@ -107,6 +115,29 @@ the build script. Until then, both build types are signed with the debug key.
   unfocused field elsewhere in the same window tree. Auto-Focus still handles
   every other dialer screen (pre-call dial pad, contact search) normally.
 
+### Proximity Sensor Workarounds (`Q25AccessibilityService` + `KeyRemapController`)
+- This device's proximity sensor has, in practice, been observed getting
+  stuck near/covered after a call ends, leaving the screen dark - and
+  separately, taking the physical keyboard's i2c driver down with it, not
+  just the display.
+- **Auto-recover after calls** (default on): confirms a call has genuinely
+  ended (not just backgrounded mid-call, which looks identical from the
+  window-state event alone) against `dumpsys telecom`'s actual call state,
+  then if the screen is still off 5 seconds later, forces it back on with
+  `input keyevent KEYCODE_WAKEUP`. A no-op if the screen already came back on
+  by itself.
+- **Respawn keyboard now** (manual button): unbinds and rebinds the
+  `Q25_keyboard` i2c driver (`KeyRemapController.respawnKeyboard()`) to
+  recover a stuck physical keyboard. Deliberately **not** run automatically
+  alongside the screen wake above - pairing an i2c unbind/rebind (which
+  re-registers the keyboard driver's display notifier) with a forced wake
+  (its own display transition) right next to it was found to race the
+  display driver and crash the kernel
+  (`bbqX0kbd_disp_notifier_callback` null deref), including on every mid-call
+  app switch before the `dumpsys telecom` check existed, not just real
+  hangups. Any active Key Remap survives an unbind/rebind unaffected - the
+  bind mount is a VFS construct independent of the driver being bound.
+
 ### Extra Dimming (`ExtraDimController`)
 - Toggles Android's built-in Accessibility "Extra Dim" feature
   (`reduce_bright_colors_activated` / `reduce_bright_colors_level` secure
@@ -119,6 +150,24 @@ the build script. Until then, both build types are signed with the debug key.
   on/off transition, so a manual override in between the two edges isn't
   immediately clobbered - matching how Android's own Night Light schedule
   coexists with manual toggles.
+
+### BesLoudness (`BesLoudnessController`)
+- Toggles the vendor speaker loudness-enhancement DSP stage, the same one
+  behind the stock Settings app's own "Sound Enhancement" screen - confirmed
+  live on-device by watching `logcat` while using that screen: it calls
+  `AudioManager.setParameters("SetBesLoudnessStatus=0/1")`, which the HAL
+  applies immediately (no restart) to the `mtk_bessound` DSP library and
+  persists into `/vendor/etc/audio_param/SoundEnhancement_AudioParam.xml`.
+- The obvious-looking alternative,
+  `persist.vendor.audiohal.besloudness_state`, is a red herring: writing it
+  does nothing audible, since it isn't the value the HAL actually reads live.
+- The manual toggle calls `AudioManager` directly from the app process. The
+  optional schedule (mirrors Extra Dim's: start/end time, on/off-transition
+  only) is a `service.d/besloudness_schedule.sh` watchdog - but that's a
+  plain shell script and can't call `AudioManager` itself, so it hands off to
+  the app via an explicit `am broadcast` to `BesLoudnessReceiver`, which a
+  root shell can deliver to a non-exported receiver even though third-party
+  apps can't.
 
 ### Per-App Display Scaling (`AppScalingController` + `Q25AccessibilityService`)
 - This ROM ignores every *per-app* scaling mechanism - the compat-framework
@@ -157,9 +206,17 @@ the build script. Until then, both build types are signed with the debug key.
 - Connection detection uses five strategies against `dumpsys
   bluetooth_manager`: device table status, active A2DP/Headset device,
   `mIsPlaying` flag, profile connection state, and GATT client/server map
-  entries. A PID lock file (plain `kill -0`, not yet the PID+cmdline check
-  used by Extra Dim/Telemetry) ensures only one daemon instance runs at a
-  time.
+  entries. A PID+cmdline lock (same as Extra Dim/Telemetry) ensures only one
+  daemon instance runs at a time.
+
+### Auto-disable Location (`LocationIdleController`)
+- Mirrors Bluetooth Auto-Disable exactly, for Location instead: a root
+  watchdog (`service.d/location_idle.sh`) turns Location off after a
+  configurable idle timeout (5 / 10 / 15 / 30 / 60 min, default 15).
+- "Idle" is measured by the GPS provider going continuously unused, not by
+  GMS's own listeners - those are near-always registered in the background
+  regardless of whether anything's actually asking for a fix, so they're not
+  a usable "in use" signal here.
 
 ### Global Telemetry Block (`TelemetryController`)
 - Scans `/data/data/*/com.google.firebase.crashlytics.xml` across all

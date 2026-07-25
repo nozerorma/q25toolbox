@@ -18,8 +18,10 @@
     <string name="title_calculator_input">Tecles de calculadora</string>
     <string name="title_ime_suggestions">Dreceres de suggeriments de l\'IME</string>
     <string name="title_bt_idle">Desactivar Bluetooth inactiu</string>
+    <string name="title_location_idle">Desactivar Ubicació inactiva</string>
     <string name="title_telemetry">Bloqueig global de telemetria</string>
     <string name="title_extra_dim">Atenuació extra</string>
+    <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Escalat de pantalla per app</string>
     <string name="title_key_remap">Reassignar tecla</string>
 
@@ -32,8 +34,10 @@
     <string name="subtitle_calculator_input">Envia números i operadors a la calculadora</string>
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R tria el suggeriment 1/2/3 del teclat</string>
     <string name="subtitle_bt_idle">Apaga el Bluetooth quan estigui inactiu</string>
+    <string name="subtitle_location_idle">Apaga la Ubicació quan estigui inactiva</string>
     <string name="subtitle_telemetry">Desactiva Firebase Crashlytics a tot el sistema</string>
     <string name="subtitle_extra_dim">Redueix la brillantor per sota del mínim del sistema</string>
+    <string name="subtitle_besloudness">Millora de sonoritat de l\'altaveu, programable</string>
     <string name="subtitle_app_scaling">Força el disseny de telèfon en apps incompatibles</string>
     <string name="subtitle_key_remap">Assigna una tecla lliure a Ctrl Dret</string>
 
@@ -176,6 +180,16 @@
     <string name="subtitle_in_call_shortcuts">Alterna silenci, altaveu i teclat en trucades</string>
     <string name="in_call_shortcuts_desc">A la pantalla de trucada de l’aplicació Telèfon de Google, utilitzeu M per silenciar/activar el micròfon, $ per alternar l’altaveu i 0–9 per obrir el teclat de marcatge. No requereix root.</string>
     <string name="in_call_shortcuts_enabled_label">Habilitat</string>
+
+    <!-- Call Screen & Keyboard Recovery Screen -->
+    <string name="title_call_screen_recovery">Solucions per al sensor de proximitat</string>
+    <string name="subtitle_call_screen_recovery">Corregeix problemes de pantalla/teclat per un sensor de proximitat defectuós</string>
+    <string name="call_recovery_auto_recover_label">Recuperació automàtica després de trucades</string>
+    <string name="call_recovery_auto_recover_desc">Si la pantalla encara està apagada uns segons després que una trucada acabi de veritat, la torna a encendre. Es pot deixar activat sense risc: no fa res si la pantalla ja s\'ha encès sola. Deliberadament ja no reinicia també el teclat automàticament - vegeu més avall.</string>
+    <string name="call_recovery_respawn_button">Reinicia el teclat ara</string>
+    <string name="call_recovery_respawn_success">Controlador del teclat desvinculat i tornat a vincular.</string>
+    <string name="call_recovery_respawn_failed">El reinici ha fallat - comprova l\'accés root.</string>
+    <string name="call_recovery_desc">S\'ha observat que un sensor de proximitat encallat en «a prop» després d\'una trucada, a la pràctica, també fa caure el teclat físic, no només deixa la pantalla apagada - aquest botó cobreix aquest cas manualment. Es manté manual en lloc d\'automàtic a propòsit: combinar-lo amb un despertar forçat de la pantalla va provocar una condició de carrera amb el controlador de pantalla i va fer petar el nucli, així que ja no s\'executa automàticament.</string>
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Prem Ctrl+W, Ctrl+E o Ctrl+R per triar el suggeriment 1, 2 o 3 de la barra de candidats del teclat físic (BlackBerry Keyboard, Harpocrat i similars). Només actua quan hi ha un suggeriment visible, de manera que Ctrl+W/E/R continuen funcionant amb normalitat en altres llocs (per exemple, tancar una pestanya del navegador). No cal root.</string>
