@@ -111,7 +111,7 @@
     <string name="settings_contributors_error">Couldn\'t load contributors: %1$s</string>
     <string name="settings_contributors_empty">No contributor data available.</string>
     <string name="settings_contributions">%1$d commits</string>
-    <string name="settings_about_version">Q25 Toolbox v%1$s</string>
+    <string name="settings_about_version">Q25 Toolbox %1$s</string>
     <string name="settings_about_repo">github.com/nozerorma/q25toolbox</string>
 
     <!-- Battery Usage Screen -->

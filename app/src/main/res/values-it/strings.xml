@@ -109,7 +109,7 @@
     <string name="settings_contributors_error">Impossibile caricare i collaboratori: %1$s</string>
     <string name="settings_contributors_empty">Nessun dato sui collaboratori disponibile.</string>
     <string name="settings_contributions">%1$d commit</string>
-    <string name="settings_about_version">Q25 Toolbox v%1$s</string>
+    <string name="settings_about_version">Q25 Toolbox %1$s</string>
     <string name="settings_about_repo">github.com/nozerorma/q25toolbox</string>
 
     <!-- Battery Usage Screen -->

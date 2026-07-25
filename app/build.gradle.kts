@@ -1,4 +1,4 @@
-val appVersionName = "1.1"
+val appVersionName = "v1.1"
 
 plugins {
     id("com.android.application")
@@ -6,7 +6,7 @@ plugins {
 }
 
 base {
-    archivesName = "Q25toolbox-v$appVersionName"
+    archivesName = "Q25toolbox-$appVersionName"
 }
 
 android {

@@ -111,7 +111,7 @@
     <string name="settings_contributors_error">Kon bijdragers niet laden: %1$s</string>
     <string name="settings_contributors_empty">Geen gegevens over bijdragers beschikbaar.</string>
     <string name="settings_contributions">%1$d commits</string>
-    <string name="settings_about_version">Q25 Toolbox v%1$s</string>
+    <string name="settings_about_version">Q25 Toolbox %1$s</string>
     <string name="settings_about_repo">github.com/nozerorma/q25toolbox</string>
 
     <!-- Battery Usage Screen -->
