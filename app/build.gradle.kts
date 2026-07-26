@@ -1,4 +1,4 @@
-val appVersionName = "v1.1"
+val appVersionName = "v1.2"
 
 plugins {
     id("com.android.application")
@@ -17,7 +17,7 @@ android {
         applicationId = "com.kgr.q25toolbox"
         minSdk = 28
         targetSdk = 34
-        versionCode = 18
+        versionCode = 19
         versionName = appVersionName
 
         ndk { abiFilters += "arm64-v8a" }
@@ -88,6 +88,9 @@ dependencies {
 
     // Contributor avatars on the Settings screen
     implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // Dominant-color extraction for the ticker's app-icon color mode
+    implementation("androidx.palette:palette-ktx:1.0.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

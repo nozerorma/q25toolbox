@@ -1,5 +1,6 @@
 package com.kgr.q25toolbox
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,8 +15,11 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.ui.HomeScreen
@@ -28,9 +32,8 @@ import kotlinx.coroutines.launch
  * fall back to the stock Material 3 light/dark baseline schemes.
  */
 @Composable
-private fun appColorScheme(): ColorScheme {
+private fun appColorScheme(dark: Boolean): ColorScheme {
     val context = LocalContext.current
-    val dark = isSystemInDarkTheme()
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
@@ -56,7 +59,13 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            MaterialTheme(colorScheme = appColorScheme()) {
+            val darkTheme = isSystemInDarkTheme()
+            // `Theme.DeviceDefault.DayNight` was expected to handle this on its own, but on
+            // this ROM it doesn't reliably flip the status bar icon color with day/night -
+            // in light mode the (white) icons were invisible against the light bar. Set it
+            // explicitly instead of trusting the parent theme.
+            StatusBarIconAppearance(darkIcons = !darkTheme)
+            MaterialTheme(colorScheme = appColorScheme(darkTheme)) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -65,5 +74,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun StatusBarIconAppearance(darkIcons: Boolean) {
+    val view = LocalView.current
+    if (view.isInEditMode) return
+    val window = (view.context as Activity).window
+    SideEffect {
+        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkIcons
     }
 }

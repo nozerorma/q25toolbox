@@ -40,6 +40,8 @@
     <string name="subtitle_besloudness">Millora de sonoritat de l\'altaveu, programable</string>
     <string name="subtitle_app_scaling">Força el disseny de telèfon en apps incompatibles</string>
     <string name="subtitle_key_remap">Assigna una tecla lliure a Ctrl Dret</string>
+    <string name="title_ticker_notifications">Notificacions en cinta</string>
+    <string name="subtitle_ticker_notifications">Bàner desplaçable a la barra d’estat en lloc d’emergents</string>
 
     <!-- Info Screen -->
     <string name="info_access">Accés</string>
@@ -175,6 +177,7 @@
     <string name="auto_focus_search_label">Buscar aplicacions</string>
     <string name="auto_focus_selected_count">%1$d seleccionades de %2$d aplicacions</string>
     <string name="auto_focus_long_desc">En les aplicacions seleccionades, el servei d’accessibilitat busca el primer camp de text editable després de la primera pulsació d’una tecla física, l’enfoca i torna a enviar aquesta tecla perquè puguis continuar escrivint sense tocar abans el camp (per exemple, en marcadors telefònics o aplicacions de missatgeria).</string>
+    <string name="auto_focus_enabled_label">Habilitat</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Dreceres en trucada</string>
     <string name="subtitle_in_call_shortcuts">Alterna silenci, altaveu i teclat en trucades</string>

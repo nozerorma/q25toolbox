@@ -24,6 +24,7 @@ sealed class Screen(@StringRes val titleRes: Int, @StringRes val subtitleRes: In
     data object CallScreenRecovery : Screen(R.string.title_call_screen_recovery, R.string.subtitle_call_screen_recovery)
     data object ImeSuggestions : Screen(R.string.title_ime_suggestions, R.string.subtitle_ime_suggestions)
     data object BatteryUsage : Screen(R.string.title_battery_usage)
+    data object TickerNotifications : Screen(R.string.title_ticker_notifications, R.string.subtitle_ticker_notifications)
 
     val title: String @Composable get() = stringResource(titleRes)
     val subtitle: String @Composable get() = if (subtitleRes != 0) stringResource(subtitleRes) else ""
@@ -61,6 +62,7 @@ val systemScreens = listOf(
     Screen.AutoFocus,
     Screen.InCallShortcuts,
     Screen.CallScreenRecovery,
+    Screen.TickerNotifications,
 )
 
 /** Screens listed under the Network tab. */

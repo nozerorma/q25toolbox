@@ -190,6 +190,31 @@ the build script. Until then, both build types are signed with the debug key.
   native on teardown so it can't leave the screen stuck at a scaled
   resolution.
 
+### Ticker Notifications (`TickerController` + `TickerOverlayController`)
+- A "Super Status Bar"-style scrolling banner instead of heads-up popups.
+  `TickerNotificationListenerService` watches posted notifications (granted
+  via root's `cmd notification allow_listener`, no manual "Notification
+  access" screen needed) and hands qualifying ones to
+  `TickerOverlayController`, which draws the banner and turns off heads-up
+  system-wide (`heads_up_notifications_enabled`) while enabled.
+- The banner is a `TYPE_ACCESSIBILITY_OVERLAY` window, not
+  `TYPE_APPLICATION_OVERLAY`/`SYSTEM_ALERT_WINDOW` - the latter renders
+  *beneath* the real status bar on this device regardless of window flags.
+  `TYPE_ACCESSIBILITY_OVERLAY` needs no "draw over other apps" permission at
+  all, but can only be added via a `WindowManager` scoped to a *running*
+  `AccessibilityService`, so `Q25AccessibilityService` exposes itself as a
+  static `instance` for exactly this. Confirmed by decompiling Super Status
+  Bar (`com.tombayley.statusbar`) with `apktool` - its own status-bar window
+  uses the identical type + flag combination.
+  Text starts fully visible at its natural position (icon left, text right
+  after it), holds for the configured start delay, then scrolls left off
+  screen; the icon fades out the moment scrolling begins.
+- Configurable: tap-to-open, minimum notification priority, per-app and
+  per-category blocklists, whether ongoing notifications (media/downloads)
+  get a ticker, lines of body text shown, scroll speed/start delay, and the
+  banner's background color (fixed preset, the notifying app's own icon
+  color muted via `androidx.palette`, or Android 12+ Monet).
+
 ### Persistent wireless ADB (`WirelessAdbController`)
 - User enters a port; **persist** installs `assets/adb_wireless_template.sh`
   (with `__PORT__` substituted) to `/data/adb/service.d/adb_wireless.sh`,

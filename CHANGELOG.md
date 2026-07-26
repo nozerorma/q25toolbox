@@ -4,6 +4,32 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.2] - 2026-07-26
+
+### Added
+- **Ticker Notifications** (`TickerController` + `TickerOverlayController`): a
+  "Super Status Bar"-style scrolling banner across the top of the screen for
+  new notifications instead of a heads-up popup, which is turned off
+  system-wide (`heads_up_notifications_enabled`) while this is on.
+  Notification listener access is granted via root (`cmd notification
+  allow_listener`), no manual "Notification access" screen needed. The
+  banner itself is a `TYPE_ACCESSIBILITY_OVERLAY` window (needs the
+  accessibility service enabled, not the "draw over other apps" permission)
+  so it actually renders above the real status bar - confirmed by
+  decompiling Super Status Bar (`com.tombayley.statusbar`) with `apktool`,
+  since the more obvious `TYPE_APPLICATION_OVERLAY` renders beneath it on
+  this device regardless of window flags.
+  Configurable: tap-to-open, minimum priority, per-app/category blocklists,
+  whether ongoing notifications get a ticker, lines of text shown, scroll
+  speed/start delay, and background color (fixed preset, muted app-icon
+  color via `androidx.palette`, or Android 12+ Monet).
+
+### Fixed
+- Status bar icons stayed white (invisible) in light mode - `Theme.
+  DeviceDefault.DayNight` doesn't reliably flip `isAppearanceLightStatusBars`
+  on this ROM, so `MainActivity` now sets it explicitly from the current
+  Compose theme.
+
 ## [1.1] - 2026-07-25
 
 First release out of beta.

@@ -40,6 +40,8 @@
     <string name="subtitle_besloudness">Melhoria de sonoridade do alto-falante, com agendamento</string>
     <string name="subtitle_app_scaling">Força o layout de celular em apps incompatíveis</string>
     <string name="subtitle_key_remap">Atribui uma tecla livre ao Ctrl Direito</string>
+    <string name="title_ticker_notifications">Notificações em ticker</string>
+    <string name="subtitle_ticker_notifications">Faixa rolante na barra de status em vez de pop-ups</string>
 
     <!-- Info Screen -->
     <string name="info_access">Acesso</string>
@@ -175,6 +177,7 @@
     <string name="auto_focus_search_label">Buscar aplicativos</string>
     <string name="auto_focus_selected_count">%1$d selecionados de %2$d aplicativos</string>
     <string name="auto_focus_long_desc">Nos aplicativos selecionados, o serviço de acessibilidade busca o primeiro campo de texto editável após a primeira tecla física pressionada, foca esse campo e reenvia essa tecla para que você possa continuar digitando sem tocar no campo antes (por exemplo, em discadores ou aplicativos de mensagens).</string>
+    <string name="auto_focus_enabled_label">Ativado</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Atalhos em chamada</string>
     <string name="subtitle_in_call_shortcuts">Alterna mudo, alto-falante e teclado em chamadas</string>

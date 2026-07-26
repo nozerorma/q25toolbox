@@ -149,6 +149,7 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.CallScreenRecovery -> CallScreenRecoveryScreen(onBack)
         Screen.ImeSuggestions -> ImeSuggestionsScreen(onBack)
         Screen.BatteryUsage -> BatteryUsageScreen(onBack)
+        Screen.TickerNotifications -> TickerNotificationsScreen(onBack)
     }
 }
 

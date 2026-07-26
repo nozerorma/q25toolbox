@@ -40,6 +40,8 @@
     <string name="subtitle_besloudness">Amélioration de la sonie du haut-parleur, programmable</string>
     <string name="subtitle_app_scaling">Force la disposition téléphone sur les apps incompatibles</string>
     <string name="subtitle_key_remap">Attribue une touche libre à Ctrl Droit</string>
+    <string name="title_ticker_notifications">Notifications défilantes</string>
+    <string name="subtitle_ticker_notifications">Bandeau défilant dans la barre d’état au lieu des popups</string>
 
     <!-- Info Screen -->
     <string name="info_access">Accès</string>
@@ -175,6 +177,7 @@
     <string name="auto_focus_search_label">Rechercher des applications</string>
     <string name="auto_focus_selected_count">%1$d sélectionnées de %2$d applications</string>
     <string name="auto_focus_long_desc">Dans les applications sélectionnées, le service d\'accessibilité recherche le premier champ de texte modifiable après la première pression sur une touche physique, le focalise et renvoie cette touche afin que vous puissiez continuer à taper sans toucher d\'abord le champ (par exemple, dans les numéroteurs ou les applications de messagerie).</string>
+    <string name="auto_focus_enabled_label">Activé</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Raccourcis en appel</string>
     <string name="subtitle_in_call_shortcuts">Basculer sourdine, haut-parleur et clavier en appels</string>

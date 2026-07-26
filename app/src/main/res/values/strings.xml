@@ -24,6 +24,7 @@
     <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Per-App Display Scaling</string>
     <string name="title_key_remap">Key Remap</string>
+    <string name="title_ticker_notifications">Ticker Notifications</string>
 
 
     <!-- Screen Subtitles -->
@@ -41,6 +42,7 @@
     <string name="subtitle_besloudness">Speaker loudness enhancement, on a schedule</string>
     <string name="subtitle_app_scaling">Force phone layout on misbehaving apps</string>
     <string name="subtitle_key_remap">Map a spare key to Right Ctrl</string>
+    <string name="subtitle_ticker_notifications">Scrolling status-bar banner instead of heads-up</string>
 
 
     <!-- Info Screen -->

@@ -41,6 +41,8 @@
     <string name="subtitle_besloudness">Luidsprekerluidheid-verbetering, met tijdschema</string>
     <string name="subtitle_app_scaling">Telefoonlay-out afdwingen voor slecht werkende apps</string>
     <string name="subtitle_key_remap">Wijs een reserve-toets toe aan Rechter Ctrl</string>
+    <string name="title_ticker_notifications">Ticker-meldingen</string>
+    <string name="subtitle_ticker_notifications">Schuivende banner in de statusbalk in plaats van pop-ups</string>
 
 
     <!-- Info Screen -->
@@ -177,6 +179,7 @@
     <string name="auto_focus_search_label">Apps zoeken</string>
     <string name="auto_focus_selected_count">%1$d geselecteerd van %2$d apps</string>
     <string name="auto_focus_long_desc">In de geselecteerde apps zoekt de toegankelijkheidsservice na de eerste fysieke toetsdruk naar het eerste bewerkbare tekstveld, focust dit en stuurt die toets opnieuw, zodat je kunt blijven typen zonder eerst op het veld te tikken (bijvoorbeeld in dialers of chat-apps).</string>
+    <string name="auto_focus_enabled_label">Ingeschakeld</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Sneltoetsen tijdens gesprek</string>
     <string name="subtitle_in_call_shortcuts">Demping, luidspreker en toetsenbord schakelen tijdens oproepen</string>

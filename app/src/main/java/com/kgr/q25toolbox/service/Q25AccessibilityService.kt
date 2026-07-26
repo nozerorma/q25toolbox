@@ -66,6 +66,13 @@ class Q25AccessibilityService : AccessibilityService() {
         // Our do-nothing IME: while it's active, physical key presses go straight
         // to the app instead of being intercepted/translated by the normal keyboard.
         const val PASSTHRU_IME = "com.kgr.q25toolbox/.service.Q25PassthroughIme"
+
+        // The live service instance, so other in-process code (TickerOverlayController)
+        // can add a TYPE_ACCESSIBILITY_OVERLAY window - that window type is only usable
+        // via a WindowManager obtained from a running AccessibilityService's own Context,
+        // not just any app Context.
+        var instance: Q25AccessibilityService? = null
+            private set
     }
 
     private val worker: ExecutorService = Executors.newSingleThreadExecutor()
@@ -157,6 +164,7 @@ class Q25AccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        instance = this
         val p = getSharedPreferences(PREFS, MODE_PRIVATE)
         prefs = p
         p.registerOnSharedPreferenceChangeListener(prefListener)
@@ -987,6 +995,7 @@ class Q25AccessibilityService : AccessibilityService() {
     override fun onUnbind(intent: Intent?): Boolean {
         restoreImeBlock()  // never leave the soft keyboard globally suppressed
         restoreScaling()   // never leave the screen stuck at a scaled resolution
+        if (instance === this) instance = null
         return super.onUnbind(intent)
     }
 
@@ -998,6 +1007,7 @@ class Q25AccessibilityService : AccessibilityService() {
     }
 
     override fun onDestroy() {
+        if (instance === this) instance = null
         restoreImeBlock()
         restoreScaling()
         prefs?.unregisterOnSharedPreferenceChangeListener(prefListener)

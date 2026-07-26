@@ -40,6 +40,8 @@
     <string name="subtitle_besloudness">Potenziamento della sonorità dell\'altoparlante, pianificabile</string>
     <string name="subtitle_app_scaling">Forza il layout del telefono su app incompatibili</string>
     <string name="subtitle_key_remap">Assegna un tasto libero a Ctrl Destro</string>
+    <string name="title_ticker_notifications">Notifiche a ticker</string>
+    <string name="subtitle_ticker_notifications">Banner scorrevole nella barra di stato invece degli avvisi a comparsa</string>
 
     <!-- Info Screen -->
     <string name="info_access">Accesso</string>
@@ -175,6 +177,7 @@
     <string name="auto_focus_search_label">Cerca applicazioni</string>
     <string name="auto_focus_selected_count">%1$d selezionate di %2$d applicazioni</string>
     <string name="auto_focus_long_desc">Nelle applicazioni selezionate, il servizio di accessibilità cerca il primo campo di testo modificabile dopo la prima pressione di un tasto fisico, lo mette a fuoco e reinvia quel tasto, così puoi continuare a digitare senza toccare prima il campo (ad esempio, in combinatori telefonici o app di messaggistica).</string>
+    <string name="auto_focus_enabled_label">Abilitato</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Scorciatoie in chiamata</string>
     <string name="subtitle_in_call_shortcuts">Alterna silenziamento, altoparlante e tastierino in chiamata</string>
