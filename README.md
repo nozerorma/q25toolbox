@@ -195,8 +195,8 @@ the build script. Until then, both build types are signed with the debug key.
   `TickerNotificationListenerService` watches posted notifications (granted
   via root's `cmd notification allow_listener`, no manual "Notification
   access" screen needed) and hands qualifying ones to
-  `TickerOverlayController`, which draws the banner and turns off heads-up
-  system-wide (`heads_up_notifications_enabled`) while enabled.
+  `TickerOverlayController`, which draws the banner and manages heads-up
+  popups while enabled.
 - The banner is a `TYPE_ACCESSIBILITY_OVERLAY` window, not
   `TYPE_APPLICATION_OVERLAY`/`SYSTEM_ALERT_WINDOW` - the latter renders
   *beneath* the real status bar on this device regardless of window flags.
@@ -206,14 +206,16 @@ the build script. Until then, both build types are signed with the debug key.
   static `instance` for exactly this. Confirmed by decompiling Super Status
   Bar (`com.tombayley.statusbar`) with `apktool` - its own status-bar window
   uses the identical type + flag combination.
-  Text starts fully visible at its natural position (icon left, text right
-  after it), holds for the configured start delay, then scrolls left off
-  screen; the icon fades out the moment scrolling begins.
+  The app icon sits inside an opaque container on top of the text layer,
+  staying fully visible while text scrolls underneath it.
 - Configurable: tap-to-open, minimum notification priority, per-app and
-  per-category blocklists, whether ongoing notifications (media/downloads)
-  get a ticker, lines of body text shown, scroll speed/start delay, and the
-  banner's background color (fixed preset, the notifying app's own icon
-  color muted via `androidx.palette`, or Android 12+ Monet).
+  per-category blocklists (with fallback smart category detection for
+  `MessagingStyle`/`CallStyle` and natural SystemUI heads-up popups for blocked
+  notifications), whether ongoing notifications (media/downloads) get a
+  ticker, lines of body text shown, scroll speed/start delay (defaults: 1.5s
+  delay, 100 dp/s speed), and background color (fixed preset, raw APK icon /
+  notification brand color muted via `androidx.palette` bypassing icon packs, or
+  Android 12+ Monet).
 
 ### Persistent wireless ADB (`WirelessAdbController`)
 - User enters a port; **persist** installs `assets/adb_wireless_template.sh`
