@@ -25,8 +25,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.modules.TickerSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -75,7 +77,7 @@ fun TickerBlockedAppsScreen(onBack: () -> Unit) {
             onValueChange = { query = it },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            label = { Text("Search apps") }
+            label = { Text(stringResource(R.string.common_search_apps)) }
         )
 
         when (val list = apps) {
@@ -93,7 +95,7 @@ fun TickerBlockedAppsScreen(onBack: () -> Unit) {
                 ) {
                     item(key = "_topbar") {
                         AppListTopBar(
-                            title = "Blocked apps",
+                            title = stringResource(R.string.ticker_blocked_apps_label),
                             onBack = onBack,
                             showSystemApps = showSystemApps,
                             onToggleShowSystemApps = { showSystemApps = it },
@@ -101,7 +103,7 @@ fun TickerBlockedAppsScreen(onBack: () -> Unit) {
                     }
                     item(key = "_count") {
                         Text(
-                            "${selected.size} blocked of ${list.size} apps",
+                            stringResource(R.string.ticker_blocked_apps_of_total, selected.size, list.size),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

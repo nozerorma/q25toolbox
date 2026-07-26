@@ -3,6 +3,7 @@ package com.kgr.q25toolbox.modules
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
+import com.kgr.q25toolbox.R
 
 /**
  * Persisted configuration for the Ticker Notifications module - kept in its own
@@ -27,8 +28,8 @@ object TickerSettings {
 
     const val DEFAULT_MIN_IMPORTANCE = NotificationManager.IMPORTANCE_DEFAULT
     const val DEFAULT_MAX_BODY_LINES = 1
-    const val DEFAULT_SCROLL_SPEED_DP = 60
-    const val DEFAULT_START_DELAY_MS = 600
+    const val DEFAULT_SCROLL_SPEED_DP = 100
+    const val DEFAULT_START_DELAY_MS = 1500
     const val DEFAULT_FIXED_COLOR = 0xFF000000.toInt()
 
     /** How the ticker banner's background color is chosen. */
@@ -52,34 +53,34 @@ object TickerSettings {
     val SCROLL_SPEED_RANGE = 20f..150f
     val START_DELAY_RANGE = 0f..3000f
 
-    /** (importance, label) pairs for the min-priority chip row, low to high. */
+    /** (importance, label resource) pairs for the min-priority chip row, low to high. */
     val IMPORTANCE_OPTIONS = listOf(
-        NotificationManager.IMPORTANCE_MIN to "Min",
-        NotificationManager.IMPORTANCE_LOW to "Low",
-        NotificationManager.IMPORTANCE_DEFAULT to "Default",
-        NotificationManager.IMPORTANCE_HIGH to "High",
+        NotificationManager.IMPORTANCE_MIN to R.string.ticker_priority_min,
+        NotificationManager.IMPORTANCE_LOW to R.string.ticker_priority_low,
+        NotificationManager.IMPORTANCE_DEFAULT to R.string.ticker_priority_default,
+        NotificationManager.IMPORTANCE_HIGH to R.string.ticker_priority_high,
     )
 
-    /** (category constant, friendly label) pairs for the blocked-categories checklist. */
-    val CATEGORY_OPTIONS = listOf(
-        Notification.CATEGORY_CALL to "Calls",
-        Notification.CATEGORY_MESSAGE to "Messages",
-        Notification.CATEGORY_EMAIL to "Email",
-        Notification.CATEGORY_EVENT to "Calendar events",
-        Notification.CATEGORY_PROMO to "Promotions",
-        Notification.CATEGORY_ALARM to "Alarms",
-        Notification.CATEGORY_PROGRESS to "Progress",
-        Notification.CATEGORY_SOCIAL to "Social",
-        Notification.CATEGORY_ERROR to "Errors",
-        Notification.CATEGORY_TRANSPORT to "Media playback",
-        Notification.CATEGORY_SYSTEM to "System",
-        Notification.CATEGORY_SERVICE to "Background services",
-        Notification.CATEGORY_REMINDER to "Reminders",
-        Notification.CATEGORY_RECOMMENDATION to "Recommendations",
-        Notification.CATEGORY_MISSED_CALL to "Missed calls",
-        Notification.CATEGORY_NAVIGATION to "Navigation",
-        Notification.CATEGORY_STOPWATCH to "Stopwatch/timers",
-        Notification.CATEGORY_WORKOUT to "Workouts",
+    /** (category constant, friendly label resource) pairs for the blocked-categories checklist. */
+    val CATEGORY_OPTIONS: List<Pair<String, Int>> = listOf(
+        Notification.CATEGORY_CALL to R.string.ticker_category_calls,
+        Notification.CATEGORY_MESSAGE to R.string.ticker_category_messages,
+        Notification.CATEGORY_EMAIL to R.string.ticker_category_email,
+        Notification.CATEGORY_EVENT to R.string.ticker_category_events,
+        Notification.CATEGORY_PROMO to R.string.ticker_category_promo,
+        Notification.CATEGORY_ALARM to R.string.ticker_category_alarms,
+        Notification.CATEGORY_PROGRESS to R.string.ticker_category_progress,
+        Notification.CATEGORY_SOCIAL to R.string.ticker_category_social,
+        Notification.CATEGORY_ERROR to R.string.ticker_category_errors,
+        Notification.CATEGORY_TRANSPORT to R.string.ticker_category_transport,
+        Notification.CATEGORY_SYSTEM to R.string.ticker_category_system,
+        Notification.CATEGORY_SERVICE to R.string.ticker_category_service,
+        Notification.CATEGORY_REMINDER to R.string.ticker_category_reminder,
+        Notification.CATEGORY_RECOMMENDATION to R.string.ticker_category_recommendation,
+        Notification.CATEGORY_MISSED_CALL to R.string.ticker_category_missed_call,
+        Notification.CATEGORY_NAVIGATION to R.string.ticker_category_navigation,
+        Notification.CATEGORY_STOPWATCH to R.string.ticker_category_stopwatch,
+        Notification.CATEGORY_WORKOUT to R.string.ticker_category_workout,
     )
 
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

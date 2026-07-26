@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.kgr.q25toolbox.MainActivity
@@ -100,7 +101,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
 
     ScreenScaffold(title = Screen.TickerNotifications.title, onBack = onBack) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enable ticker", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.ticker_enable_label), modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
             Switch(
                 checked = enabled,
                 enabled = !busy,
@@ -136,10 +137,11 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
         }
         AccessibilityServiceBanner(serviceEnabled)
 
-        Text("Heads-up popups are disabled while this is on.", style = MaterialTheme.typography.bodySmall,
+        Text(stringResource(R.string.ticker_headsup_disabled_notice), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            val testMessage = stringResource(R.string.ticker_test_message)
             Button(
                 enabled = serviceEnabled,
                 onClick = {
@@ -152,17 +154,17 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
                     TickerOverlayController.show(
                         context = context,
                         icon = ContextCompat.getDrawable(context, R.drawable.ic_app_logo),
-                        text = "Ticker Notifications test - this is how a real notification will scroll by",
+                        text = testMessage,
                         contentIntent = if (tapToOpen) openAppIntent else null,
                         backgroundColor = TickerColorResolver.resolveBackgroundColor(context, context.packageName),
                     )
                 }
             ) {
-                Text("Test ticker")
+                Text(stringResource(R.string.ticker_test_button))
             }
             if (!serviceEnabled) {
                 Text(
-                    "Needs the accessibility service enabled first (see below).",
+                    stringResource(R.string.ticker_test_needs_service),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -170,7 +172,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Tap ticker to open app", modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.ticker_tap_to_open_label), modifier = Modifier.weight(1f))
             Switch(
                 checked = tapToOpen,
                 onCheckedChange = {
@@ -181,7 +183,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Show ongoing notifications (media, downloads)", modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.ticker_include_ongoing_label), modifier = Modifier.weight(1f))
             Switch(
                 checked = includeOngoing,
                 onCheckedChange = {
@@ -192,23 +194,23 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("Minimum priority", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.ticker_min_priority_label), style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TickerSettings.IMPORTANCE_OPTIONS.forEach { (value, label) ->
+                TickerSettings.IMPORTANCE_OPTIONS.forEach { (value, labelRes) ->
                     FilterChip(
                         selected = minImportance == value,
                         onClick = {
                             minImportance = value
                             TickerSettings.setMinImportance(context, value)
                         },
-                        label = { Text(label) }
+                        label = { Text(stringResource(labelRes)) }
                     )
                 }
             }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("Lines of text shown", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.ticker_lines_label), style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TickerSettings.BODY_LINES_OPTIONS.forEach { opt ->
                     FilterChip(
@@ -224,7 +226,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("Scroll speed: ${scrollSpeed.toInt()} dp/s", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.ticker_scroll_speed_label, scrollSpeed.toInt()), style = MaterialTheme.typography.titleSmall)
             Slider(
                 value = scrollSpeed,
                 valueRange = TickerSettings.SCROLL_SPEED_RANGE,
@@ -234,7 +236,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("Start delay: ${startDelay.toInt()} ms", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.ticker_start_delay_label, startDelay.toInt()), style = MaterialTheme.typography.titleSmall)
             Slider(
                 value = startDelay,
                 valueRange = TickerSettings.START_DELAY_RANGE,
@@ -244,7 +246,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Ticker color", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.ticker_color_label), style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(
                     selected = colorMode == TickerSettings.ColorMode.FIXED,
@@ -252,7 +254,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
                         colorMode = TickerSettings.ColorMode.FIXED
                         TickerSettings.setColorMode(context, TickerSettings.ColorMode.FIXED)
                     },
-                    label = { Text("Fixed") }
+                    label = { Text(stringResource(R.string.ticker_color_fixed)) }
                 )
                 FilterChip(
                     selected = colorMode == TickerSettings.ColorMode.APP_ICON,
@@ -260,7 +262,7 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
                         colorMode = TickerSettings.ColorMode.APP_ICON
                         TickerSettings.setColorMode(context, TickerSettings.ColorMode.APP_ICON)
                     },
-                    label = { Text("App icon") }
+                    label = { Text(stringResource(R.string.ticker_color_app_icon)) }
                 )
                 FilterChip(
                     selected = colorMode == TickerSettings.ColorMode.MONET,
@@ -269,19 +271,19 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
                         colorMode = TickerSettings.ColorMode.MONET
                         TickerSettings.setColorMode(context, TickerSettings.ColorMode.MONET)
                     },
-                    label = { Text("Monet") }
+                    label = { Text(stringResource(R.string.ticker_color_monet)) }
                 )
             }
             if (colorMode == TickerSettings.ColorMode.APP_ICON) {
                 Text(
-                    "Uses each notifying app's own icon color, muted to a dark, readable tone.",
+                    stringResource(R.string.ticker_color_app_icon_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             if (colorMode == TickerSettings.ColorMode.MONET && Build.VERSION.SDK_INT < 31) {
                 Text(
-                    "Monet needs Android 12+; falls back to the fixed color on this device.",
+                    stringResource(R.string.ticker_color_monet_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -326,14 +328,14 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Blocked apps")
-                Text("$blockedAppCount blocked", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.ticker_blocked_apps_label))
+                Text(stringResource(R.string.ticker_blocked_apps_count, blockedAppCount), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-            Text("Blocked categories", style = MaterialTheme.typography.titleSmall)
-            TickerSettings.CATEGORY_OPTIONS.forEach { (category, label) ->
+            Text(stringResource(R.string.ticker_blocked_categories_label), style = MaterialTheme.typography.titleSmall)
+            TickerSettings.CATEGORY_OPTIONS.forEach { (category, labelRes) ->
                 val checked = category in blockedCategories
                 Row(
                     modifier = Modifier
@@ -351,17 +353,14 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Checkbox(checked = checked, onCheckedChange = null)
-                    Text(label)
+                    Text(stringResource(labelRes))
                 }
             }
         }
 
         DescriptionDivider()
         Text(
-            "Shows a scrolling banner across the top of the screen for new notifications " +
-                "instead of a heads-up popup, and turns heads-up off system-wide while enabled. " +
-                "Needs root to grant notification access, and the accessibility service enabled " +
-                "to draw the banner.",
+            stringResource(R.string.ticker_desc),
             style = MaterialTheme.typography.bodySmall
         )
     }
@@ -370,11 +369,10 @@ fun TickerNotificationsScreen(onBack: () -> Unit) {
 @Composable
 private fun TickerPermissionStatus(notifAccessGranted: Boolean) {
     if (notifAccessGranted) {
-        Text("Notification access granted", color = Color(0xFF81C784), style = MaterialTheme.typography.bodySmall)
+        Text(stringResource(R.string.ticker_notif_access_granted), color = Color(0xFF81C784), style = MaterialTheme.typography.bodySmall)
     } else {
         Text(
-            "Notification access not granted - the root grant may have failed; " +
-                "toggle off and on again, or check root access on the Info tab.",
+            stringResource(R.string.ticker_notif_access_missing),
             color = Color(0xFFE57373),
             style = MaterialTheme.typography.bodySmall
         )

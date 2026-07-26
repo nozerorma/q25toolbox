@@ -3,14 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/ticker_icon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_gravity="start|center_vertical"
-        android:layout_marginStart="8dp"
-        android:tint="#FFFFFFFF" />
-
     <TextView
         android:id="@+id/ticker_text"
         android:layout_width="wrap_content"
@@ -21,5 +13,20 @@
         android:ellipsize="none"
         android:textColor="#FFFFFFFF"
         android:textSize="13sp" />
+
+    <FrameLayout
+        android:id="@+id/ticker_icon_container"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
+
+        <ImageView
+            android:id="@+id/ticker_icon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="8dp"
+            android:tint="#FFFFFFFF" />
+    </FrameLayout>
 
 </FrameLayout>

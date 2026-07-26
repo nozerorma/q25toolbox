@@ -1,5 +1,6 @@
 package com.kgr.q25toolbox.modules
 
+import android.app.Notification
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -16,34 +17,50 @@ object TickerColorResolver {
     private const val APP_ICON_MIN_LIGHTNESS = 0.16f
     private const val APP_ICON_MAX_LIGHTNESS = 0.30f
 
-    fun resolveBackgroundColor(context: Context, packageName: String): Int =
+    fun resolveBackgroundColor(
+        context: Context,
+        packageName: String,
+        notification: Notification? = null
+    ): Int =
         when (TickerSettings.colorMode(context)) {
             TickerSettings.ColorMode.FIXED -> TickerSettings.fixedColor(context)
             TickerSettings.ColorMode.APP_ICON ->
-                appIconColor(context, packageName) ?: TickerSettings.fixedColor(context)
+                appIconColor(context, packageName, notification) ?: TickerSettings.fixedColor(context)
             TickerSettings.ColorMode.MONET ->
                 monetColor(context) ?: TickerSettings.fixedColor(context)
         }
 
     /**
-     * Dominant color of the app's launcher icon (not the notification's small icon, which
-     * on modern Android is almost always a flat white silhouette with no usable color),
-     * desaturated/darkened into a muted, dark-status-bar-friendly tone loosely matching
-     * how Android's own Monet tonal palettes mute a source color rather than using it at
-     * full saturation.
+     * Resolves color from notification.color (if set by the app) or from the app's raw,
+     * un-themed APK icon (bypassing system icon pack overlays that might color it gray).
      */
-    private fun appIconColor(context: Context, packageName: String): Int? {
+    private fun appIconColor(context: Context, packageName: String, notification: Notification?): Int? {
+        // 1. Check if the notification itself provided an official brand accent color.
+        if (notification != null && notification.color != 0 && notification.color != Notification.COLOR_DEFAULT) {
+            return muted(notification.color)
+        }
+
+        // 2. Extract dominant color from the app's raw APK icon (bypassing launcher icon packs).
         return try {
-            val icon = context.packageManager.getApplicationIcon(packageName)
-            val bitmap = icon.toBitmap(width = 48, height = 48)
+            val pm = context.packageManager
+            val appInfo = pm.getApplicationInfo(packageName, 0)
+            val resources = pm.getResourcesForApplication(appInfo)
+            val iconDrawable = if (appInfo.icon != 0) {
+                try {
+                    resources.getDrawable(appInfo.icon, null)
+                } catch (_: Exception) {
+                    pm.getApplicationIcon(packageName)
+                }
+            } else {
+                pm.getApplicationIcon(packageName)
+            }
+            val bitmap = iconDrawable.toBitmap(width = 48, height = 48)
             val palette = Palette.from(bitmap).generate()
             val dominant = palette.dominantSwatch?.rgb
                 ?: palette.vibrantSwatch?.rgb
                 ?: palette.mutedSwatch?.rgb
                 ?: return null
             muted(dominant)
-        } catch (_: PackageManager.NameNotFoundException) {
-            null
         } catch (_: Exception) {
             null
         }

@@ -4,6 +4,15 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.3.1] - 2026-07-27
+
+### Fixed
+- **Ticker Overlay Layout**: Adjusted Z-order so the app icon container stays visible on top while notification text scrolls underneath it behind an opaque background matching the ticker's color.
+- **Ticker Colors & Icon Packs**: Fixed gray ticker banners by reading the app's raw APK icon resources directly to extract brand colors, bypassing system/launcher icon pack overlays. `notification.color` is also preferred when set by notifying apps.
+- **Category Filtering**: Added smart fallback category resolution (inspecting `MessagingStyle`, `CallStyle`, `MediaSession`, `Progress` extras and package identifiers) to ensure category filters work even for apps that omit `notification.category`.
+- **Heads-Up for Blocked Notifications**: Fixed an issue where blocked categories/apps auto-dismissed heads-up popups after 600ms; blocked notifications now naturally display as standard SystemUI heads-up popups for their full normal duration.
+- **Ongoing Notifications**: Expanded ongoing notification detection and allowed user-enabled ongoing notifications to bypass the minimum importance floor filter.
+
 ## [1.3] - 2026-07-26
 
 ### Fixed

@@ -20,6 +20,7 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.kgr.q25toolbox.R
+import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.modules.TickerSettings
 import kotlin.math.ceil
 
@@ -72,10 +73,12 @@ object TickerOverlayController {
 
         mainHandler.post {
             hideInternal()
+            RootShell.run("settings put global heads_up_notifications_enabled 0")
 
             val wm = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val view = LayoutInflater.from(service).inflate(R.layout.ticker_overlay, null)
             val iconView = view.findViewById<ImageView>(R.id.ticker_icon)
+            val iconContainer = view.findViewById<View>(R.id.ticker_icon_container)
             val textView = view.findViewById<TextView>(R.id.ticker_text)
 
             view.setBackgroundColor(backgroundColor)
@@ -83,8 +86,11 @@ object TickerOverlayController {
                 iconView.setImageDrawable(icon)
                 iconView.alpha = 1f
                 iconView.visibility = View.VISIBLE
+                iconContainer?.visibility = View.VISIBLE
+                iconContainer?.setBackgroundColor(backgroundColor)
             } else {
                 iconView.visibility = View.GONE
+                iconContainer?.visibility = View.GONE
             }
             textView.text = text
             textView.translationX = 0f
@@ -105,10 +111,10 @@ object TickerOverlayController {
             // bar height for this device/orientation/notch as soon as the system reports
             // it, which is the actual DPI/device-independent source of truth.
             //
-            // FLAG_LAYOUT_INSET_DECOR | FLAG_LAYOUT_NO_LIMITS | FLAG_LAYOUT_IN_SCREEN is the
-            // exact flag combination Super Status Bar uses for this same window type - not
-            // touchable-outside if there's nothing to tap (contentIntent null), otherwise
-            // not-touch-modal so the bar itself is tappable but touches elsewhere pass through.
+            // FLAG_LAYOUT_NO_LIMITS | FLAG_LAYOUT_IN_SCREEN is the flag combination used for
+            // this same window type - not touchable-outside if there's nothing to tap (contentIntent
+            // null), otherwise not-touch-modal so the bar itself is tappable but touches elsewhere
+            // pass through.
             val touchFlag = if (contentIntent != null) {
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
             } else {
@@ -121,7 +127,6 @@ object TickerOverlayController {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     touchFlag,
                 PixelFormat.TRANSLUCENT
             ).apply { gravity = Gravity.TOP }
@@ -148,11 +153,11 @@ object TickerOverlayController {
             windowManager = wm
             overlayView = view
 
-            view.post { startScroll(service, iconView, textView, view) }
+            view.post { startScroll(service, textView, view) }
         }
     }
 
-    private fun startScroll(context: Context, iconView: ImageView, textView: TextView, root: View) {
+    private fun startScroll(context: Context, textView: TextView, root: View) {
         if (root.width <= 0) {
             hideInternal()
             return
@@ -185,16 +190,7 @@ object TickerOverlayController {
         animator = anim
         anim.start()
 
-        // Icon is only useful as a static preview before the text starts moving - once
-        // scrolling kicks in (same startDelay as the text), fade it out of the way so it
-        // doesn't sit there competing with the moving text.
-        if (iconView.visibility == View.VISIBLE) {
-            val fade = ObjectAnimator.ofFloat(iconView, View.ALPHA, 1f, 0f)
-            fade.startDelay = startDelayMs
-            fade.duration = ICON_FADE_DURATION_MS
-            iconAnimator = fade
-            fade.start()
-        }
+        // Icon remains visible while the text scrolls underneath it, so we do not fade it out.
 
         // Safety-net in case the animator never reports completion (e.g. the window is
         // torn down from under it) - otherwise a stuck ticker would linger forever.
@@ -217,6 +213,7 @@ object TickerOverlayController {
         } catch (_: IllegalArgumentException) {
             // Already detached.
         }
+        RootShell.run("settings put global heads_up_notifications_enabled 1")
     }
 
     private fun fallbackStatusBarHeight(resources: Resources): Int {

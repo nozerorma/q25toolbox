@@ -287,4 +287,54 @@
     <string name="ime_block_enable_switch_label">Enable per-app block</string>
     <string name="ime_block_selected_count">%1$d selected of %2$d apps</string>
     <string name="ime_block_desc">In the selected apps, physical key presses go straight to the app instead of through the keyboard - handy for games. While a selected app is open the IME is switched to a do-nothing passthrough keyboard, then restored on the way out. Needs root.</string>
+
+    <!-- Ticker Notifications Screen -->
+    <string name="ticker_enable_label">Enable ticker</string>
+    <string name="ticker_test_message">Ticker Notifications test - this is how a real notification will scroll by</string>
+    <string name="ticker_test_button">Test ticker</string>
+    <string name="ticker_test_needs_service">Needs the accessibility service enabled first (see below).</string>
+    <string name="ticker_headsup_disabled_notice">Heads-up popups are disabled while this is on.</string>
+    <string name="ticker_tap_to_open_label">Tap ticker to open app</string>
+    <string name="ticker_include_ongoing_label">Show ongoing notifications (media, downloads)</string>
+    <string name="ticker_min_priority_label">Minimum priority</string>
+    <string name="ticker_priority_min">Min</string>
+    <string name="ticker_priority_low">Low</string>
+    <string name="ticker_priority_default">Default</string>
+    <string name="ticker_priority_high">High</string>
+    <string name="ticker_lines_label">Lines of text shown</string>
+    <string name="ticker_scroll_speed_label">Scroll speed: %1$d dp/s</string>
+    <string name="ticker_start_delay_label">Start delay: %1$d ms</string>
+    <string name="ticker_color_label">Ticker color</string>
+    <string name="ticker_color_fixed">Fixed</string>
+    <string name="ticker_color_app_icon">App icon</string>
+    <string name="ticker_color_monet">Monet</string>
+    <string name="ticker_color_app_icon_desc">Uses each notifying app\'s own icon color, muted to a dark, readable tone.</string>
+    <string name="ticker_color_monet_desc">Monet needs Android 12+; falls back to the fixed color on this device.</string>
+    <string name="ticker_blocked_apps_label">Blocked apps</string>
+    <string name="ticker_blocked_apps_count">%1$d blocked</string>
+    <string name="ticker_blocked_apps_of_total">%1$d blocked of %2$d apps</string>
+    <string name="ticker_blocked_categories_label">Blocked categories</string>
+    <string name="ticker_desc">Shows a scrolling banner across the top of the screen for new notifications instead of a heads-up popup, and turns heads-up off system-wide while enabled. Needs root to grant notification access, and the accessibility service enabled to draw the banner.</string>
+    <string name="ticker_notif_access_granted">Notification access granted</string>
+    <string name="ticker_notif_access_missing">Notification access not granted - the root grant may have failed; toggle off and on again, or check root access on the Info tab.</string>
+
+    <!-- Ticker Notifications - notification category filter labels -->
+    <string name="ticker_category_calls">Calls</string>
+    <string name="ticker_category_messages">Messages</string>
+    <string name="ticker_category_email">Email</string>
+    <string name="ticker_category_events">Calendar events</string>
+    <string name="ticker_category_promo">Promotions</string>
+    <string name="ticker_category_alarms">Alarms</string>
+    <string name="ticker_category_progress">Progress</string>
+    <string name="ticker_category_social">Social</string>
+    <string name="ticker_category_errors">Errors</string>
+    <string name="ticker_category_transport">Media playback</string>
+    <string name="ticker_category_system">System</string>
+    <string name="ticker_category_service">Background services</string>
+    <string name="ticker_category_reminder">Reminders</string>
+    <string name="ticker_category_recommendation">Recommendations</string>
+    <string name="ticker_category_missed_call">Missed calls</string>
+    <string name="ticker_category_navigation">Navigation</string>
+    <string name="ticker_category_stopwatch">Stopwatch/timers</string>
+    <string name="ticker_category_workout">Workouts</string>
 </resources>

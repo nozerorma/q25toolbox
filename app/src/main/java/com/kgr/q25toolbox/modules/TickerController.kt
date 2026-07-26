@@ -35,7 +35,7 @@ object TickerController {
         if (enabled) {
             RootShell.run(
                 "cmd notification allow_listener $SERVICE_COMPONENT; " +
-                    "settings put global heads_up_notifications_enabled 0"
+                    "settings put global heads_up_notifications_enabled 1"
             )
         } else {
             RootShell.run(
