@@ -4,6 +4,18 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [1.3] - 2026-07-26
+
+### Fixed
+- Settings tab wasn't scrollable, so content below the fold (contributors,
+  about section) was unreachable on-screen. Added the missing
+  `verticalScroll` modifier.
+- Translated the remaining hardcoded English strings across all 7 locales:
+  the Bluetooth/Location Auto-Disable, Global Telemetry Block, BesLoudness,
+  Extra Dimming, Calculator Keys, Chat Enter-to-Send, and Per-App Keyboard
+  Block screens, plus the shared "Search apps"/"Show system apps" app-list
+  picker chrome they (and Auto-Focus) depend on.
+
 ## [1.2] - 2026-07-26
 
 ### Added

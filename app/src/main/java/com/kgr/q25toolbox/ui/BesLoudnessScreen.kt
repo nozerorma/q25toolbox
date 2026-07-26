@@ -19,7 +19,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.modules.BesLoudnessController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -79,7 +81,7 @@ fun BesLoudnessScreen(onBack: () -> Unit) {
 
     ScreenScaffold(title = Screen.BesLoudness.title, onBack = onBack) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("BesLoudness Enabled")
+            Text(stringResource(R.string.besloudness_enabled_switch_label))
             Switch(
                 checked = enabled,
                 enabled = !busy,
@@ -89,7 +91,9 @@ fun BesLoudnessScreen(onBack: () -> Unit) {
                         BesLoudnessController.setEnabled(context, enable)
                         enabled = BesLoudnessController.isEnabled(context)
                         busy = false
-                        statusMessage = if (enable) "BesLoudness enabled." else "BesLoudness disabled."
+                        statusMessage = if (enable)
+                            context.getString(R.string.besloudness_on_status)
+                        else context.getString(R.string.besloudness_off_status)
                     }
                 }
             )
@@ -100,22 +104,22 @@ fun BesLoudnessScreen(onBack: () -> Unit) {
         }
 
         Text(
-            "Auto Schedule",
+            stringResource(R.string.besloudness_auto_schedule),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            "Automatically turns BesLoudness on at the start time and off at the " +
-            "end time every day, without needing the app open.",
+            stringResource(R.string.besloudness_schedule_desc),
             style = MaterialTheme.typography.bodySmall
         )
-        Text(
-            "Schedule: ${if (scheduleEnabled) "On" else "Off"}" +
-                if (scheduleEnabled && !scheduleRunning) " (starts at next boot)" else ""
-        )
+        run {
+            val state = (if (scheduleEnabled) stringResource(R.string.besloudness_schedule_on) else stringResource(R.string.besloudness_schedule_off)) +
+                if (scheduleEnabled && !scheduleRunning) stringResource(R.string.besloudness_schedule_boot_notice) else ""
+            Text(stringResource(R.string.besloudness_schedule_state, state))
+        }
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enabled")
+            Text(stringResource(R.string.besloudness_schedule_enabled_label))
             Switch(
                 checked = scheduleEnabled,
                 enabled = !scheduleBusy,
@@ -131,7 +135,7 @@ fun BesLoudnessScreen(onBack: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Starts at", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.besloudness_starts_at), style = MaterialTheme.typography.titleSmall)
             Text(formatMinutes(startMinutes), style = MaterialTheme.typography.titleMedium)
         }
 
@@ -143,15 +147,13 @@ fun BesLoudnessScreen(onBack: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Ends at", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.besloudness_ends_at), style = MaterialTheme.typography.titleSmall)
             Text(formatMinutes(endMinutes), style = MaterialTheme.typography.titleMedium)
         }
 
         DescriptionDivider()
         Text(
-            "Toggles the vendor speaker loudness-enhancement DSP stage, the same " +
-            "one behind Settings' own \"Sound Enhancement\" screen. Applies " +
-            "immediately, including to whatever's already playing.",
+            stringResource(R.string.besloudness_desc),
             style = MaterialTheme.typography.bodySmall
         )
     }

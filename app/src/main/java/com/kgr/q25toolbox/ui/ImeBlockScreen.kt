@@ -27,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.service.Q25AccessibilityService
 import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
 import kotlinx.coroutines.Dispatchers
@@ -97,7 +99,7 @@ fun ImeBlockScreen(onBack: () -> Unit) {
             onValueChange = { query = it },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            label = { Text("Search apps") }
+            label = { Text(stringResource(R.string.common_search_apps)) }
         )
 
         when (val list = apps) {
@@ -123,7 +125,7 @@ fun ImeBlockScreen(onBack: () -> Unit) {
                     }
                     item(key = "_switch") {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Enable per-app block", modifier = Modifier.weight(1f))
+                            Text(stringResource(R.string.ime_block_enable_switch_label), modifier = Modifier.weight(1f))
                             Switch(
                                 checked = enabled,
                                 onCheckedChange = { checked ->
@@ -136,7 +138,7 @@ fun ImeBlockScreen(onBack: () -> Unit) {
                     item(key = "_banner") { AccessibilityServiceBanner(serviceEnabled) }
                     item(key = "_count") {
                         Text(
-                            "${selected.size} selected of ${list.size} apps",
+                            stringResource(R.string.ime_block_selected_count, selected.size, list.size),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -178,10 +180,7 @@ fun ImeBlockScreen(onBack: () -> Unit) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             DescriptionDivider()
                             Text(
-                                "In the selected apps, physical key presses go straight to the " +
-                                    "app instead of through the keyboard - handy for games. While a " +
-                                    "selected app is open the IME is switched to a do-nothing " +
-                                    "passthrough keyboard, then restored on the way out. Needs root.",
+                                stringResource(R.string.ime_block_desc),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }

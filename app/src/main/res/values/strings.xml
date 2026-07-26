@@ -198,4 +198,93 @@
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Press Ctrl+W, Ctrl+E, or Ctrl+R to pick suggestion 1, 2, or 3 from the physical keyboard\'s candidate strip (BlackBerry Keyboard, Harpocrat, and similar). Only acts when a suggestion is actually showing, so Ctrl+W/E/R still behave normally elsewhere (e.g. closing a browser tab). No root required.</string>
+
+    <!-- Shared app-list picker chrome (Per-App Keyboard Block, Auto-Focus, Ticker blocked apps) -->
+    <string name="common_search_apps">Search apps</string>
+    <string name="common_show_system_apps">Show system apps</string>
+
+    <!-- Bluetooth Auto-Disable Screen -->
+    <string name="bt_idle_state">State: %1$s</string>
+    <string name="bt_idle_on">On</string>
+    <string name="bt_idle_off">Off</string>
+    <string name="bt_idle_boot_notice"> (starts at next boot)</string>
+    <string name="bt_idle_enabled_label">Enabled</string>
+    <string name="bt_idle_turn_off_after">Turn off after</string>
+    <string name="bt_idle_minutes">%1$d min</string>
+    <string name="bt_idle_hours">%1$d h</string>
+    <string name="bt_idle_status_on">Bluetooth will turn off after %1$d min with nothing connected.</string>
+    <string name="bt_idle_status_off">Auto-disable off. Bluetooth stays as you set it.</string>
+    <string name="bt_idle_desc">Turns Bluetooth off after a period with no device connected, so an idle radio can\'t hold the system awake overnight. Connecting earbuds, a watch or a speaker resets the timer.</string>
+
+    <!-- Location Auto-Disable Screen -->
+    <string name="location_idle_state">State: %1$s</string>
+    <string name="location_idle_on">On</string>
+    <string name="location_idle_off">Off</string>
+    <string name="location_idle_boot_notice"> (starts at next boot)</string>
+    <string name="location_idle_enabled_label">Enabled</string>
+    <string name="location_idle_turn_off_after">Turn off after</string>
+    <string name="location_idle_minutes">%1$d min</string>
+    <string name="location_idle_hours">%1$d h</string>
+    <string name="location_idle_status_on">Location will turn off after %1$d min with no active GPS fix.</string>
+    <string name="location_idle_status_off">Auto-disable off. Location stays as you set it.</string>
+    <string name="location_idle_desc">Turns Location off after a period with no active GPS fix (navigation, ride-hailing pickup, camera geotag, ...). Background low-power location checks from Google Play services don\'t count as "active" and won\'t keep resetting the timer.</string>
+
+    <!-- Global Telemetry Block Screen -->
+    <string name="telemetry_protection_status">Protection Status</string>
+    <string name="telemetry_status_full">Status: Fully Protected</string>
+    <string name="telemetry_status_partial">Status: Partially Protected</string>
+    <string name="telemetry_status_none">Status: Unprotected</string>
+    <string name="telemetry_detected_apps">Detected apps with telemetry: %1$d</string>
+    <string name="telemetry_blocked_apps">Blocked apps: %1$d</string>
+    <string name="telemetry_enable_at_boot">Enable at Boot</string>
+    <string name="telemetry_autoblock_on">Auto-block enabled. Will run on every boot.</string>
+    <string name="telemetry_autoblock_off">Auto-block disabled.</string>
+    <string name="telemetry_block_now_button">Block all telemetry now</string>
+    <string name="telemetry_block_now_status">Toggled telemetry off for all detected apps.</string>
+    <string name="telemetry_desc">Globally deactivates Firebase Crashlytics collection system-wide. This halts background crash logs packaging and upload triggers, saving mobile data, RAM, and wakeup cycles.</string>
+
+    <!-- BesLoudness Screen -->
+    <string name="besloudness_enabled_switch_label">BesLoudness Enabled</string>
+    <string name="besloudness_on_status">BesLoudness enabled.</string>
+    <string name="besloudness_off_status">BesLoudness disabled.</string>
+    <string name="besloudness_auto_schedule">Auto Schedule</string>
+    <string name="besloudness_schedule_desc">Automatically turns BesLoudness on at the start time and off at the end time every day, without needing the app open.</string>
+    <string name="besloudness_schedule_state">Schedule: %1$s</string>
+    <string name="besloudness_schedule_on">On</string>
+    <string name="besloudness_schedule_off">Off</string>
+    <string name="besloudness_schedule_boot_notice"> (starts at next boot)</string>
+    <string name="besloudness_schedule_enabled_label">Enabled</string>
+    <string name="besloudness_starts_at">Starts at</string>
+    <string name="besloudness_ends_at">Ends at</string>
+    <string name="besloudness_desc">Toggles the vendor speaker loudness-enhancement DSP stage, the same one behind Settings\' own "Sound Enhancement" screen. Applies immediately, including to whatever\'s already playing.</string>
+
+    <!-- Extra Dimming Screen -->
+    <string name="extra_dim_activated_switch_label">Extra Dim Activated</string>
+    <string name="extra_dim_on_status">Extra Dimming activated.</string>
+    <string name="extra_dim_off_status">Extra Dimming deactivated.</string>
+    <string name="extra_dim_intensity_label">Dimming Intensity: %1$d%%</string>
+    <string name="extra_dim_intensity_status">Dimming intensity set to %1$d%%</string>
+    <string name="extra_dim_auto_night">Auto Night Dim</string>
+    <string name="extra_dim_schedule_desc">Automatically turns Extra Dim on at the start time and off at the end time every day, without needing the app open.</string>
+    <string name="extra_dim_schedule_state">Schedule: %1$s</string>
+    <string name="extra_dim_schedule_on">On</string>
+    <string name="extra_dim_schedule_off">Off</string>
+    <string name="extra_dim_schedule_boot_notice"> (starts at next boot)</string>
+    <string name="extra_dim_schedule_enabled_label">Enabled</string>
+    <string name="extra_dim_starts_at">Starts at</string>
+    <string name="extra_dim_ends_at">Ends at</string>
+    <string name="extra_dim_desc">Reduces the screen brightness below the system\'s standard minimum level. Perfect for reading in low light and saving battery at night.</string>
+
+    <!-- Calculator Keys Screen -->
+    <string name="calculator_input_enabled_label">Enabled</string>
+    <string name="calculator_input_desc">In the AOSP/Google Calculator, route physical keys to the calculator buttons: digits (or W E R / S D F / Z X C / Q for 1-9, 0), plus operators - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, T/Y = ( ), Sym/Alt toggles scientific mode, Backspace deletes. No root needed - uses the accessibility service only.</string>
+
+    <!-- Chat Enter-to-Send Screen -->
+    <string name="chat_composer_enabled_label">Enabled</string>
+    <string name="chat_composer_desc">In supported chat and messaging apps, press Enter to send the message and Alt+Enter (or Shift+Enter) to add a new line - so a physical Enter posts instead of inserting a linebreak. Works in Messages, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, Wallapop, ChatGPT and Perplexity. No root needed - uses the accessibility service only.</string>
+
+    <!-- Per-App Keyboard Block Screen -->
+    <string name="ime_block_enable_switch_label">Enable per-app block</string>
+    <string name="ime_block_selected_count">%1$d selected of %2$d apps</string>
+    <string name="ime_block_desc">In the selected apps, physical key presses go straight to the app instead of through the keyboard - handy for games. While a selected app is open the IME is switched to a do-nothing passthrough keyboard, then restored on the way out. Needs root.</string>
 </resources>

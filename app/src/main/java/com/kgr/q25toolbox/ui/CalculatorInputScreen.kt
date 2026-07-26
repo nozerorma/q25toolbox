@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.service.Q25AccessibilityService
 import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
 
@@ -38,7 +40,7 @@ fun CalculatorInputScreen(onBack: () -> Unit) {
         AccessibilityServiceBanner(serviceEnabled)
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enabled")
+            Text(stringResource(R.string.calculator_input_enabled_label))
             Switch(
                 checked = enabled,
                 onCheckedChange = { checked ->
@@ -50,11 +52,7 @@ fun CalculatorInputScreen(onBack: () -> Unit) {
 
         DescriptionDivider()
         Text(
-            "In the AOSP/Google Calculator, route physical keys to the calculator " +
-                "buttons: digits (or W E R / S D F / Z X C / Q for 1-9, 0), plus " +
-                "operators - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, " +
-                "T/Y = ( ), Sym/Alt toggles scientific mode, Backspace deletes. " +
-                "No root needed - uses the accessibility service only.",
+            stringResource(R.string.calculator_input_desc),
             style = MaterialTheme.typography.bodySmall
         )
     }

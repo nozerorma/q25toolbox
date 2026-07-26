@@ -196,4 +196,93 @@
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Prem Ctrl+W, Ctrl+E o Ctrl+R per triar el suggeriment 1, 2 o 3 de la barra de candidats del teclat físic (BlackBerry Keyboard, Harpocrat i similars). Només actua quan hi ha un suggeriment visible, de manera que Ctrl+W/E/R continuen funcionant amb normalitat en altres llocs (per exemple, tancar una pestanya del navegador). No cal root.</string>
+
+    <!-- Shared app-list picker chrome -->
+    <string name="common_search_apps">Cerca aplicacions</string>
+    <string name="common_show_system_apps">Mostra aplicacions del sistema</string>
+
+    <!-- Bluetooth Auto-Disable Screen -->
+    <string name="bt_idle_state">Estat: %1$s</string>
+    <string name="bt_idle_on">Activat</string>
+    <string name="bt_idle_off">Desactivat</string>
+    <string name="bt_idle_boot_notice"> (comença a la següent arrencada)</string>
+    <string name="bt_idle_enabled_label">Habilitat</string>
+    <string name="bt_idle_turn_off_after">Desactiva després de</string>
+    <string name="bt_idle_minutes">%1$d min</string>
+    <string name="bt_idle_hours">%1$d h</string>
+    <string name="bt_idle_status_on">El Bluetooth es desactivarà després de %1$d min sense res connectat.</string>
+    <string name="bt_idle_status_off">Desactivació automàtica desactivada. El Bluetooth es manté com el tinguis configurat.</string>
+    <string name="bt_idle_desc">Desactiva el Bluetooth després d’un període sense cap dispositiu connectat, perquè una ràdio inactiva no mantingui el sistema despert tota la nit. Connectar auriculars, un rellotge o un altaveu reinicia el temporitzador.</string>
+
+    <!-- Location Auto-Disable Screen -->
+    <string name="location_idle_state">Estat: %1$s</string>
+    <string name="location_idle_on">Activat</string>
+    <string name="location_idle_off">Desactivat</string>
+    <string name="location_idle_boot_notice"> (comença a la següent arrencada)</string>
+    <string name="location_idle_enabled_label">Habilitat</string>
+    <string name="location_idle_turn_off_after">Desactiva després de</string>
+    <string name="location_idle_minutes">%1$d min</string>
+    <string name="location_idle_hours">%1$d h</string>
+    <string name="location_idle_status_on">La ubicació es desactivarà després de %1$d min sense cap fixació GPS activa.</string>
+    <string name="location_idle_status_off">Desactivació automàtica desactivada. La ubicació es manté com la tinguis configurada.</string>
+    <string name="location_idle_desc">Desactiva la ubicació després d’un període sense cap fixació GPS activa (navegació, recollida de VTC, geoetiquetatge de fotos, ...). Les comprovacions de ubicació de baix consum en segon pla de Google Play Services no compten com a “actives” i no reinicien el temporitzador.</string>
+
+    <!-- Global Telemetry Block Screen -->
+    <string name="telemetry_protection_status">Estat de protecció</string>
+    <string name="telemetry_status_full">Estat: Totalment protegit</string>
+    <string name="telemetry_status_partial">Estat: Parcialment protegit</string>
+    <string name="telemetry_status_none">Estat: Sense protecció</string>
+    <string name="telemetry_detected_apps">Aplicacions detectades amb telemetria: %1$d</string>
+    <string name="telemetry_blocked_apps">Aplicacions bloquejades: %1$d</string>
+    <string name="telemetry_enable_at_boot">Habilita a l’arrencada</string>
+    <string name="telemetry_autoblock_on">Bloqueig automàtic habilitat. S’executarà a cada arrencada.</string>
+    <string name="telemetry_autoblock_off">Bloqueig automàtic desactivat.</string>
+    <string name="telemetry_block_now_button">Bloqueja ara tota la telemetria</string>
+    <string name="telemetry_block_now_status">Telemetria desactivada per a totes les aplicacions detectades.</string>
+    <string name="telemetry_desc">Desactiva globalment la recollida de Firebase Crashlytics a tot el sistema. Això atura l’empaquetatge i l’enviament en segon pla dels registres de fallades, estalviant dades mòbils, RAM i cicles de despertar.</string>
+
+    <!-- BesLoudness Screen -->
+    <string name="besloudness_enabled_switch_label">BesLoudness habilitat</string>
+    <string name="besloudness_on_status">BesLoudness habilitat.</string>
+    <string name="besloudness_off_status">BesLoudness desactivat.</string>
+    <string name="besloudness_auto_schedule">Programació automàtica</string>
+    <string name="besloudness_schedule_desc">Activa BesLoudness automàticament a l’hora d’inici i el desactiva a l’hora de final cada dia, sense necessitat de tenir l’aplicació oberta.</string>
+    <string name="besloudness_schedule_state">Programació: %1$s</string>
+    <string name="besloudness_schedule_on">Activada</string>
+    <string name="besloudness_schedule_off">Desactivada</string>
+    <string name="besloudness_schedule_boot_notice"> (comença a la següent arrencada)</string>
+    <string name="besloudness_schedule_enabled_label">Habilitat</string>
+    <string name="besloudness_starts_at">Comença a</string>
+    <string name="besloudness_ends_at">Acaba a</string>
+    <string name="besloudness_desc">Activa o desactiva l’etapa de millora de sonoritat de l’altaveu del fabricant, la mateixa que hi ha darrere de la pantalla “Millora de so” dels Ajustos. S’aplica immediatament, també al que ja s’estigui reproduint.</string>
+
+    <!-- Extra Dimming Screen -->
+    <string name="extra_dim_activated_switch_label">Atenuació extra activada</string>
+    <string name="extra_dim_on_status">Atenuació extra activada.</string>
+    <string name="extra_dim_off_status">Atenuació extra desactivada.</string>
+    <string name="extra_dim_intensity_label">Intensitat d’atenuació: %1$d%%</string>
+    <string name="extra_dim_intensity_status">Intensitat d’atenuació establerta al %1$d%%</string>
+    <string name="extra_dim_auto_night">Atenuació nocturna automàtica</string>
+    <string name="extra_dim_schedule_desc">Activa l’Atenuació extra automàticament a l’hora d’inici i la desactiva a l’hora de final cada dia, sense necessitat de tenir l’aplicació oberta.</string>
+    <string name="extra_dim_schedule_state">Programació: %1$s</string>
+    <string name="extra_dim_schedule_on">Activada</string>
+    <string name="extra_dim_schedule_off">Desactivada</string>
+    <string name="extra_dim_schedule_boot_notice"> (comença a la següent arrencada)</string>
+    <string name="extra_dim_schedule_enabled_label">Habilitat</string>
+    <string name="extra_dim_starts_at">Comença a</string>
+    <string name="extra_dim_ends_at">Acaba a</string>
+    <string name="extra_dim_desc">Redueix la brillantor de la pantalla per sota del nivell mínim estàndard del sistema. Ideal per llegir amb poca llum i estalviar bateria a la nit.</string>
+
+    <!-- Calculator Keys Screen -->
+    <string name="calculator_input_enabled_label">Habilitat</string>
+    <string name="calculator_input_desc">A la Calculadora AOSP/Google, envia les tecles físiques als botons de la calculadora: dígits (o W E R / S D F / Z X C / Q per a 1-9, 0), més els operadors - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, T/Y = ( ), Sym/Alt commuta el mode científic, Retrocés esborra. No cal root - només fa servir el servei d’accessibilitat.</string>
+
+    <!-- Chat Enter-to-Send Screen -->
+    <string name="chat_composer_enabled_label">Habilitat</string>
+    <string name="chat_composer_desc">A les aplicacions de xat i missatgeria compatibles, prem Intro per enviar el missatge i Alt+Intro (o Maj+Intro) per afegir una línia nova - així una Intro física envia en lloc d’inserir un salt de línia. Funciona a Missatges, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, Wallapop, ChatGPT i Perplexity. No cal root - només fa servir el servei d’accessibilitat.</string>
+
+    <!-- Per-App Keyboard Block Screen -->
+    <string name="ime_block_enable_switch_label">Habilita el bloqueig per aplicació</string>
+    <string name="ime_block_selected_count">%1$d seleccionades de %2$d aplicacions</string>
+    <string name="ime_block_desc">A les aplicacions seleccionades, les pulsacions de tecles físiques van directament a l’aplicació en lloc de passar pel teclat - útil per a jocs. Mentre una aplicació seleccionada estigui oberta, l’IME canvia a un teclat de pas sense funció, que es restaura en sortir. Necessita root.</string>
 </resources>

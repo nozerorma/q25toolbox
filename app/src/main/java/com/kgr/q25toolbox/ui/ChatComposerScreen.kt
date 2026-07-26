@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.service.Q25AccessibilityService
 import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
 
@@ -38,7 +40,7 @@ fun ChatComposerScreen(onBack: () -> Unit) {
         AccessibilityServiceBanner(serviceEnabled)
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enabled")
+            Text(stringResource(R.string.chat_composer_enabled_label))
             Switch(
                 checked = enabled,
                 onCheckedChange = { checked ->
@@ -50,12 +52,7 @@ fun ChatComposerScreen(onBack: () -> Unit) {
 
         DescriptionDivider()
         Text(
-            "In supported chat and messaging apps, press Enter to send the " +
-                "message and Alt+Enter (or Shift+Enter) to add a new line - so a " +
-                "physical Enter posts instead of inserting a linebreak. Works in " +
-                "Messages, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, " +
-                "Wallapop, ChatGPT and Perplexity. No root needed - uses the " +
-                "accessibility service only.",
+            stringResource(R.string.chat_composer_desc),
             style = MaterialTheme.typography.bodySmall
         )
     }

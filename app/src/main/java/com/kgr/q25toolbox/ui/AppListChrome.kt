@@ -22,7 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import com.kgr.q25toolbox.R
 import java.util.Locale
 
 /** An installed app entry (label + package) for the picker lists. */
@@ -62,7 +64,7 @@ fun AppListTopBar(
             }
             DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                 DropdownMenuItem(
-                    text = { Text("Show system apps") },
+                    text = { Text(stringResource(R.string.common_show_system_apps)) },
                     onClick = { onToggleShowSystemApps(!showSystemApps) },
                     leadingIcon = { Checkbox(checked = showSystemApps, onCheckedChange = null) }
                 )

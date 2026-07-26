@@ -196,4 +196,93 @@
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Pulsa Ctrl+W, Ctrl+E o Ctrl+R para elegir la sugerencia 1, 2 o 3 de la barra de candidatos del teclado físico (BlackBerry Keyboard, Harpocrat y similares). Solo actúa cuando realmente se muestra una sugerencia, así que Ctrl+W/E/R siguen funcionando con normalidad en otros lugares (por ejemplo, para cerrar una pestaña del navegador). No requiere root.</string>
+
+    <!-- Shared app-list picker chrome -->
+    <string name="common_search_apps">Buscar aplicaciones</string>
+    <string name="common_show_system_apps">Mostrar aplicaciones del sistema</string>
+
+    <!-- Bluetooth Auto-Disable Screen -->
+    <string name="bt_idle_state">Estado: %1$s</string>
+    <string name="bt_idle_on">Activado</string>
+    <string name="bt_idle_off">Desactivado</string>
+    <string name="bt_idle_boot_notice"> (se inicia en el próximo arranque)</string>
+    <string name="bt_idle_enabled_label">Habilitado</string>
+    <string name="bt_idle_turn_off_after">Desactivar después de</string>
+    <string name="bt_idle_minutes">%1$d min</string>
+    <string name="bt_idle_hours">%1$d h</string>
+    <string name="bt_idle_status_on">El Bluetooth se desactivará tras %1$d min sin nada conectado.</string>
+    <string name="bt_idle_status_off">Desactivación automática apagada. El Bluetooth se mantiene como lo configures.</string>
+    <string name="bt_idle_desc">Desactiva el Bluetooth tras un periodo sin ningún dispositivo conectado, para que una radio inactiva no mantenga el sistema despierto toda la noche. Conectar auriculares, un reloj o un altavoz reinicia el temporizador.</string>
+
+    <!-- Location Auto-Disable Screen -->
+    <string name="location_idle_state">Estado: %1$s</string>
+    <string name="location_idle_on">Activado</string>
+    <string name="location_idle_off">Desactivado</string>
+    <string name="location_idle_boot_notice"> (se inicia en el próximo arranque)</string>
+    <string name="location_idle_enabled_label">Habilitado</string>
+    <string name="location_idle_turn_off_after">Desactivar después de</string>
+    <string name="location_idle_minutes">%1$d min</string>
+    <string name="location_idle_hours">%1$d h</string>
+    <string name="location_idle_status_on">La ubicación se desactivará tras %1$d min sin una fijación GPS activa.</string>
+    <string name="location_idle_status_off">Desactivación automática apagada. La ubicación se mantiene como la configures.</string>
+    <string name="location_idle_desc">Desactiva la ubicación tras un periodo sin una fijación GPS activa (navegación, recogida de VTC, geoetiquetado de fotos, ...). Las comprobaciones de ubicación de bajo consumo en segundo plano de Google Play Services no cuentan como "activas" y no reinician el temporizador.</string>
+
+    <!-- Global Telemetry Block Screen -->
+    <string name="telemetry_protection_status">Estado de protección</string>
+    <string name="telemetry_status_full">Estado: Totalmente protegido</string>
+    <string name="telemetry_status_partial">Estado: Parcialmente protegido</string>
+    <string name="telemetry_status_none">Estado: Desprotegido</string>
+    <string name="telemetry_detected_apps">Aplicaciones detectadas con telemetría: %1$d</string>
+    <string name="telemetry_blocked_apps">Aplicaciones bloqueadas: %1$d</string>
+    <string name="telemetry_enable_at_boot">Habilitar en el arranque</string>
+    <string name="telemetry_autoblock_on">Bloqueo automático habilitado. Se ejecutará en cada arranque.</string>
+    <string name="telemetry_autoblock_off">Bloqueo automático deshabilitado.</string>
+    <string name="telemetry_block_now_button">Bloquear toda la telemetría ahora</string>
+    <string name="telemetry_block_now_status">Telemetría desactivada para todas las aplicaciones detectadas.</string>
+    <string name="telemetry_desc">Desactiva globalmente la recopilación de Firebase Crashlytics en todo el sistema. Esto detiene el empaquetado y envío en segundo plano de los registros de fallos, ahorrando datos móviles, RAM y ciclos de activación.</string>
+
+    <!-- BesLoudness Screen -->
+    <string name="besloudness_enabled_switch_label">BesLoudness habilitado</string>
+    <string name="besloudness_on_status">BesLoudness habilitado.</string>
+    <string name="besloudness_off_status">BesLoudness deshabilitado.</string>
+    <string name="besloudness_auto_schedule">Programación automática</string>
+    <string name="besloudness_schedule_desc">Activa BesLoudness automáticamente a la hora de inicio y lo desactiva a la hora de fin cada día, sin necesidad de tener la app abierta.</string>
+    <string name="besloudness_schedule_state">Programación: %1$s</string>
+    <string name="besloudness_schedule_on">Activada</string>
+    <string name="besloudness_schedule_off">Desactivada</string>
+    <string name="besloudness_schedule_boot_notice"> (se inicia en el próximo arranque)</string>
+    <string name="besloudness_schedule_enabled_label">Habilitado</string>
+    <string name="besloudness_starts_at">Empieza a las</string>
+    <string name="besloudness_ends_at">Termina a las</string>
+    <string name="besloudness_desc">Activa o desactiva la etapa de mejora de sonoridad del altavoz del fabricante, la misma que hay detrás de la pantalla "Mejora de sonido" de Ajustes. Se aplica de inmediato, incluso a lo que ya se esté reproduciendo.</string>
+
+    <!-- Extra Dimming Screen -->
+    <string name="extra_dim_activated_switch_label">Atenuación extra activada</string>
+    <string name="extra_dim_on_status">Atenuación extra activada.</string>
+    <string name="extra_dim_off_status">Atenuación extra desactivada.</string>
+    <string name="extra_dim_intensity_label">Intensidad de atenuación: %1$d%%</string>
+    <string name="extra_dim_intensity_status">Intensidad de atenuación fijada al %1$d%%</string>
+    <string name="extra_dim_auto_night">Atenuación nocturna automática</string>
+    <string name="extra_dim_schedule_desc">Activa la Atenuación extra automáticamente a la hora de inicio y la desactiva a la hora de fin cada día, sin necesidad de tener la app abierta.</string>
+    <string name="extra_dim_schedule_state">Programación: %1$s</string>
+    <string name="extra_dim_schedule_on">Activada</string>
+    <string name="extra_dim_schedule_off">Desactivada</string>
+    <string name="extra_dim_schedule_boot_notice"> (se inicia en el próximo arranque)</string>
+    <string name="extra_dim_schedule_enabled_label">Habilitado</string>
+    <string name="extra_dim_starts_at">Empieza a las</string>
+    <string name="extra_dim_ends_at">Termina a las</string>
+    <string name="extra_dim_desc">Reduce el brillo de la pantalla por debajo del nivel mínimo estándar del sistema. Perfecto para leer con poca luz y ahorrar batería por la noche.</string>
+
+    <!-- Calculator Keys Screen -->
+    <string name="calculator_input_enabled_label">Habilitado</string>
+    <string name="calculator_input_desc">En la Calculadora AOSP/Google, envía las teclas físicas a los botones de la calculadora: dígitos (o W E R / S D F / Z X C / Q para 1-9, 0), más operadores - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, T/Y = ( ), Sym/Alt alterna el modo científico, Retroceso borra. No requiere root - solo usa el servicio de accesibilidad.</string>
+
+    <!-- Chat Enter-to-Send Screen -->
+    <string name="chat_composer_enabled_label">Habilitado</string>
+    <string name="chat_composer_desc">En las apps de chat y mensajería compatibles, pulsa Intro para enviar el mensaje y Alt+Intro (o Mayús+Intro) para añadir una línea nueva - así una Intro física envía en vez de insertar un salto de línea. Funciona en Mensajes, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, Wallapop, ChatGPT y Perplexity. No requiere root - solo usa el servicio de accesibilidad.</string>
+
+    <!-- Per-App Keyboard Block Screen -->
+    <string name="ime_block_enable_switch_label">Habilitar bloqueo por app</string>
+    <string name="ime_block_selected_count">%1$d seleccionadas de %2$d aplicaciones</string>
+    <string name="ime_block_desc">En las aplicaciones seleccionadas, las pulsaciones de teclas físicas van directas a la app en lugar de pasar por el teclado - útil para juegos. Mientras una app seleccionada esté abierta, el IME cambia a un teclado de paso sin función, que se restaura al salir. Necesita root.</string>
 </resources>

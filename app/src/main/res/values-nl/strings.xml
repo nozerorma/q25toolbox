@@ -198,4 +198,93 @@
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Druk op Ctrl+W, Ctrl+E of Ctrl+R om suggestie 1, 2 of 3 te kiezen uit de kandidatenbalk van het fysieke toetsenbord (BlackBerry Keyboard, Harpocrat en vergelijkbare). Werkt alleen als er daadwerkelijk een suggestie wordt getoond, dus Ctrl+W/E/R werken elders nog gewoon normaal (bijv. om een browsertabblad te sluiten). Geen root nodig.</string>
+
+    <!-- Shared app-list picker chrome -->
+    <string name="common_search_apps">Apps zoeken</string>
+    <string name="common_show_system_apps">Systeemapps tonen</string>
+
+    <!-- Bluetooth Auto-Disable Screen -->
+    <string name="bt_idle_state">Status: %1$s</string>
+    <string name="bt_idle_on">Aan</string>
+    <string name="bt_idle_off">Uit</string>
+    <string name="bt_idle_boot_notice"> (start bij volgende opstart)</string>
+    <string name="bt_idle_enabled_label">Ingeschakeld</string>
+    <string name="bt_idle_turn_off_after">Uitschakelen na</string>
+    <string name="bt_idle_minutes">%1$d min</string>
+    <string name="bt_idle_hours">%1$d u</string>
+    <string name="bt_idle_status_on">Bluetooth wordt uitgeschakeld na %1$d min zonder verbinding.</string>
+    <string name="bt_idle_status_off">Automatisch uitschakelen staat uit. Bluetooth blijft zoals ingesteld.</string>
+    <string name="bt_idle_desc">Schakelt Bluetooth uit na een periode zonder verbonden apparaat, zodat een inactieve radio het systeem niet de hele nacht wakker houdt. Het verbinden van oordopjes, een horloge of een speaker zet de timer terug.</string>
+
+    <!-- Location Auto-Disable Screen -->
+    <string name="location_idle_state">Status: %1$s</string>
+    <string name="location_idle_on">Aan</string>
+    <string name="location_idle_off">Uit</string>
+    <string name="location_idle_boot_notice"> (start bij volgende opstart)</string>
+    <string name="location_idle_enabled_label">Ingeschakeld</string>
+    <string name="location_idle_turn_off_after">Uitschakelen na</string>
+    <string name="location_idle_minutes">%1$d min</string>
+    <string name="location_idle_hours">%1$d u</string>
+    <string name="location_idle_status_on">Locatie wordt uitgeschakeld na %1$d min zonder actieve GPS-positie.</string>
+    <string name="location_idle_status_off">Automatisch uitschakelen staat uit. Locatie blijft zoals ingesteld.</string>
+    <string name="location_idle_desc">Schakelt Locatie uit na een periode zonder actieve GPS-positie (navigatie, taxi-ophaal, foto-geotag, ...). Energiezuinige locatiecontroles op de achtergrond van Google Play-services tellen niet als "actief" en zetten de timer niet terug.</string>
+
+    <!-- Global Telemetry Block Screen -->
+    <string name="telemetry_protection_status">Beschermingsstatus</string>
+    <string name="telemetry_status_full">Status: Volledig beschermd</string>
+    <string name="telemetry_status_partial">Status: Gedeeltelijk beschermd</string>
+    <string name="telemetry_status_none">Status: Onbeschermd</string>
+    <string name="telemetry_detected_apps">Gedetecteerde apps met telemetrie: %1$d</string>
+    <string name="telemetry_blocked_apps">Geblokkeerde apps: %1$d</string>
+    <string name="telemetry_enable_at_boot">Inschakelen bij opstarten</string>
+    <string name="telemetry_autoblock_on">Automatisch blokkeren ingeschakeld. Wordt bij elke opstart uitgevoerd.</string>
+    <string name="telemetry_autoblock_off">Automatisch blokkeren uitgeschakeld.</string>
+    <string name="telemetry_block_now_button">Nu alle telemetrie blokkeren</string>
+    <string name="telemetry_block_now_status">Telemetrie uitgeschakeld voor alle gedetecteerde apps.</string>
+    <string name="telemetry_desc">Schakelt de verzameling van Firebase Crashlytics systeembreed uit. Dit stopt het achtergrond-verpakken en uploaden van crashlogs, wat mobiele data, RAM en wake-cycli bespaart.</string>
+
+    <!-- BesLoudness Screen -->
+    <string name="besloudness_enabled_switch_label">BesLoudness ingeschakeld</string>
+    <string name="besloudness_on_status">BesLoudness ingeschakeld.</string>
+    <string name="besloudness_off_status">BesLoudness uitgeschakeld.</string>
+    <string name="besloudness_auto_schedule">Automatische planning</string>
+    <string name="besloudness_schedule_desc">Schakelt BesLoudness dagelijks automatisch in op de starttijd en uit op de eindtijd, zonder dat de app geopend hoeft te zijn.</string>
+    <string name="besloudness_schedule_state">Planning: %1$s</string>
+    <string name="besloudness_schedule_on">Aan</string>
+    <string name="besloudness_schedule_off">Uit</string>
+    <string name="besloudness_schedule_boot_notice"> (start bij volgende opstart)</string>
+    <string name="besloudness_schedule_enabled_label">Ingeschakeld</string>
+    <string name="besloudness_starts_at">Begint om</string>
+    <string name="besloudness_ends_at">Eindigt om</string>
+    <string name="besloudness_desc">Schakelt de geluidsversterkings-DSP-trap van de fabrikant om, dezelfde die achter het "Geluidsverbetering"-scherm van Instellingen zit. Wordt direct toegepast, ook op wat al wordt afgespeeld.</string>
+
+    <!-- Extra Dimming Screen -->
+    <string name="extra_dim_activated_switch_label">Extra dimmen geactiveerd</string>
+    <string name="extra_dim_on_status">Extra dimmen geactiveerd.</string>
+    <string name="extra_dim_off_status">Extra dimmen gedeactiveerd.</string>
+    <string name="extra_dim_intensity_label">Dimintensiteit: %1$d%%</string>
+    <string name="extra_dim_intensity_status">Dimintensiteit ingesteld op %1$d%%</string>
+    <string name="extra_dim_auto_night">Automatisch nachtdimmen</string>
+    <string name="extra_dim_schedule_desc">Schakelt Extra dimmen dagelijks automatisch in op de starttijd en uit op de eindtijd, zonder dat de app geopend hoeft te zijn.</string>
+    <string name="extra_dim_schedule_state">Planning: %1$s</string>
+    <string name="extra_dim_schedule_on">Aan</string>
+    <string name="extra_dim_schedule_off">Uit</string>
+    <string name="extra_dim_schedule_boot_notice"> (start bij volgende opstart)</string>
+    <string name="extra_dim_schedule_enabled_label">Ingeschakeld</string>
+    <string name="extra_dim_starts_at">Begint om</string>
+    <string name="extra_dim_ends_at">Eindigt om</string>
+    <string name="extra_dim_desc">Verlaagt de schermhelderheid onder het standaard minimumniveau van het systeem. Perfect om te lezen bij weinig licht en om \'s nachts batterij te besparen.</string>
+
+    <!-- Calculator Keys Screen -->
+    <string name="calculator_input_enabled_label">Ingeschakeld</string>
+    <string name="calculator_input_desc">Stuurt in de AOSP/Google Rekenmachine fysieke toetsen naar de rekenmachineknoppen: cijfers (of W E R / S D F / Z X C / Q voor 1-9, 0), plus operators - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, T/Y = ( ), Sym/Alt schakelt wetenschappelijke modus, Backspace wist. Geen root nodig - gebruikt alleen de toegankelijkheidsservice.</string>
+
+    <!-- Chat Enter-to-Send Screen -->
+    <string name="chat_composer_enabled_label">Ingeschakeld</string>
+    <string name="chat_composer_desc">Druk in ondersteunde chat- en berichten-apps op Enter om het bericht te versturen en Alt+Enter (of Shift+Enter) om een nieuwe regel toe te voegen - zo verstuurt een fysieke Enter in plaats van een regeleinde in te voegen. Werkt in Messages, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, Wallapop, ChatGPT en Perplexity. Geen root nodig - gebruikt alleen de toegankelijkheidsservice.</string>
+
+    <!-- Per-App Keyboard Block Screen -->
+    <string name="ime_block_enable_switch_label">Blokkering per app inschakelen</string>
+    <string name="ime_block_selected_count">%1$d geselecteerd van %2$d apps</string>
+    <string name="ime_block_desc">In de geselecteerde apps gaan fysieke toetsaanslagen rechtstreeks naar de app in plaats van via het toetsenbord - handig voor games. Zolang een geselecteerde app open is, schakelt de IME naar een niets-doende passthrough-toetsenbord, dat bij het verlaten wordt hersteld. Vereist root.</string>
 </resources>

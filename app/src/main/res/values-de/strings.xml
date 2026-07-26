@@ -196,4 +196,93 @@
 
     <!-- IME Suggestions Screen -->
     <string name="ime_suggestions_desc">Drücke Strg+W, Strg+E oder Strg+R, um Vorschlag 1, 2 oder 3 aus der Vorschlagsleiste der physischen Tastatur (BlackBerry Keyboard, Harpocrat und ähnliche) auszuwählen. Wirkt nur, wenn tatsächlich ein Vorschlag angezeigt wird, sodass Strg+W/E/R anderswo normal funktionieren (z. B. zum Schließen eines Browser-Tabs). Kein Root erforderlich.</string>
+
+    <!-- Shared app-list picker chrome -->
+    <string name="common_search_apps">Apps suchen</string>
+    <string name="common_show_system_apps">Systemapps anzeigen</string>
+
+    <!-- Bluetooth Auto-Disable Screen -->
+    <string name="bt_idle_state">Status: %1$s</string>
+    <string name="bt_idle_on">An</string>
+    <string name="bt_idle_off">Aus</string>
+    <string name="bt_idle_boot_notice"> (startet beim nächsten Neustart)</string>
+    <string name="bt_idle_enabled_label">Aktiviert</string>
+    <string name="bt_idle_turn_off_after">Ausschalten nach</string>
+    <string name="bt_idle_minutes">%1$d Min.</string>
+    <string name="bt_idle_hours">%1$d Std.</string>
+    <string name="bt_idle_status_on">Bluetooth schaltet sich nach %1$d Min. ohne Verbindung aus.</string>
+    <string name="bt_idle_status_off">Automatisches Ausschalten deaktiviert. Bluetooth bleibt wie eingestellt.</string>
+    <string name="bt_idle_desc">Schaltet Bluetooth nach einer Zeit ohne verbundenes Gerät aus, damit ein untätiges Funkmodul das System nicht die ganze Nacht wachhält. Das Verbinden von Kopfhörern, einer Uhr oder eines Lautsprechers setzt den Timer zurück.</string>
+
+    <!-- Location Auto-Disable Screen -->
+    <string name="location_idle_state">Status: %1$s</string>
+    <string name="location_idle_on">An</string>
+    <string name="location_idle_off">Aus</string>
+    <string name="location_idle_boot_notice"> (startet beim nächsten Neustart)</string>
+    <string name="location_idle_enabled_label">Aktiviert</string>
+    <string name="location_idle_turn_off_after">Ausschalten nach</string>
+    <string name="location_idle_minutes">%1$d Min.</string>
+    <string name="location_idle_hours">%1$d Std.</string>
+    <string name="location_idle_status_on">Standort schaltet sich nach %1$d Min. ohne aktive GPS-Ortung aus.</string>
+    <string name="location_idle_status_off">Automatisches Ausschalten deaktiviert. Standort bleibt wie eingestellt.</string>
+    <string name="location_idle_desc">Schaltet den Standort nach einer Zeit ohne aktive GPS-Ortung aus (Navigation, Fahrdienst-Abholung, Foto-Geotagging, ...). Stromsparende Hintergrund-Standortabfragen von Google Play-Diensten zählen nicht als „aktiv“ und setzen den Timer nicht zurück.</string>
+
+    <!-- Global Telemetry Block Screen -->
+    <string name="telemetry_protection_status">Schutzstatus</string>
+    <string name="telemetry_status_full">Status: Vollständig geschützt</string>
+    <string name="telemetry_status_partial">Status: Teilweise geschützt</string>
+    <string name="telemetry_status_none">Status: Ungeschützt</string>
+    <string name="telemetry_detected_apps">Erkannte Apps mit Telemetrie: %1$d</string>
+    <string name="telemetry_blocked_apps">Blockierte Apps: %1$d</string>
+    <string name="telemetry_enable_at_boot">Beim Start aktivieren</string>
+    <string name="telemetry_autoblock_on">Automatische Blockierung aktiviert. Läuft bei jedem Start.</string>
+    <string name="telemetry_autoblock_off">Automatische Blockierung deaktiviert.</string>
+    <string name="telemetry_block_now_button">Jetzt alle Telemetrie blockieren</string>
+    <string name="telemetry_block_now_status">Telemetrie für alle erkannten Apps deaktiviert.</string>
+    <string name="telemetry_desc">Deaktiviert die Firebase-Crashlytics-Erfassung systemweit. Dies stoppt das Verpacken und Hochladen von Absturzprotokollen im Hintergrund und spart mobile Daten, RAM und Aufwachzyklen.</string>
+
+    <!-- BesLoudness Screen -->
+    <string name="besloudness_enabled_switch_label">BesLoudness aktiviert</string>
+    <string name="besloudness_on_status">BesLoudness aktiviert.</string>
+    <string name="besloudness_off_status">BesLoudness deaktiviert.</string>
+    <string name="besloudness_auto_schedule">Automatischer Zeitplan</string>
+    <string name="besloudness_schedule_desc">Schaltet BesLoudness täglich automatisch zur Startzeit ein und zur Endzeit aus, ohne dass die App geöffnet sein muss.</string>
+    <string name="besloudness_schedule_state">Zeitplan: %1$s</string>
+    <string name="besloudness_schedule_on">An</string>
+    <string name="besloudness_schedule_off">Aus</string>
+    <string name="besloudness_schedule_boot_notice"> (startet beim nächsten Neustart)</string>
+    <string name="besloudness_schedule_enabled_label">Aktiviert</string>
+    <string name="besloudness_starts_at">Beginnt um</string>
+    <string name="besloudness_ends_at">Endet um</string>
+    <string name="besloudness_desc">Schaltet die Lautstärkeverbesserungs-DSP-Stufe des Herstellers um, dieselbe hinter dem „Klangverbesserung“-Bildschirm der Einstellungen. Wirkt sofort, auch auf bereits laufende Wiedergabe.</string>
+
+    <!-- Extra Dimming Screen -->
+    <string name="extra_dim_activated_switch_label">Extra-Abdunklung aktiviert</string>
+    <string name="extra_dim_on_status">Extra-Abdunklung aktiviert.</string>
+    <string name="extra_dim_off_status">Extra-Abdunklung deaktiviert.</string>
+    <string name="extra_dim_intensity_label">Abdunklungsstärke: %1$d %%</string>
+    <string name="extra_dim_intensity_status">Abdunklungsstärke auf %1$d %% gesetzt</string>
+    <string name="extra_dim_auto_night">Automatische Nachtabdunklung</string>
+    <string name="extra_dim_schedule_desc">Schaltet Extra-Abdunklung täglich automatisch zur Startzeit ein und zur Endzeit aus, ohne dass die App geöffnet sein muss.</string>
+    <string name="extra_dim_schedule_state">Zeitplan: %1$s</string>
+    <string name="extra_dim_schedule_on">An</string>
+    <string name="extra_dim_schedule_off">Aus</string>
+    <string name="extra_dim_schedule_boot_notice"> (startet beim nächsten Neustart)</string>
+    <string name="extra_dim_schedule_enabled_label">Aktiviert</string>
+    <string name="extra_dim_starts_at">Beginnt um</string>
+    <string name="extra_dim_ends_at">Endet um</string>
+    <string name="extra_dim_desc">Reduziert die Bildschirmhelligkeit unter die Standard-Mindesthelligkeit des Systems. Perfekt zum Lesen bei schwachem Licht und zum Sparen von Akku nachts.</string>
+
+    <!-- Calculator Keys Screen -->
+    <string name="calculator_input_enabled_label">Aktiviert</string>
+    <string name="calculator_input_desc">Im AOSP/Google-Taschenrechner werden physische Tasten auf die Rechner-Tasten geleitet: Ziffern (oder W E R / S D F / Z X C / Q für 1-9, 0), plus Operatoren - O = +, I = -, A = ×, G = ÷, M = ., U = %, B = !, T/Y = ( ), Sym/Alt schaltet den wissenschaftlichen Modus um, Rücktaste löscht. Kein Root nötig - nutzt nur den Bedienungshilfen-Dienst.</string>
+
+    <!-- Chat Enter-to-Send Screen -->
+    <string name="chat_composer_enabled_label">Aktiviert</string>
+    <string name="chat_composer_desc">In unterstützten Chat- und Messaging-Apps sendet Enter die Nachricht und Alt+Enter (oder Umschalt+Enter) fügt eine neue Zeile ein - so sendet eine physische Enter-Taste, statt einen Zeilenumbruch einzufügen. Funktioniert in Messages, WhatsApp, Telegram, Signal, Element/Matrix, Mattermost, Wallapop, ChatGPT und Perplexity. Kein Root nötig - nutzt nur den Bedienungshilfen-Dienst.</string>
+
+    <!-- Per-App Keyboard Block Screen -->
+    <string name="ime_block_enable_switch_label">Blockierung pro App aktivieren</string>
+    <string name="ime_block_selected_count">%1$d von %2$d Apps ausgewählt</string>
+    <string name="ime_block_desc">In den ausgewählten Apps gehen physische Tastendrücke direkt an die App statt über die Tastatur - praktisch für Spiele. Solange eine ausgewählte App geöffnet ist, wird die Eingabemethode auf eine Do-nothing-Passthrough-Tastatur umgeschaltet und beim Verlassen wiederhergestellt. Benötigt Root.</string>
 </resources>

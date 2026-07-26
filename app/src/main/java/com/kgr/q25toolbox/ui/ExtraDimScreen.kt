@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.modules.ExtraDimController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -86,7 +88,7 @@ fun ExtraDimScreen(onBack: () -> Unit) {
 
     ScreenScaffold(title = Screen.ExtraDim.title, onBack = onBack) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Extra Dim Activated")
+            Text(stringResource(R.string.extra_dim_activated_switch_label))
             Switch(
                 checked = activated,
                 enabled = !busy,
@@ -96,7 +98,9 @@ fun ExtraDimScreen(onBack: () -> Unit) {
                         ExtraDimController.setActivated(enable)
                         activated = ExtraDimController.isActivated()
                         busy = false
-                        statusMessage = if (enable) "Extra Dimming activated." else "Extra Dimming deactivated."
+                        statusMessage = if (enable)
+                            context.getString(R.string.extra_dim_on_status)
+                        else context.getString(R.string.extra_dim_off_status)
                     }
                 }
             )
@@ -108,7 +112,7 @@ fun ExtraDimScreen(onBack: () -> Unit) {
                 .padding(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text("Dimming Intensity: ${level.toInt()}%", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.extra_dim_intensity_label, level.toInt()), style = MaterialTheme.typography.titleSmall)
             Slider(
                 value = level,
                 enabled = !busy,
@@ -120,7 +124,7 @@ fun ExtraDimScreen(onBack: () -> Unit) {
                         ExtraDimController.setDimmingLevel(level.toInt())
                         level = ExtraDimController.getDimmingLevel().toFloat()
                         busy = false
-                        statusMessage = "Dimming intensity set to ${level.toInt()}%"
+                        statusMessage = context.getString(R.string.extra_dim_intensity_status, level.toInt())
                     }
                 }
             )
@@ -131,22 +135,22 @@ fun ExtraDimScreen(onBack: () -> Unit) {
         }
 
         Text(
-            "Auto Night Dim",
+            stringResource(R.string.extra_dim_auto_night),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            "Automatically turns Extra Dim on at the start time and off at the " +
-            "end time every day, without needing the app open.",
+            stringResource(R.string.extra_dim_schedule_desc),
             style = MaterialTheme.typography.bodySmall
         )
-        Text(
-            "Schedule: ${if (scheduleEnabled) "On" else "Off"}" +
-                if (scheduleEnabled && !scheduleRunning) " (starts at next boot)" else ""
-        )
+        run {
+            val state = (if (scheduleEnabled) stringResource(R.string.extra_dim_schedule_on) else stringResource(R.string.extra_dim_schedule_off)) +
+                if (scheduleEnabled && !scheduleRunning) stringResource(R.string.extra_dim_schedule_boot_notice) else ""
+            Text(stringResource(R.string.extra_dim_schedule_state, state))
+        }
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Enabled")
+            Text(stringResource(R.string.extra_dim_schedule_enabled_label))
             Switch(
                 checked = scheduleEnabled,
                 enabled = !scheduleBusy,
@@ -162,7 +166,7 @@ fun ExtraDimScreen(onBack: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Starts at", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.extra_dim_starts_at), style = MaterialTheme.typography.titleSmall)
             Text(formatMinutes(startMinutes), style = MaterialTheme.typography.titleMedium)
         }
 
@@ -174,14 +178,13 @@ fun ExtraDimScreen(onBack: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Ends at", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.extra_dim_ends_at), style = MaterialTheme.typography.titleSmall)
             Text(formatMinutes(endMinutes), style = MaterialTheme.typography.titleMedium)
         }
 
         DescriptionDivider()
         Text(
-            "Reduces the screen brightness below the system's standard minimum level. " +
-            "Perfect for reading in low light and saving battery at night.",
+            stringResource(R.string.extra_dim_desc),
             style = MaterialTheme.typography.bodySmall
         )
     }
