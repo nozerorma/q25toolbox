@@ -69,4 +69,16 @@ object RecentsTweaksController {
     fun restartLauncher(): Boolean = killProcess("com.android.launcher3")
 
     fun restartSystemUi(): Boolean = killProcess("com.android.systemui")
+
+    private const val SCRIM_ALPHA_KEY = "q25_recents_scrim_alpha"
+
+    /** Recents background scrim opacity (0f = fully transparent, 1f = fully opaque).
+     * Read live by the patched RecentsState/OverviewState.getScrimColor()/
+     * getWorkspaceScrimColor() - no rebuild needed, just a launcher restart to pick it up. */
+    fun getScrimAlpha(): Float =
+        RootShell.run("settings get global $SCRIM_ALPHA_KEY").outString.trim().toFloatOrNull() ?: 1f
+
+    fun setScrimAlpha(alpha: Float) {
+        RootShell.run("settings put global $SCRIM_ALPHA_KEY ${alpha.coerceIn(0f, 1f)}")
+    }
 }

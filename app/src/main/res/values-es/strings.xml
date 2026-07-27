@@ -339,6 +339,8 @@
     <string name="subtitle_recents_tweaks">Vista multi-app en Recientes mediante un parche quirúrgico de RecentsView</string>
     <string name="recents_patch_card_title">Cuadrícula nativa de Recientes</string>
     <string name="recents_patch_card_desc">Parchea RecentsView y BaseActivityInterface directamente para forzar la vista de Recientes en cuadrícula de dos filas a la DPI nativa, sin cambiar el estado de tablet de DeviceProfile para el escritorio/hotseat ni la densidad de pantalla.</string>
+    <string name="recents_transparency_title">Transparencia de fondo</string>
+    <string name="recents_transparency_desc">Cuánto se ve el fondo de pantalla detrás de las tarjetas. Reinicia Launcher3 para aplicarlo.</string>
     <string name="recents_restart_launcher">Reiniciar Launcher3</string>
     <string name="recents_restart_systemui">Reiniciar SystemUI</string>
 

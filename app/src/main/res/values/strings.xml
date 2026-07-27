@@ -360,6 +360,8 @@
     <!-- Recents UI Tweaks Screen -->
     <string name="recents_patch_card_title">Native Grid Recents</string>
     <string name="recents_patch_card_desc">Patches RecentsView and BaseActivityInterface directly to force the two-row Grid Recents overview at native DPI, without changing DeviceProfile\'s tablet status for the workspace/hotseat or the screen density.</string>
+    <string name="recents_transparency_title">Background Transparency</string>
+    <string name="recents_transparency_desc">How much of the wallpaper shows through behind the cards. Restarts Launcher3 to apply.</string>
     <string name="recents_restart_launcher">Restart Launcher3</string>
     <string name="recents_restart_systemui">Restart SystemUI</string>
 </resources>

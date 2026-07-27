@@ -239,6 +239,22 @@ the build script. Until then, both build types are signed with the debug key.
 - "Restart Launcher3" / "Restart SystemUI" actions use a hard `kill -9` on the
   actual PID - `am force-stop` is a no-op for persistent processes like
   SystemUI (confirmed on-device: identical PID before/after).
+- **Background Transparency** slider: how much of the wallpaper shows through
+  behind the grid cards. Backed by a `q25_recents_scrim_alpha` `Settings.
+  Global` key that the patch reads live at render time, so changing it only
+  needs a Launcher3 restart, not a new patch build.
+- The grid's margins are symmetric on all four sides (each mirrors its own
+  real inset rather than reusing the top/left one, which looked symmetric in
+  the numbers but not visually, since the real status bar height folded into
+  the top inset has no equivalent on the bottom), with a small proportional
+  top-only offset to center the block within that rect.
+- Opening Recents directly from Home no longer shows a live-updating patch of
+  the home screen floating over the grid - Android's gesture nav renders the
+  most-recently-used task (Home, in that case) as a live `SurfaceView` mirror
+  rather than a screenshot for a seamless swipe animation; `onGestureAnimationEnd()`
+  now forces an immediate `switchToScreenshot()` instead of leaving it live.
+- Transition duration cut from 250ms to 100ms (380ms to 140ms for the
+  gesture-nav variant).
 
 ### Ticker Notifications (`TickerController` + `TickerOverlayController`)
 - A "Super Status Bar"-style scrolling banner instead of heads-up popups.

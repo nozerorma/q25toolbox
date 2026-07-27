@@ -10,6 +10,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,14 +37,24 @@ import kotlinx.coroutines.withContext
 fun RecentsTweaksScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     var status by remember { mutableStateOf(RecentsTweaksController.RecentsStatus()) }
+    var scrimAlpha by remember { mutableStateOf(1f) }
     val scope = rememberCoroutineScope()
 
     fun updateStatusAsync() {
         scope.launch(Dispatchers.IO) {
             val newStatus = RecentsTweaksController.queryStatus()
+            val alpha = RecentsTweaksController.getScrimAlpha()
             withContext(Dispatchers.Main) {
                 status = newStatus
+                scrimAlpha = alpha
             }
+        }
+    }
+
+    fun commitScrimAlphaAsync(alpha: Float) {
+        scope.launch(Dispatchers.IO) {
+            RecentsTweaksController.setScrimAlpha(alpha)
+            RecentsTweaksController.restartLauncher()
         }
     }
 
@@ -97,6 +108,40 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
                     onCheckedChange = { checked ->
                         toggleNativePatchAsync(checked)
                     }
+                )
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(R.string.recents_transparency_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "${(scrimAlpha * 100).toInt()}%",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.recents_transparency_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Slider(
+                    value = scrimAlpha,
+                    onValueChange = { scrimAlpha = it },
+                    onValueChangeFinished = { commitScrimAlphaAsync(scrimAlpha) },
+                    valueRange = 0f..1f
                 )
             }
         }

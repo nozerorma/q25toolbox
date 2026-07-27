@@ -339,6 +339,8 @@
     <string name="subtitle_recents_tweaks">Layout multi-app in Recenti tramite una patch chirurgica di RecentsView</string>
     <string name="recents_patch_card_title">Griglia nativa di Recenti</string>
     <string name="recents_patch_card_desc">Applica una patch diretta a RecentsView e BaseActivityInterface per forzare la panoramica Recenti a griglia a due righe alla DPI nativa, senza modificare lo stato tablet di DeviceProfile per home/hotseat o la densità dello schermo.</string>
+    <string name="recents_transparency_title">Trasparenza dello sfondo</string>
+    <string name="recents_transparency_desc">Quanto si vede lo sfondo dietro le schede. Riavvia Launcher3 per applicare.</string>
     <string name="recents_restart_launcher">Riavvia Launcher3</string>
     <string name="recents_restart_systemui">Riavvia SystemUI</string>
 

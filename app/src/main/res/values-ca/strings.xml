@@ -339,6 +339,8 @@
     <string name="subtitle_recents_tweaks">Disposició de Recents multi-app mitjançant un pedaç quirúrgic de RecentsView</string>
     <string name="recents_patch_card_title">Graella nativa de Recents</string>
     <string name="recents_patch_card_desc">Apedaça RecentsView i BaseActivityInterface directament per forçar la vista general de Recents en graella de dues files a la DPI nativa, sense canviar l\'estat de tauleta de DeviceProfile per a l\'escriptori/hotseat ni la densitat de pantalla.</string>
+    <string name="recents_transparency_title">Transparència de fons</string>
+    <string name="recents_transparency_desc">Quant es veu el fons de pantalla darrere de les targetes. Reinicia Launcher3 per aplicar-ho.</string>
     <string name="recents_restart_launcher">Reinicia Launcher3</string>
     <string name="recents_restart_systemui">Reinicia SystemUI</string>
 

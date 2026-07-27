@@ -4,6 +4,44 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.0.1] - 2026-07-27
+
+### Added
+- **Recents background transparency**: a slider on the Recents UI Layout screen
+  controlling how much of the wallpaper shows through behind the grid cards
+  (0-100%). Backed by a `q25_recents_scrim_alpha` `Settings.Global` key that the
+  patched `RecentsState.getScrimColor()`/`OverviewState.getWorkspaceScrimColor()`
+  read live - changing it only needs a Launcher3 restart, no new patch build.
+
+### Fixed
+- **Recents grid margins**: the grid rect's top/bottom/left/right insets are
+  now genuinely symmetric. The previous fix computed a symmetric *rect* by
+  reusing `insets.top` for the bottom margin too, but the real status bar
+  height folded into that top inset isn't matched by anything on the bottom,
+  so the *visible* gap stayed asymmetric even though the numbers matched;
+  each side now mirrors its own real inset (`insets.bottom`, `insets.right`)
+  instead. A small proportional top-only offset (`heightPx/10`) centers the
+  block within that now-symmetric rect.
+- **Recents "live tile" artifact**: opening Recents directly from Home (never
+  reproduced from within another app) showed a small, live-updating patch of
+  the home screen floating over the grid. Root cause: Android's gesture nav
+  renders the most-recently-used task - Home, in this case - as a live
+  `SurfaceView` mirror rather than a captured screenshot, for a seamless
+  swipe animation; two earlier attempts (workspace scale/translation, and
+  suppressing `FallbackRecentsView`'s synthetic Home task entry) didn't
+  address this and were reverted/superseded. Fixed by forcing
+  `RecentsView.onGestureAnimationEnd()` to call `switchToScreenshot()` +
+  `finishRecentsAnimation()` immediately, converting the live tile to a
+  normal static screenshot instead of leaving it live.
+- **Recents transition speed**: cut from 250ms to 100ms (and the gesture-nav
+  variant from 380ms to 140ms) in both `RecentsState` and `OverviewState`.
+- **Status bar background color**: didn't reliably follow dark/light mode,
+  same underlying cause as the earlier icon-tint fix (`Theme.DeviceDefault.
+  DayNight` doesn't reliably resolve day/night state on this ROM) - only the
+  icon tint had an explicit override before. Now the status bar background
+  is also set explicitly from the current Compose `MaterialTheme.colorScheme.
+  background` on every recompose.
+
 ## [2.0] - 2026-07-27
 
 ### Added
