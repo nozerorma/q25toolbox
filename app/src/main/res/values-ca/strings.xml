@@ -5,6 +5,7 @@
     <!-- App Tabs -->
     <string name="tab_info">Info</string>
     <string name="tab_keyboard">Teclat</string>
+    <string name="tab_screen">Pantalla</string>
     <string name="tab_system">Sistema</string>
     <string name="tab_network">Xarxa</string>
     <string name="tab_settings">Configuració</string>
@@ -333,4 +334,22 @@
     <string name="ticker_category_navigation">Navegació</string>
     <string name="ticker_category_stopwatch">Cronòmetre/temporitzadors</string>
     <string name="ticker_category_workout">Entrenaments</string>
+
+    <string name="title_recents_tweaks">Disposició de la UI de Recents</string>
+    <string name="subtitle_recents_tweaks">Disposició de Recents multi-app mitjançant un pedaç quirúrgic de RecentsView</string>
+    <string name="recents_patch_card_title">Graella nativa de Recents</string>
+    <string name="recents_patch_card_desc">Apedaça RecentsView i BaseActivityInterface directament per forçar la vista general de Recents en graella de dues files a la DPI nativa, sense canviar l\'estat de tauleta de DeviceProfile per a l\'escriptori/hotseat ni la densitat de pantalla.</string>
+    <string name="recents_restart_launcher">Reinicia Launcher3</string>
+    <string name="recents_restart_systemui">Reinicia SystemUI</string>
+
+    <string name="prox_live_status">Monitor de sensor en directe</string>
+    <string name="prox_unavailable">El sensor de proximitat no està disponible en aquest dispositiu.</string>
+    <string name="prox_state_near">A PROP (Tapat)</string>
+    <string name="prox_state_far">LLUNY (Destapat)</string>
+    <string name="prox_distance">Distància: %1$.1f cm</string>
+    <string name="prox_lux_label">Reflexió analògica fina (Lux):</string>
+    <string name="prox_lux_value">%1$.1f Lux</string>
+    <string name="prox_factory_test_title">Mode de prova de fàbrica</string>
+    <string name="prox_factory_test_desc">Obre la pantalla de lectura bruta del sensor del fabricant per a diagnòstic. El llindar a prop/lluny està fixat al firmware del sensor - no hi ha cap control de calibratge exposat.</string>
+    <string name="prox_factory_test_button">Inicia el mode de prova de fàbrica</string>
 </resources>

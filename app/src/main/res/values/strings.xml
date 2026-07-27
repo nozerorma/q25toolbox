@@ -5,6 +5,7 @@
     <!-- App Tabs -->
     <string name="tab_info">Info</string>
     <string name="tab_keyboard">Keyboard</string>
+    <string name="tab_screen">Screen</string>
     <string name="tab_system">System</string>
     <string name="tab_network">Network</string>
     <string name="tab_settings">Settings</string>
@@ -25,6 +26,7 @@
     <string name="title_app_scaling">Per-App Display Scaling</string>
     <string name="title_key_remap">Key Remap</string>
     <string name="title_ticker_notifications">Ticker Notifications</string>
+    <string name="title_recents_tweaks">Recents UI Layout</string>
 
 
     <!-- Screen Subtitles -->
@@ -43,6 +45,7 @@
     <string name="subtitle_app_scaling">Force phone layout on misbehaving apps</string>
     <string name="subtitle_key_remap">Map a spare key to Right Ctrl</string>
     <string name="subtitle_ticker_notifications">Scrolling status-bar banner instead of heads-up</string>
+    <string name="subtitle_recents_tweaks">Multi-app Overview layout via a surgical RecentsView patch</string>
 
 
     <!-- Info Screen -->
@@ -109,6 +112,10 @@
     <string name="settings_quick_access_a11y_subtitle">Enable Q25 Toolbox\'s accessibility features</string>
     <string name="settings_quick_access_ime_title">Input Method</string>
     <string name="settings_quick_access_ime_subtitle">Enable the physical-keyboard IME features</string>
+    <string name="settings_quick_access_restart_systemui_title">Restart SystemUI</string>
+    <string name="settings_quick_access_restart_systemui_subtitle">Force-restart SystemUI to apply a pending tweak</string>
+    <string name="settings_quick_access_notifications_title">Notification Access</string>
+    <string name="settings_quick_access_notifications_subtitle">Manual fallback for Ticker Notifications if the root grant didn\'t take</string>
     <string name="settings_contributors_loading">Loading contributors…</string>
     <string name="settings_contributors_error">Couldn\'t load contributors: %1$s</string>
     <string name="settings_contributors_empty">No contributor data available.</string>
@@ -337,4 +344,22 @@
     <string name="ticker_category_navigation">Navigation</string>
     <string name="ticker_category_stopwatch">Stopwatch/timers</string>
     <string name="ticker_category_workout">Workouts</string>
+
+    <!-- Proximity Sensor Screen -->
+    <string name="prox_live_status">Live Sensor Monitor</string>
+    <string name="prox_unavailable">Proximity sensor is not available on this device.</string>
+    <string name="prox_state_near">NEAR (Covered)</string>
+    <string name="prox_state_far">FAR (Uncovered)</string>
+    <string name="prox_distance">Distance: %1$.1f cm</string>
+    <string name="prox_lux_label">Fine Analog Reflection (Lux):</string>
+    <string name="prox_lux_value">%1$.1f Lux</string>
+    <string name="prox_factory_test_title">Factory Hardware Test Mode</string>
+    <string name="prox_factory_test_desc">Opens the OEM\'s raw sensor readout screen for diagnostics. The near/far threshold is fixed in the sensor\'s firmware - there is no exposed calibration control.</string>
+    <string name="prox_factory_test_button">Launch Factory Test Mode</string>
+
+    <!-- Recents UI Tweaks Screen -->
+    <string name="recents_patch_card_title">Native Grid Recents</string>
+    <string name="recents_patch_card_desc">Patches RecentsView and BaseActivityInterface directly to force the two-row Grid Recents overview at native DPI, without changing DeviceProfile\'s tablet status for the workspace/hotseat or the screen density.</string>
+    <string name="recents_restart_launcher">Restart Launcher3</string>
+    <string name="recents_restart_systemui">Restart SystemUI</string>
 </resources>

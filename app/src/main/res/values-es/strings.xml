@@ -5,6 +5,7 @@
     <!-- App Tabs -->
     <string name="tab_info">Info</string>
     <string name="tab_keyboard">Teclado</string>
+    <string name="tab_screen">Pantalla</string>
     <string name="tab_system">Sistema</string>
     <string name="tab_network">Red</string>
     <string name="tab_settings">Ajustes</string>
@@ -333,4 +334,22 @@
     <string name="ticker_category_navigation">Navegación</string>
     <string name="ticker_category_stopwatch">Cronómetro/temporizadores</string>
     <string name="ticker_category_workout">Entrenamientos</string>
+
+    <string name="title_recents_tweaks">Diseño de la interfaz de Recientes</string>
+    <string name="subtitle_recents_tweaks">Vista multi-app en Recientes mediante un parche quirúrgico de RecentsView</string>
+    <string name="recents_patch_card_title">Cuadrícula nativa de Recientes</string>
+    <string name="recents_patch_card_desc">Parchea RecentsView y BaseActivityInterface directamente para forzar la vista de Recientes en cuadrícula de dos filas a la DPI nativa, sin cambiar el estado de tablet de DeviceProfile para el escritorio/hotseat ni la densidad de pantalla.</string>
+    <string name="recents_restart_launcher">Reiniciar Launcher3</string>
+    <string name="recents_restart_systemui">Reiniciar SystemUI</string>
+
+    <string name="prox_live_status">Monitor de sensor en vivo</string>
+    <string name="prox_unavailable">El sensor de proximidad no está disponible en este dispositivo.</string>
+    <string name="prox_state_near">CERCA (Tapado)</string>
+    <string name="prox_state_far">LEJOS (Destapado)</string>
+    <string name="prox_distance">Distancia: %1$.1f cm</string>
+    <string name="prox_lux_label">Reflexión analógica fina (Lux):</string>
+    <string name="prox_lux_value">%1$.1f Lux</string>
+    <string name="prox_factory_test_title">Modo de prueba de fábrica</string>
+    <string name="prox_factory_test_desc">Abre la pantalla de lectura bruta del sensor del fabricante para diagnóstico. El umbral cerca/lejos está fijado en el firmware del sensor - no hay ningún control de calibración expuesto.</string>
+    <string name="prox_factory_test_button">Iniciar modo de prueba de fábrica</string>
 </resources>

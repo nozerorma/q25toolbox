@@ -5,6 +5,7 @@ build/
 .cxx/
 *.apk
 *.aab
+!app/src/main/assets/*.apk
 
 # Local config (contains your machine-specific SDK path)
 local.properties

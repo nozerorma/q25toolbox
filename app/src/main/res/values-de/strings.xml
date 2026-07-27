@@ -5,6 +5,7 @@
     <!-- App Tabs -->
     <string name="tab_info">Info</string>
     <string name="tab_keyboard">Tastatur</string>
+    <string name="tab_screen">Bildschirm</string>
     <string name="tab_system">System</string>
     <string name="tab_network">Netzwerk</string>
     <string name="tab_settings">Einstellungen</string>
@@ -333,4 +334,22 @@
     <string name="ticker_category_navigation">Navigation</string>
     <string name="ticker_category_stopwatch">Stoppuhr/Timer</string>
     <string name="ticker_category_workout">Workouts</string>
+
+    <string name="title_recents_tweaks">Recents-UI-Layout</string>
+    <string name="subtitle_recents_tweaks">Mehrere Apps im Overview-Layout durch einen chirurgischen RecentsView-Patch</string>
+    <string name="recents_patch_card_title">Natives Grid Recents</string>
+    <string name="recents_patch_card_desc">Patcht RecentsView und BaseActivityInterface direkt, um die zweizeilige Grid-Recents-Übersicht bei nativer DPI zu erzwingen, ohne den Tablet-Status von DeviceProfile für Homescreen/Hotseat oder die Bildschirmdichte zu ändern.</string>
+    <string name="recents_restart_launcher">Launcher3 neu starten</string>
+    <string name="recents_restart_systemui">SystemUI neu starten</string>
+
+    <string name="prox_live_status">Live-Sensorüberwachung</string>
+    <string name="prox_unavailable">Der Näherungssensor ist auf diesem Gerät nicht verfügbar.</string>
+    <string name="prox_state_near">NAH (Verdeckt)</string>
+    <string name="prox_state_far">FERN (Frei)</string>
+    <string name="prox_distance">Entfernung: %1$.1f cm</string>
+    <string name="prox_lux_label">Feine analoge Reflexion (Lux):</string>
+    <string name="prox_lux_value">%1$.1f Lux</string>
+    <string name="prox_factory_test_title">Werksseitiger Hardware-Testmodus</string>
+    <string name="prox_factory_test_desc">Öffnet den rohen Sensor-Ausleseschirm des Herstellers zur Diagnose. Die Nah/Fern-Schwelle ist in der Firmware des Sensors fixiert - es gibt keine zugängliche Kalibrierung.</string>
+    <string name="prox_factory_test_button">Werkstestmodus starten</string>
 </resources>

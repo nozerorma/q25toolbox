@@ -5,6 +5,7 @@
     <!-- App Tabs -->
     <string name="tab_info">Info</string>
     <string name="tab_keyboard">Clavier</string>
+    <string name="tab_screen">Écran</string>
     <string name="tab_system">Système</string>
     <string name="tab_network">Réseau</string>
     <string name="tab_settings">Paramètres</string>
@@ -333,4 +334,22 @@
     <string name="ticker_category_navigation">Navigation</string>
     <string name="ticker_category_stopwatch">Chronomètre/minuteurs</string>
     <string name="ticker_category_workout">Entraînements</string>
+
+    <string name="title_recents_tweaks">Disposition de l\'interface Récents</string>
+    <string name="subtitle_recents_tweaks">Disposition multi-app dans Récents via un correctif chirurgical de RecentsView</string>
+    <string name="recents_patch_card_title">Grille native de Récents</string>
+    <string name="recents_patch_card_desc">Patche directement RecentsView et BaseActivityInterface pour forcer l\'aperçu Récents en grille à deux rangées à la DPI native, sans modifier l\'état tablette de DeviceProfile pour l\'écran d\'accueil/hotseat ni la densité d\'écran.</string>
+    <string name="recents_restart_launcher">Redémarrer Launcher3</string>
+    <string name="recents_restart_systemui">Redémarrer SystemUI</string>
+
+    <string name="prox_live_status">Moniteur du capteur en direct</string>
+    <string name="prox_unavailable">Le capteur de proximité n\'est pas disponible sur cet appareil.</string>
+    <string name="prox_state_near">PROCHE (Couvert)</string>
+    <string name="prox_state_far">LOIN (Découvert)</string>
+    <string name="prox_distance">Distance : %1$.1f cm</string>
+    <string name="prox_lux_label">Réflexion analogique fine (Lux) :</string>
+    <string name="prox_lux_value">%1$.1f Lux</string>
+    <string name="prox_factory_test_title">Mode de test usine</string>
+    <string name="prox_factory_test_desc">Ouvre l\'écran de lecture brute du capteur du fabricant à des fins de diagnostic. Le seuil proche/loin est fixé dans le firmware du capteur - aucun contrôle d\'étalonnage n\'est exposé.</string>
+    <string name="prox_factory_test_button">Lancer le mode de test usine</string>
 </resources>

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -38,6 +39,8 @@ import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+import androidx.compose.runtime.saveable.rememberSaveable
+
 /**
  * Top-level navigation: a bottom bar with Info / Keyboard / System sections.
  * Info is the landing page (device status); the other two list their modules,
@@ -45,8 +48,11 @@ import kotlinx.coroutines.withContext
  */
 @Composable
 fun HomeScreen() {
-    var tab by remember { mutableStateOf(AppTab.Info) }
-    var detail by remember { mutableStateOf<Screen?>(null) }
+    var tabName by rememberSaveable { mutableStateOf(AppTab.Info.name) }
+    var detailRoute by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val tab = remember(tabName) { AppTab.entries.firstOrNull { it.name == tabName } ?: AppTab.Info }
+    val detail = remember(detailRoute) { Screen.fromRoute(detailRoute) }
 
     // Hoisted above the `when(tab)` branches (which are disposed/recreated on every
     // tab switch, losing their own `remember` state) so revisiting Info doesn't
@@ -70,38 +76,44 @@ fun HomeScreen() {
         }
     }
 
-    BackHandler(enabled = detail != null) { detail = null }
+    BackHandler(enabled = detail != null) { detailRoute = null }
 
     Scaffold(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
                     selected = tab == AppTab.Info && detail == null,
-                    onClick = { tab = AppTab.Info; detail = null },
+                    onClick = { tabName = AppTab.Info.name; detailRoute = null },
                     icon = { Icon(Icons.Filled.Home, contentDescription = null) },
                     label = { Text(stringResource(AppTab.Info.labelRes)) }
                 )
                 NavigationBarItem(
                     selected = tab == AppTab.Keyboard,
-                    onClick = { tab = AppTab.Keyboard; detail = null },
+                    onClick = { tabName = AppTab.Keyboard.name; detailRoute = null },
                     icon = { Icon(Icons.Filled.Keyboard, contentDescription = null) },
                     label = { Text(stringResource(AppTab.Keyboard.labelRes)) }
                 )
                 NavigationBarItem(
+                    selected = tab == AppTab.Screen,
+                    onClick = { tabName = AppTab.Screen.name; detailRoute = null },
+                    icon = { Icon(Icons.Filled.Smartphone, contentDescription = null) },
+                    label = { Text(stringResource(AppTab.Screen.labelRes)) }
+                )
+                NavigationBarItem(
                     selected = tab == AppTab.System,
-                    onClick = { tab = AppTab.System; detail = null },
+                    onClick = { tabName = AppTab.System.name; detailRoute = null },
                     icon = { Icon(Icons.Filled.Build, contentDescription = null) },
                     label = { Text(stringResource(AppTab.System.labelRes)) }
                 )
                 NavigationBarItem(
                     selected = tab == AppTab.Network,
-                    onClick = { tab = AppTab.Network; detail = null },
+                    onClick = { tabName = AppTab.Network.name; detailRoute = null },
                     icon = { Icon(Icons.Filled.Wifi, contentDescription = null) },
                     label = { Text(stringResource(AppTab.Network.labelRes)) }
                 )
                 NavigationBarItem(
                     selected = tab == AppTab.Settings,
-                    onClick = { tab = AppTab.Settings; detail = null },
+                    onClick = { tabName = AppTab.Settings.name; detailRoute = null },
                     icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
                     label = { Text(stringResource(AppTab.Settings.labelRes)) }
                 )
@@ -111,16 +123,17 @@ fun HomeScreen() {
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             val current = detail
             if (current != null) {
-                DetailHost(current) { detail = null }
+                DetailHost(current) { detailRoute = null }
             } else when (tab) {
                 AppTab.Info -> InfoScreen(
                     state = infoState,
                     scrollState = infoScrollState,
-                    onOpenBatteryUsage = { detail = Screen.BatteryUsage }
+                    onOpenBatteryUsage = { detailRoute = Screen.BatteryUsage.route }
                 )
-                AppTab.Keyboard -> CategoryMenu(stringResource(R.string.tab_keyboard), keyboardScreens) { detail = it }
-                AppTab.System -> CategoryMenu(stringResource(R.string.tab_system), systemScreens) { detail = it }
-                AppTab.Network -> CategoryMenu(stringResource(R.string.tab_network), networkScreens) { detail = it }
+                AppTab.Keyboard -> CategoryMenu(stringResource(R.string.tab_keyboard), keyboardScreens) { detailRoute = it.route }
+                AppTab.Screen -> CategoryMenu(stringResource(R.string.tab_screen), screenScreens) { detailRoute = it.route }
+                AppTab.System -> CategoryMenu(stringResource(R.string.tab_system), systemScreens) { detailRoute = it.route }
+                AppTab.Network -> CategoryMenu(stringResource(R.string.tab_network), networkScreens) { detailRoute = it.route }
                 AppTab.Settings -> SettingsScreen(currentVersionName = currentVersionName)
             }
         }
@@ -150,6 +163,7 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.ImeSuggestions -> ImeSuggestionsScreen(onBack)
         Screen.BatteryUsage -> BatteryUsageScreen(onBack)
         Screen.TickerNotifications -> TickerNotificationsScreen(onBack)
+        Screen.RecentsTweaks -> RecentsTweaksScreen(onBack)
     }
 }
 

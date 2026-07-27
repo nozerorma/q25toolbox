@@ -24,6 +24,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.kgr.q25toolbox.R
+import com.kgr.q25toolbox.core.RootShell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -128,6 +131,25 @@ fun SettingsScreen(currentVersionName: String) {
             icon = Icons.Default.Keyboard
         ) {
             context.startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
+        SettingsRow(
+            title = stringResource(R.string.settings_quick_access_restart_systemui_title),
+            subtitle = stringResource(R.string.settings_quick_access_restart_systemui_subtitle),
+            icon = Icons.Default.RestartAlt
+        ) {
+            scope.launch(Dispatchers.IO) {
+                // am force-stop is a no-op for persistent apps like SystemUI; a hard kill on
+                // its actual PID is what actually forces a respawn.
+                val pid = RootShell.run("pidof com.android.systemui").outString.trim()
+                if (pid.isNotEmpty()) RootShell.run("kill -9 $pid")
+            }
+        }
+        SettingsRow(
+            title = stringResource(R.string.settings_quick_access_notifications_title),
+            subtitle = stringResource(R.string.settings_quick_access_notifications_subtitle),
+            icon = Icons.Default.Notifications
+        ) {
+            context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         }
 
         Spacer(Modifier.height(24.dp))

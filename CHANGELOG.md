@@ -4,6 +4,47 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.0] - 2026-07-27
+
+### Added
+- **Recents UI Layout** (`RecentsTweaksController`): a surgical binary patch to
+  `SearchLauncherQuickStep.apk` (the AOSP/QuickStep launcher that provides
+  gesture-nav Recents on this device regardless of default home app) that forces
+  the real two-row Grid Recents overview at native 208 DPI, without changing
+  screen density or `DeviceProfile`'s tablet status for the workspace/hotseat.
+  Forces `isTablet` and the `ENABLE_GRID_ONLY_OVERVIEW` feature flag true at
+  every read site scoped to Recents/Overview code (`RecentsView`,
+  `BaseActivityInterface`, `TaskView`, and ~15 supporting classes - deliberately
+  never in `DeviceProfile` itself), and backfills the grid-mode dimens (row
+  spacing, side margins, grid icon size) that are `0` on the phone resource
+  bucket, since simply forcing the boolean flags alone produced a broken
+  "snake" layout with zero visual spacing. Bundled as an app asset and applied
+  via a bind-mount over the read-only `/system_ext` launcher, toggleable and
+  fully reversible; includes "Restart Launcher3" / "Restart SystemUI" actions
+  (a hard `kill -9` on the real PID - `am force-stop` is a no-op for persistent
+  processes like SystemUI, verified on-device).
+- **"Screen" tab**: a new top-level section (Extra Dim, Per-App Display
+  Scaling, Recents UI Layout) alongside Keyboard/System/Network/Settings.
+
+### Changed
+- **Proximity Sensor Test** merged into **Proximity Sensor Workarounds**
+  (`CallScreenRecoveryScreen`): the live sensor/Lux monitor and OEM factory
+  test launcher now live alongside the auto-recover/respawn-keyboard controls,
+  instead of being a separate module. The factory test screen was confirmed
+  (via decompiled OEM smali) to be a raw diagnostic readout only - there is no
+  exposed calibration control, so the module no longer implies otherwise.
+- **In-Call Shortcuts** moved from the System tab to the Keyboard tab.
+
+### Fixed
+- The Recents grid patch toggle didn't restore original behavior reliably:
+  every app process (including this one) gets its own private mount namespace
+  on this ROM, so a bind mount/unmount performed in this app's own root shell
+  was invisible to `com.android.launcher3`'s namespace, and this app's own
+  `mount` status readback only ever saw its own phantom copy. Every mount
+  operation and status check now runs inside PID 1's (the real, global) mount
+  namespace via `nsenter`, matching the pattern `TelemetryController` already
+  used for `/data/data` visibility.
+
 ## [1.3.1] - 2026-07-27
 
 ### Fixed

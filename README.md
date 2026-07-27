@@ -1,7 +1,7 @@
 # Q25 Toolbox
 
 A root app for the Zinwa Q25 (KernelSU, MediaTek-based, physical QWERTY
-keyboard) that bundles a set of tweaks into one UI, organised into five
+keyboard) that bundles a set of tweaks into one UI, organised into six
 bottom-bar sections:
 
 - **Info** — device status landing page: build info and battery (level,
@@ -9,15 +9,17 @@ bottom-bar sections:
   Usage breakdown.
 - **Keyboard** — key remapping, lockscreen PIN entry on the physical
   keyboard, per-app keyboard block, chat Enter-to-send, calculator-key
-  routing, and IME suggestion shortcuts.
-- **System** — extra dimming, BesLoudness speaker enhancement (both with an
-  optional night schedule), per-app display scaling, auto-focus input,
-  in-call shortcuts, and proximity-sensor workarounds.
+  routing, IME suggestion shortcuts, and in-call shortcuts.
+- **Screen** — extra dimming, per-app display scaling, and the Recents UI
+  Layout grid patch.
+- **System** — BesLoudness speaker enhancement (with an optional night
+  schedule), auto-focus input, proximity-sensor workarounds (including a live
+  sensor monitor and the OEM factory test screen), and Ticker Notifications.
 - **Network** — telemetry blocking, wireless ADB, and Bluetooth/Location
   auto-disable.
 - **Settings** — update checking (with in-app download + install), quick
-  links to the Accessibility/Input Method system settings, contributors, and
-  about.
+  links to the Accessibility/Input Method system settings, a SystemUI restart
+  action, and a Notification Access shortcut, plus contributors and about.
 
 Ported from [Key2 Toolbox](../Key2Toolbox), the same app built for the
 BlackBerry Key2. Most of the UI and architecture carried over unchanged; the
@@ -115,7 +117,7 @@ the build script. Until then, both build types are signed with the debug key.
   unfocused field elsewhere in the same window tree. Auto-Focus still handles
   every other dialer screen (pre-call dial pad, contact search) normally.
 
-### Proximity Sensor Workarounds (`Q25AccessibilityService` + `KeyRemapController`)
+### Proximity Sensor Workarounds (`Q25AccessibilityService` + `KeyRemapController` + `ProximitySensorController`)
 - This device's proximity sensor has, in practice, been observed getting
   stuck near/covered after a call ends, leaving the screen dark - and
   separately, taking the physical keyboard's i2c driver down with it, not
@@ -137,6 +139,14 @@ the build script. Until then, both build types are signed with the debug key.
   app switch before the `dumpsys telecom` check existed, not just real
   hangups. Any active Key Remap survives an unbind/rebind unaffected - the
   bind mount is a VFS construct independent of the driver being bound.
+- **Live Sensor Monitor**: shows the proximity sensor's binary near/far state
+  plus a continuous analog Lux reading from the co-located `hx32062se_als`
+  light sensor, so you can watch it react in real time.
+- **Factory Hardware Test Mode** (button): launches `com.hodafone.factorytest`'s
+  `P_SensorTestActivity` (chosen over `PsensorTestActivity`/`PsensorProxTestActivity`
+  to dodge an OEM firmware bug). This is a raw sensor readout screen only -
+  confirmed via decompiled OEM smali that no calibration write path exists;
+  the near/far threshold is fixed in the sensor's firmware.
 
 ### Extra Dimming (`ExtraDimController`)
 - Toggles Android's built-in Accessibility "Extra Dim" feature
@@ -189,6 +199,46 @@ the build script. Until then, both build types are signed with the debug key.
   `pkg=WxH` StringSet in the `q25tweaks` prefs; the service always resets to
   native on teardown so it can't leave the screen stuck at a scaled
   resolution.
+- Investigated (and rejected) a per-app compat-framework alternative for
+  this: `am compat enable OVERRIDE_MIN_ASPECT_RATIO_LARGE <pkg>` is accepted
+  without error on this ROM, but `dumpsys window` confirms it has zero actual
+  effect on the app's reported window bounds - the `wm size` swap remains the
+  only thing that works. Also: this technique (and the binary-patch approach
+  used by Recents UI Layout below) isn't worth pursuing for regular Play
+  Store apps like Calendar/Substack/Phone-dialer - unlike a stable
+  `/system_ext` priv-app, they live under a per-install `/data/app/~~random~~`
+  path that changes on every update, Play Store silently overwrites any
+  patched binary on the next auto-update, and a re-signed APK risks tripping
+  each app's own Play Integrity/anti-tampering checks (account sync,
+  subscription login).
+
+### Recents UI Layout (`RecentsTweaksController`)
+- Forces the real two-row Grid Recents overview (multiple task cards
+  on-screen, not one-app-per-swipe) at native 208 DPI on
+  `SearchLauncherQuickStep.apk`, the AOSP/QuickStep launcher that provides
+  gesture-nav Recents on this device regardless of which app is set as
+  default Home.
+- The patch forces `isTablet` and the `ENABLE_GRID_ONLY_OVERVIEW` feature flag
+  true at every read site scoped to Recents/Overview code (`RecentsView`,
+  `BaseActivityInterface`, `TaskView`, and ~15 supporting classes) -
+  deliberately **never** in `DeviceProfile` itself, so the workspace/hotseat
+  and screen density are untouched. Also backfills the grid-mode resource
+  dimens (`overview_grid_row_spacing`, `overview_grid_side_margin`,
+  `task_thumbnail_icon_drawable_size_grid`) that are `0` on the phone resource
+  bucket - forcing the boolean flags alone produces a broken "snake" layout
+  (tasks alternating top/bottom row with zero spacing) since Android still
+  resolves those dimens from the phone bucket at native DPI.
+- Applied via a bind-mount of the patched APK (bundled as an app asset, via
+  `AssetInstaller`) over the real `/system_ext` launcher, toggleable and
+  fully reversible. Every mount/unmount and status check runs inside PID 1's
+  mount namespace via `nsenter` - this app's own process (like every app on
+  this ROM) gets a private mount namespace at fork, so a bind mount/status
+  check done in its own root shell is invisible to `com.android.launcher3`'s
+  namespace otherwise, same reason `TelemetryController` needs `nsenter` for
+  `/data/data` visibility.
+- "Restart Launcher3" / "Restart SystemUI" actions use a hard `kill -9` on the
+  actual PID - `am force-stop` is a no-op for persistent processes like
+  SystemUI (confirmed on-device: identical PID before/after).
 
 ### Ticker Notifications (`TickerController` + `TickerOverlayController`)
 - A "Super Status Bar"-style scrolling banner instead of heads-up popups.
@@ -325,7 +375,10 @@ actual usage, with no alternate source on this hardware.
   "Download & install" fetches the release's `.apk` asset and installs it via
   root (`pm install -r`) without leaving the app.
 - **Quick Access**: shortcuts straight to the system Accessibility and Input
-  Method settings screens.
+  Method settings screens, a "Restart SystemUI" action (hard `kill -9` on the
+  real PID - `am force-stop` is a no-op for persistent processes), and a
+  Notification Access shortcut (manual fallback for Ticker Notifications if
+  the root grant didn't take).
 - **Contributors**: avatars pulled live from the GitHub API.
 - **About**: current version and repo link.
 

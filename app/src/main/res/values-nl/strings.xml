@@ -5,6 +5,7 @@
     <!-- App Tabs -->
     <string name="tab_info">Info</string>
     <string name="tab_keyboard">Toetsenbord</string>
+    <string name="tab_screen">Scherm</string>
     <string name="tab_system">Systeem</string>
     <string name="tab_network">Netwerk</string>
     <string name="tab_settings">Instellingen</string>
@@ -335,4 +336,22 @@
     <string name="ticker_category_navigation">Navigatie</string>
     <string name="ticker_category_stopwatch">Stopwatch/timers</string>
     <string name="ticker_category_workout">Work-outs</string>
+
+    <string name="title_recents_tweaks">Recents-UI-indeling</string>
+    <string name="subtitle_recents_tweaks">Multi-app-indeling in Recents via een chirurgische RecentsView-patch</string>
+    <string name="recents_patch_card_title">Native Grid Recents</string>
+    <string name="recents_patch_card_desc">Patcht RecentsView en BaseActivityInterface rechtstreeks om de tweerijige Grid Recents-overzicht bij native DPI af te dwingen, zonder de tablet-status van DeviceProfile voor startscherm/hotseat of de schermdichtheid te wijzigen.</string>
+    <string name="recents_restart_launcher">Launcher3 herstarten</string>
+    <string name="recents_restart_systemui">SystemUI herstarten</string>
+
+    <string name="prox_live_status">Live sensormonitor</string>
+    <string name="prox_unavailable">De nabijheidssensor is niet beschikbaar op dit apparaat.</string>
+    <string name="prox_state_near">DICHTBIJ (Bedekt)</string>
+    <string name="prox_state_far">VER (Onbedekt)</string>
+    <string name="prox_distance">Afstand: %1$.1f cm</string>
+    <string name="prox_lux_label">Fijne analoge reflectie (Lux):</string>
+    <string name="prox_lux_value">%1$.1f Lux</string>
+    <string name="prox_factory_test_title">Fabriekstestmodus (hardware)</string>
+    <string name="prox_factory_test_desc">Opent het ruwe sensoruitleesscherm van de fabrikant voor diagnose. De dichtbij/ver-drempel ligt vast in de firmware van de sensor - er is geen kalibratie beschikbaar.</string>
+    <string name="prox_factory_test_button">Start fabriekstestmodus</string>
 </resources>
