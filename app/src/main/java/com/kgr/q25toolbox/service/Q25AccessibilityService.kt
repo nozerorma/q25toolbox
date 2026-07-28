@@ -10,8 +10,6 @@ import android.content.SharedPreferences
 import android.os.BatteryManager
 import android.util.Log
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -83,8 +81,6 @@ class Q25AccessibilityService : AccessibilityService() {
     // one on the same single thread was delaying the IME switch by that much, which is exactly
     // what caused the "first keypress after switching apps doesn't register" symptom.
     private val imeWorker: ExecutorService = Executors.newSingleThreadExecutor()
-    private val mainHandler = Handler(Looper.getMainLooper())
-    private val debounceForegroundRunnable = Runnable { checkForeground() }
 
     // Resets resolution to native when the screen turns off (lock button).
     private val screenOffReceiver = object : BroadcastReceiver() {
@@ -287,15 +283,6 @@ class Q25AccessibilityService : AccessibilityService() {
         return pkg in AutoFocusController.getSelectedApps(prefs)
     }
 
-    private fun checkForeground() {
-        val pkg = foregroundAppPackage()
-        if (pkg != foregroundPkg) {
-            foregroundPkg = pkg
-            reconcileImeBlock()
-            reconcileScaling()
-        }
-    }
-
     /**
      * The package of the focused/active TYPE_APPLICATION window - i.e. the app
      * behind any keyboard. Reading the application window (not the event source)
@@ -443,21 +430,25 @@ class Q25AccessibilityService : AccessibilityService() {
                             val isMKey = kc == KeyEvent.KEYCODE_M
 
                             if (isCurrencyKey) {
-                                // Short press currency key -> Toggle Speaker (index 2)
+                                // Short press currency key -> Toggle Speaker. Found by its actual
+                                // label rather than assumed index 2: a different dialer build/OEM
+                                // customization can reorder or add to this action bar, and blindly
+                                // clicking "whatever's 3rd" risked hitting an unrelated toggle -
+                                // reported as Airplane Mode turning on by itself during calls.
                                 if (event.action == KeyEvent.ACTION_UP) {
-                                    if (checkables.size > 2) {
-                                        checkables[2].performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                                    }
+                                    findCheckableByLabel(checkables, "speaker")?.performAction(
+                                        AccessibilityNodeInfo.ACTION_CLICK
+                                    )
                                 }
                                 return true // Consume currency key event
                             }
 
                             if (isMKey) {
-                                // Press M key -> Toggle Mute (index 1)
+                                // Press M key -> Toggle Mute, same label-based lookup as above.
                                 if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                                    if (checkables.size > 1) {
-                                        checkables[1].performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                                    }
+                                    findCheckableByLabel(checkables, "mute")?.performAction(
+                                        AccessibilityNodeInfo.ACTION_CLICK
+                                    )
                                 }
                                 return true // Consume M key event
                             }
@@ -465,8 +456,11 @@ class Q25AccessibilityService : AccessibilityService() {
                             val injectKc = getDialerKeycode(kc)
                             if (injectKc != null) {
                                 if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                                    val keypadNode = checkables[0]
-                                    if (keypadNode.isChecked) {
+                                    val keypadNode = findCheckableByLabel(checkables, "dial")
+                                    if (keypadNode == null) {
+                                        // Couldn't identify the keypad toggle by label - do nothing
+                                        // rather than guess at a differently-ordered button.
+                                    } else if (keypadNode.isChecked) {
                                         // Common case: autoOpenDialpad() already opened it earlier,
                                         // so the digits field should already exist - insert straight away.
                                         findDialerDigitsField(root)?.let { insertDialerDigit(it, kc) }
@@ -745,29 +739,6 @@ class Q25AccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun performDialerAction(index: Int): Boolean {
-        val root = rootInActiveWindow ?: return false
-        try {
-            val checkables = mutableListOf<AccessibilityNodeInfo>()
-            findCheckables(root, checkables)
-            try {
-                if (checkables.size > index) {
-                    val node = checkables[index]
-                    val success = node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                    if (success) {
-                        Log.d("Q25Toolbox", "Successfully clicked dialer button index $index")
-                    }
-                    return success
-                }
-            } finally {
-                checkables.forEach { it.recycle() }
-            }
-        } finally {
-            root.recycle()
-        }
-        return false
-    }
-
     private fun autoOpenDialpad() {
         val root = rootInActiveWindow ?: return
         try {
@@ -778,8 +749,8 @@ class Q25AccessibilityService : AccessibilityService() {
                 // the full keypad+mute+speaker toggle set, so this can't misfire on the
                 // pre-call dial-a-number screen's own (unrelated) checkables.
                 if (checkables.size >= 3) {
-                    val keypadNode = checkables[0]
-                    if (!keypadNode.isChecked) {
+                    val keypadNode = findCheckableByLabel(checkables, "dial")
+                    if (keypadNode != null && !keypadNode.isChecked) {
                         keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                         Log.d("Q25Toolbox", "Auto-opened dialpad on call screen load")
                     }
@@ -875,6 +846,15 @@ class Q25AccessibilityService : AccessibilityService() {
             child.recycle()
         }
     }
+
+    /** Matches by content-description or text (case-insensitive) instead of a fixed index,
+     * since the in-call action bar's button order/count isn't guaranteed across dialer
+     * builds/OEM customizations. Returns null (no click) rather than guessing on a miss. */
+    private fun findCheckableByLabel(checkables: List<AccessibilityNodeInfo>, keyword: String): AccessibilityNodeInfo? =
+        checkables.firstOrNull { node ->
+            node.contentDescription?.contains(keyword, ignoreCase = true) == true ||
+                node.text?.contains(keyword, ignoreCase = true) == true
+        }
 
     enum class PinInput { DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, ENTER, DELETE }
 

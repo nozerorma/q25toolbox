@@ -53,18 +53,6 @@ object AssetInstaller {
         return RootShell.run("install -m $mode '${staging.absolutePath}' '$targetPath'")
     }
 
-    /** Installs generated [content] (rather than a bundled asset) to [targetPath]. */
-    fun installContent(
-        context: Context,
-        stagingName: String,
-        content: String,
-        targetPath: String
-    ): ShellResult {
-        val tmp = File(context.filesDir, stagingName)
-        tmp.writeText(content)
-        return RootShell.run("install -m 755 '${tmp.absolutePath}' '$targetPath'")
-    }
-
     fun removeFile(targetPath: String): ShellResult =
         RootShell.run("rm -f '$targetPath'")
 

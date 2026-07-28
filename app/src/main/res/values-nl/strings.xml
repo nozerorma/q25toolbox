@@ -47,22 +47,6 @@
 
 
     <!-- Info Screen -->
-    <string name="info_access">Toegang</string>
-    <string name="info_root_access">Root-toegang</string>
-    <string name="info_root_checking">Controleren…</string>
-    <string name="info_root_granted">Verleend</string>
-    <string name="info_root_not_granted">Niet verleend</string>
-    <string name="info_a11y_service">Toegankelijkheidsservice</string>
-    <string name="info_ime_service">IME</string>
-    <string name="info_tap_to_open">Tik om te openen</string>
-    <string name="info_enabled">Ingeschakeld</string>
-    <string name="info_disabled">Uitgeschakeld</string>
-    <string name="info_app">App</string>
-    <string name="info_app_version">Versie</string>
-    <string name="info_app_update">Update</string>
-    <string name="info_update_checking">Controleren…</string>
-    <string name="info_update_up_to_date">Up-to-date</string>
-    <string name="info_update_available">Update beschikbaar: v%1$s (tik om te bekijken)</string>
     <string name="info_device">Apparaat</string>
     <string name="info_battery">Batterij</string>
     <string name="info_model">Model</string>
@@ -96,6 +80,10 @@
     <string name="settings_section_quick_access">Snelle toegang</string>
     <string name="settings_section_contributors">Bijdragers</string>
     <string name="settings_section_about">Over</string>
+    <string name="settings_section_debug">Foutopsporing</string>
+    <string name="settings_export_logs">Debuglogboeken exporteren</string>
+    <string name="settings_export_logs_success">Opgeslagen in %1$s</string>
+    <string name="settings_export_logs_failed">Exporteren mislukt: %1$s</string>
     <string name="settings_current_version">Huidige versie</string>
     <string name="settings_check_now">Nu controleren</string>
     <string name="settings_checking">Controleren op updates…</string>
@@ -180,7 +168,6 @@
     <string name="auto_focus_search_label">Apps zoeken</string>
     <string name="auto_focus_selected_count">%1$d geselecteerd van %2$d apps</string>
     <string name="auto_focus_long_desc">In de geselecteerde apps zoekt de toegankelijkheidsservice na de eerste fysieke toetsdruk naar het eerste bewerkbare tekstveld, focust dit en stuurt die toets opnieuw, zodat je kunt blijven typen zonder eerst op het veld te tikken (bijvoorbeeld in dialers of chat-apps).</string>
-    <string name="auto_focus_enabled_label">Ingeschakeld</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Sneltoetsen tijdens gesprek</string>
     <string name="subtitle_in_call_shortcuts">Demping, luidspreker en toetsenbord schakelen tijdens oproepen</string>

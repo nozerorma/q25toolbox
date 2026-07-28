@@ -45,22 +45,6 @@
     <string name="subtitle_ticker_notifications">Bandeau défilant dans la barre d’état au lieu des popups</string>
 
     <!-- Info Screen -->
-    <string name="info_access">Accès</string>
-    <string name="info_root_access">Accès root</string>
-    <string name="info_root_checking">Vérification…</string>
-    <string name="info_root_granted">Accordé</string>
-    <string name="info_root_not_granted">Non accordé</string>
-    <string name="info_a11y_service">Service d\'accessibilité</string>
-    <string name="info_ime_service">IME</string>
-    <string name="info_tap_to_open">Appuyez pour ouvrir</string>
-    <string name="info_enabled">Activé</string>
-    <string name="info_disabled">Désactivé</string>
-    <string name="info_app">App</string>
-    <string name="info_app_version">Version</string>
-    <string name="info_app_update">Mise à jour</string>
-    <string name="info_update_checking">Vérification…</string>
-    <string name="info_update_up_to_date">À jour</string>
-    <string name="info_update_available">Mise à jour disponible : v%1$s (appuyez pour voir)</string>
     <string name="info_device">Appareil</string>
     <string name="info_battery">Batterie</string>
     <string name="info_model">Modèle</string>
@@ -94,6 +78,10 @@
     <string name="settings_section_quick_access">Accès rapide</string>
     <string name="settings_section_contributors">Contributeurs</string>
     <string name="settings_section_about">À propos</string>
+    <string name="settings_section_debug">Débogage</string>
+    <string name="settings_export_logs">Exporter les journaux de débogage</string>
+    <string name="settings_export_logs_success">Enregistré dans %1$s</string>
+    <string name="settings_export_logs_failed">Échec de l\'export : %1$s</string>
     <string name="settings_current_version">Version actuelle</string>
     <string name="settings_check_now">Vérifier maintenant</string>
     <string name="settings_checking">Recherche de mises à jour…</string>
@@ -178,7 +166,6 @@
     <string name="auto_focus_search_label">Rechercher des applications</string>
     <string name="auto_focus_selected_count">%1$d sélectionnées de %2$d applications</string>
     <string name="auto_focus_long_desc">Dans les applications sélectionnées, le service d\'accessibilité recherche le premier champ de texte modifiable après la première pression sur une touche physique, le focalise et renvoie cette touche afin que vous puissiez continuer à taper sans toucher d\'abord le champ (par exemple, dans les numéroteurs ou les applications de messagerie).</string>
-    <string name="auto_focus_enabled_label">Activé</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Raccourcis en appel</string>
     <string name="subtitle_in_call_shortcuts">Basculer sourdine, haut-parleur et clavier en appels</string>

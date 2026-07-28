@@ -24,6 +24,15 @@ object RecentsTweaksController {
     private const val PATCHED_APK_PATH = "/data/adb/q25toolbox/SearchLauncherQuickStep_patched.apk"
     private const val PATCHED_APK_ASSET = "SearchLauncherQuickStep_patched.apk"
 
+    // Bind mounts are kernel state, not persisted - without this, the patch silently
+    // reverted on every reboot even though the toggle still showed "on" in the app's
+    // own persisted intent, since queryStatus() (correctly) reads the live mount, not
+    // a stored preference. This boot script re-applies the mount at startup, matching
+    // every other persisted module in this app.
+    private const val BOOT_SCRIPT_NAME = "recents_grid_patch.sh"
+    private const val BOOT_SCRIPT_TARGET = "/data/adb/service.d/$BOOT_SCRIPT_NAME"
+    private const val BOOT_SCRIPT_ASSET = "recents_grid_patch_template.sh"
+
     // Every app process (including this one) gets its own private mount namespace on this ROM
     // (same reason TelemetryController has to nsenter for /data/data visibility). A bind mount
     // done in this app's own root-shell namespace is invisible to com.android.launcher3's
@@ -51,6 +60,9 @@ object RecentsTweaksController {
             AssetInstaller.installAsset(context, PATCHED_APK_ASSET, PATCHED_APK_PATH, mode = "644")
             RootShell.run("chown root:root $PATCHED_APK_PATH && chcon u:object_r:system_file:s0 $PATCHED_APK_PATH")
             RootShell.run(inGlobalNs("umount -l $TARGET_APK 2>/dev/null ; mount -o bind $PATCHED_APK_PATH $TARGET_APK"))
+            // The mount itself is kernel state and won't survive a reboot on its own -
+            // install the boot script that re-applies it on every startup.
+            AssetInstaller.installFromAsset(context, BOOT_SCRIPT_ASSET, BOOT_SCRIPT_TARGET)
             killProcess("com.android.launcher3")
             isBindMounted()
         } else {
@@ -61,10 +73,21 @@ object RecentsTweaksController {
                 RootShell.run(inGlobalNs("umount -l $TARGET_APK 2>/dev/null ; umount $TARGET_APK 2>/dev/null"))
                 attempts++
             }
+            AssetInstaller.removeFile(BOOT_SCRIPT_TARGET)
             killProcess("com.android.launcher3")
             !isBindMounted()
         }
     }
+
+    /** Whether the boot-time re-mount script is installed (i.e. the patch is meant to
+     * survive reboot), for [DaemonMaintenance] to self-heal against. */
+    fun isPersisted(): Boolean = AssetInstaller.fileExists(BOOT_SCRIPT_TARGET)
+
+    /** Persisted AND the mount it's supposed to maintain is actually active right now -
+     * see [AssetInstaller.matchesAsset] for why checking the script exists alone isn't
+     * enough (a stale script from an older build looks identical to a healthy one). */
+    fun isHealthy(context: Context): Boolean =
+        isBindMounted() && AssetInstaller.matchesAsset(context, BOOT_SCRIPT_ASSET, BOOT_SCRIPT_TARGET)
 
     fun restartLauncher(): Boolean = killProcess("com.android.launcher3")
 

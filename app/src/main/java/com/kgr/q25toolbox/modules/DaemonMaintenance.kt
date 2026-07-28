@@ -66,6 +66,9 @@ object DaemonMaintenance {
                 LocationIdleController.setEnabled(context, true, minutes)
             }
         }
+        if (RecentsTweaksController.isPersisted() && !RecentsTweaksController.isHealthy(context)) {
+            RecentsTweaksController.setNativeGridPatch(context, true)
+        }
 
         for ((script, lock) in DEPRECATED_SCRIPTS) {
             RootShell.run("kill \$(pgrep -f $script) 2>/dev/null; rm -f /data/adb/service.d/$script /data/adb/$lock")

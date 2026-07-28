@@ -45,22 +45,6 @@
     <string name="subtitle_ticker_notifications">Banner deslizante en la barra de estado en vez de emergentes</string>
 
     <!-- Info Screen -->
-    <string name="info_access">Acceso</string>
-    <string name="info_root_access">Acceso root</string>
-    <string name="info_root_checking">Comprobando…</string>
-    <string name="info_root_granted">Concedido</string>
-    <string name="info_root_not_granted">No concedido</string>
-    <string name="info_a11y_service">Servicio de accesibilidad</string>
-    <string name="info_ime_service">IME</string>
-    <string name="info_tap_to_open">Pulsa para abrir</string>
-    <string name="info_enabled">Habilitado</string>
-    <string name="info_disabled">Deshabilitado</string>
-    <string name="info_app">App</string>
-    <string name="info_app_version">Versión</string>
-    <string name="info_app_update">Actualización</string>
-    <string name="info_update_checking">Comprobando…</string>
-    <string name="info_update_up_to_date">Actualizado</string>
-    <string name="info_update_available">Actualización disponible: v%1$s (toca para ver)</string>
     <string name="info_device">Dispositivo</string>
     <string name="info_battery">Batería</string>
     <string name="info_model">Modelo</string>
@@ -94,6 +78,10 @@
     <string name="settings_section_quick_access">Acceso rápido</string>
     <string name="settings_section_contributors">Colaboradores</string>
     <string name="settings_section_about">Acerca de</string>
+    <string name="settings_section_debug">Depuración</string>
+    <string name="settings_export_logs">Exportar registros de depuración</string>
+    <string name="settings_export_logs_success">Guardado en %1$s</string>
+    <string name="settings_export_logs_failed">Error al exportar: %1$s</string>
     <string name="settings_current_version">Versión actual</string>
     <string name="settings_check_now">Comprobar ahora</string>
     <string name="settings_checking">Buscando actualizaciones…</string>
@@ -178,7 +166,6 @@
     <string name="auto_focus_search_label">Buscar aplicaciones</string>
     <string name="auto_focus_selected_count">%1$d seleccionadas de %2$d aplicaciones</string>
     <string name="auto_focus_long_desc">En las aplicaciones seleccionadas, el servicio de accesibilidad busca el primer campo de texto editable tras la primera pulsación de una tecla física, lo enfoca y vuelve a enviar esa tecla para que puedas seguir escribiendo sin tocar antes el campo (por ejemplo, en marcadores telefónicos o aplicaciones de mensajería).</string>
-    <string name="auto_focus_enabled_label">Habilitado</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Atajos en llamada</string>
     <string name="subtitle_in_call_shortcuts">Alterna silencio, altavoz y teclado en llamadas</string>

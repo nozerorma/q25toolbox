@@ -79,8 +79,6 @@ object AppScalingController {
         }.toMap()
     }
 
-    fun resFor(context: Context, pkg: String): Res = entries(context)[pkg] ?: NATIVE
-
     fun setRes(context: Context, pkg: String, res: Res) {
         val map = entries(context).toMutableMap()
         if (res.isNative) map.remove(pkg) else map[pkg] = res

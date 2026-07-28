@@ -45,22 +45,6 @@
     <string name="subtitle_ticker_notifications">Laufendes Banner in der Statusleiste statt Heads-up</string>
 
     <!-- Info Screen -->
-    <string name="info_access">Zugriff</string>
-    <string name="info_root_access">Root-Zugriff</string>
-    <string name="info_root_checking">Überprüfung…</string>
-    <string name="info_root_granted">Erteilt</string>
-    <string name="info_root_not_granted">Nicht erteilt</string>
-    <string name="info_a11y_service">Barrierefreiheitsdienst</string>
-    <string name="info_ime_service">IME</string>
-    <string name="info_tap_to_open">Tippen, um zu öffnen</string>
-    <string name="info_enabled">Aktiviert</string>
-    <string name="info_disabled">Deaktiviert</string>
-    <string name="info_app">App</string>
-    <string name="info_app_version">Version</string>
-    <string name="info_app_update">Update</string>
-    <string name="info_update_checking">Wird geprüft…</string>
-    <string name="info_update_up_to_date">Aktuell</string>
-    <string name="info_update_available">Update verfügbar: v%1$s (zum Anzeigen tippen)</string>
     <string name="info_device">Gerät</string>
     <string name="info_battery">Batterie</string>
     <string name="info_model">Modell</string>
@@ -94,6 +78,10 @@
     <string name="settings_section_quick_access">Schnellzugriff</string>
     <string name="settings_section_contributors">Mitwirkende</string>
     <string name="settings_section_about">Über</string>
+    <string name="settings_section_debug">Debug</string>
+    <string name="settings_export_logs">Debug-Protokolle exportieren</string>
+    <string name="settings_export_logs_success">Gespeichert unter %1$s</string>
+    <string name="settings_export_logs_failed">Export fehlgeschlagen: %1$s</string>
     <string name="settings_current_version">Aktuelle Version</string>
     <string name="settings_check_now">Jetzt prüfen</string>
     <string name="settings_checking">Suche nach Updates…</string>
@@ -178,7 +166,6 @@
     <string name="auto_focus_search_label">Apps suchen</string>
     <string name="auto_focus_selected_count">%1$d ausgewählt von %2$d Apps</string>
     <string name="auto_focus_long_desc">In den ausgewählten Apps sucht der Barrierefreiheitsdienst nach dem ersten Druck auf eine physische Taste das erste bearbeitbare Texteingabefeld, fokussiert es und sendet diese Taste erneut. So können Sie weiter tippen, ohne das Feld vorher antippen zu müssen (z. B. in Telefon- oder Messenger-Apps).</string>
-    <string name="auto_focus_enabled_label">Aktiviert</string>
     <!-- In-Call Shortcuts Screen -->
     <string name="title_in_call_shortcuts">Tastenkombinationen im Telefonat</string>
     <string name="subtitle_in_call_shortcuts">Stummschaltung, Lautsprecher und Tastatur in Anrufen umschalten</string>

@@ -10,11 +10,16 @@ bottom-bar sections:
 - **Keyboard** — key remapping, lockscreen PIN entry on the physical
   keyboard, per-app keyboard block, chat Enter-to-send, calculator-key
   routing, IME suggestion shortcuts, and in-call shortcuts.
-- **Screen** — extra dimming, per-app display scaling, and the Recents UI
-  Layout grid patch.
+- **Screen** — extra dimming, per-app display scaling, and Recents UI Layout:
+  a surgical binary patch forcing the real two-row Grid Recents overview at
+  native DPI (not a DPI/resolution swap), with an adjustable background
+  transparency slider, symmetric grid margins, a fix for the "live tile"
+  artifact when opening Recents from Home, and a snappier transition.
 - **System** — BesLoudness speaker enhancement (with an optional night
-  schedule), auto-focus input, proximity-sensor workarounds (including a live
-  sensor monitor and the OEM factory test screen), and Ticker Notifications.
+  schedule), auto-focus input, Ticker Notifications, and Proximity Sensor
+  Workarounds (auto-recovering the screen/keyboard after a stuck-near sensor
+  post-call, plus a live sensor/Lux monitor and the OEM factory test screen
+  merged into the same module).
 - **Network** — telemetry blocking, wireless ADB, and Bluetooth/Location
   auto-disable.
 - **Settings** — update checking (with in-app download + install), quick
@@ -395,8 +400,30 @@ actual usage, with no alternate source on this hardware.
   real PID - `am force-stop` is a no-op for persistent processes), and a
   Notification Access shortcut (manual fallback for Ticker Notifications if
   the root grant didn't take).
+- **Debug**: "Export Debug Logs" captures the full current `logcat -d` buffer
+  plus a header (app version, device model, Android version, build
+  fingerprint) via `DebugLogExporter` to `Documents/q25toolbox/
+  debug_<timestamp>.log`. Release builds aren't minified, so every module's
+  existing `Log.d`/`Log.e` tags already survive as-is - this just makes them
+  one tap away instead of needing a separate rooted logcat-reader app.
 - **Contributors**: avatars pulled live from the GitHub API.
 - **About**: current version and repo link.
+
+### App Theming (`MainActivity`)
+- Full Material You (Monet): on Android 12+ the color scheme is derived from
+  the system wallpaper via `dynamicDarkColorScheme`/`dynamicLightColorScheme`,
+  following the system light/dark setting; older versions fall back to the
+  stock Material 3 baseline schemes.
+- `Theme.DeviceDefault.DayNight` was expected to keep the status bar in sync
+  with that on its own, but doesn't reliably resolve day/night on this ROM -
+  in light mode the (white) status bar icons were invisible against the light
+  bar, and the status bar's background color had the same problem, staying
+  stuck on one theme's color instead of tracking whichever scheme Compose was
+  actually rendering. Both are now set explicitly from a `SideEffect` each
+  recompose: `WindowCompat.getInsetsController(...).isAppearanceLightStatusBars`
+  for the icon tint, and `window.statusBarColor` from the live
+  `MaterialTheme.colorScheme.background` for the background - instead of
+  trusting the parent theme's own DayNight resolution for either.
 
 ### Double-Tap to Wake (`Dt2wController`) - currently hidden from the UI
 - The Q25 touch panel has **no** hardware/driver gesture-wake, and the

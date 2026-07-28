@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.core.RootShell
+import com.kgr.q25toolbox.modules.DebugLogExporter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,6 +65,8 @@ fun SettingsScreen(currentVersionName: String) {
     var updateState by remember { mutableStateOf<UpdateState>(UpdateState.Idle) }
     var contributors by remember { mutableStateOf<List<GitHubContributor>?>(null) }
     var contributorsError by remember { mutableStateOf<String?>(null) }
+    var exportingLogs by remember { mutableStateOf(false) }
+    var exportResult by remember { mutableStateOf<DebugLogExporter.Result?>(null) }
 
     // Load contributors once when the screen is first shown
     LaunchedEffect(Unit) {
@@ -162,6 +165,42 @@ fun SettingsScreen(currentVersionName: String) {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             }
         )
+
+        Spacer(Modifier.height(24.dp))
+
+        SectionHeader(stringResource(R.string.settings_section_debug))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                enabled = !exportingLogs,
+                onClick = {
+                    exportingLogs = true
+                    exportResult = null
+                    scope.launch(Dispatchers.IO) {
+                        val result = DebugLogExporter.export(context)
+                        withContext(Dispatchers.Main) {
+                            exportingLogs = false
+                            exportResult = result
+                        }
+                    }
+                }
+            ) {
+                Text(stringResource(R.string.settings_export_logs))
+            }
+            if (exportingLogs) {
+                CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+            }
+        }
+        exportResult?.let { result ->
+            Text(
+                text = when (result) {
+                    is DebugLogExporter.Result.Success -> stringResource(R.string.settings_export_logs_success, result.path)
+                    is DebugLogExporter.Result.Failure -> stringResource(R.string.settings_export_logs_failed, result.message)
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = if (result is DebugLogExporter.Result.Failure) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
 
         Spacer(Modifier.height(24.dp))
         SectionHeader(stringResource(R.string.settings_section_about))

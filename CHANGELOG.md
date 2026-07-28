@@ -4,6 +4,40 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.0.2] - 2026-07-28
+
+### Added
+- **Export Debug Logs** (Settings → Debug): captures the full current `logcat -d`
+  buffer plus a header (app version, device model, Android version, build
+  fingerprint) to `Documents/q25toolbox/debug_<timestamp>.log`, shown right
+  below the button. Release builds aren't minified, so every module's
+  existing `Log.d`/`Log.e` tags already survive as-is - this just makes them
+  one tap away instead of requiring a separate rooted logcat-reader app.
+
+### Fixed
+- **In-Call Shortcuts**: the Speaker/Mute/Keypad toggles in the in-call action
+  bar were identified by a fixed position (index 0/1/2) rather than their
+  actual accessibility label. A differently laid-out dialer build/OEM
+  customization could shift that ordering, causing the wrong button to be
+  clicked - reported as Airplane Mode turning on by itself during calls. Now
+  matched by label (`"speaker"`/`"mute"`/`"dial"`), falling back to no click
+  at all on a miss rather than guessing.
+- **Recents UI Layout not surviving reboot**: the grid patch is a bind mount
+  (kernel state only), so it silently reverted to the unpatched launcher on
+  every reboot even though the toggle was left on. Now installs a boot
+  script (like every other persisted module) that re-applies the mount at
+  startup, self-healed by `DaemonMaintenance` alongside the others.
+
+### Removed
+- Dead code cleanup: an entirely unused foreground-tracking chain in
+  `Q25AccessibilityService` (superseded by inline tracking in
+  `onAccessibilityEvent`), `AppScalingController.resFor()`,
+  `AssetInstaller.installContent()`, and a fully dead `performDialerAction()`
+  helper that used the same by-position anti-pattern fixed above - all zero
+  callers. Also removed 17 unreferenced strings (`auto_focus_enabled_label`,
+  a rename leftover, plus 16 `info_*` strings from a since-removed InfoScreen
+  card) from the base file and all 7 locales.
+
 ## [2.0.1] - 2026-07-27
 
 ### Added
