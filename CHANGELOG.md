@@ -4,6 +4,18 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.0.3] - 2026-07-28
+
+### Fixed
+- **In-Call Shortcuts regression**: the 2.0.2 label-matching fix rendered
+  every shortcut non-functional. The Speaker/Mute/Keypad buttons carry their
+  text/content-description on a *child* view (an icon + label as children of
+  the checkable container), not on the checkable node itself, so matching
+  only the node directly found nothing and clicked nothing. Confirmed against
+  Google Dialer's actual string resources (`"Speaker"`, `"Mute"`/`"Unmute"`,
+  `"Dialpad"`) rather than guessing again - the label match now searches each
+  checkable's full subtree.
+
 ## [2.0.2] - 2026-07-28
 
 ### Added

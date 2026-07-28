@@ -849,12 +849,31 @@ class Q25AccessibilityService : AccessibilityService() {
 
     /** Matches by content-description or text (case-insensitive) instead of a fixed index,
      * since the in-call action bar's button order/count isn't guaranteed across dialer
-     * builds/OEM customizations. Returns null (no click) rather than guessing on a miss. */
+     * builds/OEM customizations. Returns null (no click) rather than guessing on a miss.
+     *
+     * Checks the checkable node's own subtree, not just the node itself: these buttons are
+     * commonly an icon + a separate label as children of the checkable container, with the
+     * checkable node itself carrying neither text nor a content-description - matching only
+     * the node directly found nothing and silently broke every shortcut. */
     private fun findCheckableByLabel(checkables: List<AccessibilityNodeInfo>, keyword: String): AccessibilityNodeInfo? =
-        checkables.firstOrNull { node ->
-            node.contentDescription?.contains(keyword, ignoreCase = true) == true ||
-                node.text?.contains(keyword, ignoreCase = true) == true
+        checkables.firstOrNull { node -> nodeSubtreeContainsLabel(node, keyword) }
+
+    private fun nodeSubtreeContainsLabel(node: AccessibilityNodeInfo, keyword: String): Boolean {
+        if (node.contentDescription?.contains(keyword, ignoreCase = true) == true ||
+            node.text?.contains(keyword, ignoreCase = true) == true
+        ) {
+            return true
         }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            try {
+                if (nodeSubtreeContainsLabel(child, keyword)) return true
+            } finally {
+                child.recycle()
+            }
+        }
+        return false
+    }
 
     enum class PinInput { DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, ENTER, DELETE }
 
