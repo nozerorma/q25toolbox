@@ -4,6 +4,21 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.0.4] - 2026-07-28
+
+### Changed
+- **In-Call Shortcuts**: still reported as non-functional after the 2.0.3
+  subtree-search fix, on a device this hasn't been reproducible on directly.
+  Rather than guess a third time, this adds temporary diagnostic logging
+  (`Q25InCallDebug` tag) to `onKeyEvent` - on every relevant key while the
+  Dialer is foreground, logs the checkables found, each one's full subtree
+  text/content-description, and which (if any) matched. If you're hitting
+  this, please try the shortcuts during a call, then Settings → Debug →
+  Export Debug Logs and share the result - the previous two attempts were
+  each confirmed against the dialer's real string resources and still didn't
+  resolve it, so the actual cause needs a log from the affected device.
+  2.0.3 was pulled from Releases since it didn't fix the issue either.
+
 ## [2.0.3] - 2026-07-28
 
 ### Fixed

@@ -420,6 +420,18 @@ class Q25AccessibilityService : AccessibilityService() {
                     val checkables = mutableListOf<AccessibilityNodeInfo>()
                     findCheckables(root, checkables)
                     try {
+                        // TEMPORARY diagnostic logging for the still-broken in-call shortcuts
+                        // report - remove once confirmed fixed. Logs on every relevant key so a
+                        // debug log export from the affected device shows exactly where this
+                        // breaks: the foreground/enabled gate, the checkables.size guard, or the
+                        // label match against each checkable's actual subtree text.
+                        Log.d(
+                            "Q25InCallDebug",
+                            "onKeyEvent kc=$kc action=${event.action} checkables=${checkables.size} " +
+                                checkables.mapIndexed { i, n ->
+                                    "[$i desc=${n.contentDescription} text=${n.text} children=${subtreeLabelsDebug(n)}]"
+                                }.joinToString(" ")
+                        )
                         // Require the full expected in-call toggle set (keypad, mute, speaker) -
                         // the standalone pre-call dial-a-number screen isn't guaranteed to have
                         // zero checkables, and matching on just "any" let this block misfire
@@ -873,6 +885,24 @@ class Q25AccessibilityService : AccessibilityService() {
             }
         }
         return false
+    }
+
+    /** TEMPORARY diagnostic helper - collects every non-null text/content-description string
+     * found in a node's subtree, for logging what a checkable button actually looks like on
+     * a given device. Remove alongside the Log.d call in onKeyEvent once this is resolved. */
+    private fun subtreeLabelsDebug(node: AccessibilityNodeInfo): List<String> {
+        val out = mutableListOf<String>()
+        node.contentDescription?.toString()?.let { out.add(it) }
+        node.text?.toString()?.let { out.add(it) }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            try {
+                out.addAll(subtreeLabelsDebug(child))
+            } finally {
+                child.recycle()
+            }
+        }
+        return out
     }
 
     enum class PinInput { DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, ENTER, DELETE }
