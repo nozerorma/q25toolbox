@@ -71,6 +71,19 @@ class Q25AccessibilityService : AccessibilityService() {
         // not just any app Context.
         var instance: Q25AccessibilityService? = null
             private set
+
+        // Every localized label Google Dialer uses for these three in-call action-bar buttons
+        // (string/incall_label_speaker, .../incall_label_mute, .../incall_label_dialpad),
+        // pulled directly from the installed Dialer APK's own resources.xml across all its
+        // shipped locales. Matching English substrings like "speaker"/"mute"/"dial" only worked
+        // on English-locale devices - a Spanish-locale device shows "Altavoz"/"Silenciar"/
+        // "Teclado" instead, which don't contain those substrings, so every shortcut silently
+        // no-op'd. Exact (trimmed, case-insensitive) match against these sets instead of a
+        // substring check, since several of these strings are short enough that substring
+        // matching could false-positive against something unrelated.
+        private val SPEAKER_LABELS = setOf("altaveu", "altavoz", "altifalante", "alto-falante", "altofalante", "altoparlanti", "bocina", "bozgorailua", "difuzor", "dinamik", "garsiakalbis", "głośnik", "hangszóró", "haut-parleur", "hoparlör", "hátalari", "högtalare", "højttaler", "høyttaler", "isipikha", "kaiutin", "karnay", "kõlar", "lautsprecher", "loa", "luidspreker", "pmbsr suara", "reproduktor", "skaļrunis", "speaker", "spika", "vivavoce", "zvočnik", "zvučnik", "ηχείο", "високогов.", "динамик", "динамік", "дынамік", "звучник", "катуу сүйлөткүч", "чанга яригч", "բարձրախոս", "רמקול", "اسپیکر", "بلندگو", "مكبر الصوت", "स्पिकर", "स्पीकर", "स्‍पीकर", "স্পিকার", "স্পীকাৰ", "ਸਪੀਕਰ", "સ્પીકર", "ସ୍ପିକର୍‌", "ஸ்பீக்கர்", "స్పీకర్", "ಸ್ಪೀಕರ್‌", "സ്പീക്കർ", "ස්පීකරය", "ลำโพง", "ລຳໂພງ", "စပီကာ", "სპიკერი", "የድምጽ ማጉያ", "ឧបករណ៍​បំពង​សំឡេង", "スピーカー", "免提", "喇叭", "擴音", "스피커")
+        private val MUTE_LABELS = setOf("bisukan", "couper le son", "couper micro", "demp", "dempen", "desakt. audioa", "desativ. som", "hiqi zërin", "hljóð af", "i-mute", "isklj. zvuk", "isključi zvuk", "izklopi zvok", "izslēgt", "kutt lyden", "ljud av", "mute", "mykistä", "nutildyti", "némítás", "ovozsiz", "redam", "sesi kapat", "silencia", "silenciar", "silenzia", "silențios", "sluk mikrofon", "stumm", "susdurun", "thulisa", "tắt tiếng", "vaigista", "vypnúť zvuk", "wycisz", "zima maikrofoni", "ztlumit", "σίγαση", "без звука", "выкл. гук", "дууг хаах", "дыбысын өшіру", "заглушаване", "исклучи звук", "искључи звук", "мікрофон", "үнүн өчүрүү", "անջատել", "השתקה", "خاموش کریں", "صامت کردن", "كتم", "म्युट गर्नुहोस्", "म्यूट करा", "म्यूट करें", "মিউট করুন", "মিউট কৰক", "ਮਿਊਟ ਕਰੋ", "મ્યૂટ કરો", "ମ୍ୟୁଟ୍ କର", "ஒலியடக்கு", "మ్యూట్", "ಮ್ಯೂಟ್‌", "മ്യൂട്ടുചെയ്യുക", "නිහඬ කරන්න", "ปิดเสียง", "ປີດສຽງ", "အသံပိတ်ရန်", "დადუმება", "ድምፀ-ከል አድርግ", "បិទ​សំឡេង", "ミュート", "静音", "靜音", "음소거")
+        private val DIALPAD_LABELS = setOf("billentyűzet", "blloku i tasteve", "bàn phím", "cipartast.", "clavier", "ikhiphedi", "keypad", "klaviatura", "klaviatuur", "klaviatūra", "klawiatura", "klávesnice", "knappsats", "nommerblad", "näppäimistö", "pad kekunci", "talnaborð", "tastatur", "tastatura", "tastatură", "tastenfeld", "tastierino", "teclado", "teclat", "teklatua", "telefonska tastatura", "tipkovnica", "toetsenblok", "tuş takımı", "vitufe vya simu", "číselník", "πληκτρολόγιο", "клавиа­тура", "клавиатура", "клавіатура", "клавіятура", "ном. тергич", "пернетақта", "тастатура", "товчлуур", "թվաշար", "לוח חיוג", "صفحه کلید", "لوحة المفاتيح", "کی پیڈ", "किप्याड", "कीपॅड", "कीपैड", "কীপেড", "কীপ্যাড", "ਕੀਪੈਡ", "કીપેડ", "କୀ’ପେଡ", "கீபேட்", "కీప్యాడ్", "ಕೀಪ್ಯಾಡ್‌", "കീപാഡ്", "යතුරු පුවරුව", "ปุ่มกด", "ແປ້ນກົດ", "ခလုတ်ခုံ", "კლავიატურა", "ቁልፍ ሰሌዳ", "ផ្ទាំងចុចលេខ", "キーパッド", "拨号键盘", "撥號鍵盤", "키패드")
     }
 
     private val worker: ExecutorService = Executors.newSingleThreadExecutor()
@@ -420,18 +433,6 @@ class Q25AccessibilityService : AccessibilityService() {
                     val checkables = mutableListOf<AccessibilityNodeInfo>()
                     findCheckables(root, checkables)
                     try {
-                        // TEMPORARY diagnostic logging for the still-broken in-call shortcuts
-                        // report - remove once confirmed fixed. Logs on every relevant key so a
-                        // debug log export from the affected device shows exactly where this
-                        // breaks: the foreground/enabled gate, the checkables.size guard, or the
-                        // label match against each checkable's actual subtree text.
-                        Log.d(
-                            "Q25InCallDebug",
-                            "onKeyEvent kc=$kc action=${event.action} checkables=${checkables.size} " +
-                                checkables.mapIndexed { i, n ->
-                                    "[$i desc=${n.contentDescription} text=${n.text} children=${subtreeLabelsDebug(n)}]"
-                                }.joinToString(" ")
-                        )
                         // Require the full expected in-call toggle set (keypad, mute, speaker) -
                         // the standalone pre-call dial-a-number screen isn't guaranteed to have
                         // zero checkables, and matching on just "any" let this block misfire
@@ -448,7 +449,7 @@ class Q25AccessibilityService : AccessibilityService() {
                                 // clicking "whatever's 3rd" risked hitting an unrelated toggle -
                                 // reported as Airplane Mode turning on by itself during calls.
                                 if (event.action == KeyEvent.ACTION_UP) {
-                                    findCheckableByLabel(checkables, "speaker")?.performAction(
+                                    findCheckableByLabel(checkables, SPEAKER_LABELS)?.performAction(
                                         AccessibilityNodeInfo.ACTION_CLICK
                                     )
                                 }
@@ -458,7 +459,7 @@ class Q25AccessibilityService : AccessibilityService() {
                             if (isMKey) {
                                 // Press M key -> Toggle Mute, same label-based lookup as above.
                                 if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                                    findCheckableByLabel(checkables, "mute")?.performAction(
+                                    findCheckableByLabel(checkables, MUTE_LABELS)?.performAction(
                                         AccessibilityNodeInfo.ACTION_CLICK
                                     )
                                 }
@@ -468,7 +469,7 @@ class Q25AccessibilityService : AccessibilityService() {
                             val injectKc = getDialerKeycode(kc)
                             if (injectKc != null) {
                                 if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                                    val keypadNode = findCheckableByLabel(checkables, "dial")
+                                    val keypadNode = findCheckableByLabel(checkables, DIALPAD_LABELS)
                                     if (keypadNode == null) {
                                         // Couldn't identify the keypad toggle by label - do nothing
                                         // rather than guess at a differently-ordered button.
@@ -761,7 +762,7 @@ class Q25AccessibilityService : AccessibilityService() {
                 // the full keypad+mute+speaker toggle set, so this can't misfire on the
                 // pre-call dial-a-number screen's own (unrelated) checkables.
                 if (checkables.size >= 3) {
-                    val keypadNode = findCheckableByLabel(checkables, "dial")
+                    val keypadNode = findCheckableByLabel(checkables, DIALPAD_LABELS)
                     if (keypadNode != null && !keypadNode.isChecked) {
                         keypadNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                         Log.d("Q25Toolbox", "Auto-opened dialpad on call screen load")
@@ -867,42 +868,24 @@ class Q25AccessibilityService : AccessibilityService() {
      * commonly an icon + a separate label as children of the checkable container, with the
      * checkable node itself carrying neither text nor a content-description - matching only
      * the node directly found nothing and silently broke every shortcut. */
-    private fun findCheckableByLabel(checkables: List<AccessibilityNodeInfo>, keyword: String): AccessibilityNodeInfo? =
-        checkables.firstOrNull { node -> nodeSubtreeContainsLabel(node, keyword) }
+    private fun findCheckableByLabel(checkables: List<AccessibilityNodeInfo>, labels: Set<String>): AccessibilityNodeInfo? =
+        checkables.firstOrNull { node -> nodeSubtreeContainsLabel(node, labels) }
 
-    private fun nodeSubtreeContainsLabel(node: AccessibilityNodeInfo, keyword: String): Boolean {
-        if (node.contentDescription?.contains(keyword, ignoreCase = true) == true ||
-            node.text?.contains(keyword, ignoreCase = true) == true
+    private fun nodeSubtreeContainsLabel(node: AccessibilityNodeInfo, labels: Set<String>): Boolean {
+        if (node.contentDescription?.toString()?.trim()?.lowercase() in labels ||
+            node.text?.toString()?.trim()?.lowercase() in labels
         ) {
             return true
         }
         for (i in 0 until node.childCount) {
             val child = node.getChild(i) ?: continue
             try {
-                if (nodeSubtreeContainsLabel(child, keyword)) return true
+                if (nodeSubtreeContainsLabel(child, labels)) return true
             } finally {
                 child.recycle()
             }
         }
         return false
-    }
-
-    /** TEMPORARY diagnostic helper - collects every non-null text/content-description string
-     * found in a node's subtree, for logging what a checkable button actually looks like on
-     * a given device. Remove alongside the Log.d call in onKeyEvent once this is resolved. */
-    private fun subtreeLabelsDebug(node: AccessibilityNodeInfo): List<String> {
-        val out = mutableListOf<String>()
-        node.contentDescription?.toString()?.let { out.add(it) }
-        node.text?.toString()?.let { out.add(it) }
-        for (i in 0 until node.childCount) {
-            val child = node.getChild(i) ?: continue
-            try {
-                out.addAll(subtreeLabelsDebug(child))
-            } finally {
-                child.recycle()
-            }
-        }
-        return out
     }
 
     enum class PinInput { DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, ENTER, DELETE }

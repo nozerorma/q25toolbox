@@ -4,6 +4,24 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.0.5] - 2026-07-28
+
+### Fixed
+- **In-Call Shortcuts, actual root cause**: 2.0.4's diagnostic logging
+  confirmed the shortcuts were failing on non-English-locale devices, not
+  from a matching-depth issue. `findCheckableByLabel` matched checkable
+  subtree text/content-description against hardcoded English substrings
+  (`"speaker"`, `"mute"`, `"dial"`), but Google Dialer localizes those labels
+  - a Spanish-locale device shows `"Altavoz"`/`"Silenciar"`/`"Teclado"`
+  instead, none of which contain the English substrings, so every lookup
+  silently returned null. Matching now uses the exact label sets Google
+  Dialer itself ships for `incall_label_speaker`/`incall_label_mute`/
+  `incall_label_dialpad` across every locale in its own resource table
+  (pulled directly from the installed Dialer APK, not guessed), matched
+  exactly (case-insensitive, trimmed) instead of by substring. Confirmed
+  fixed on a Spanish-locale device. The temporary diagnostic logging added
+  in 2.0.4 has been removed.
+
 ## [2.0.4] - 2026-07-28
 
 ### Changed
