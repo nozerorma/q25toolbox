@@ -351,4 +351,11 @@
     <string name="recents_transparency_desc">How much of the wallpaper shows through behind the cards. Restarts Launcher3 to apply.</string>
     <string name="recents_restart_launcher">Restart Launcher3</string>
     <string name="recents_restart_systemui">Restart SystemUI</string>
+    <string name="recents_ota_disclaimer">Turn this off before installing a system update. A corrupted OTA install has been traced back to this patch being active mid-update.</string>
+    <string name="recents_repair_title">Recents Provider Repair</string>
+    <string name="recents_repair_desc">If Recents/Overview stopped working after a system update, use this to restore it.</string>
+    <string name="recents_repair_button">Repair Recents Provider</string>
+    <string name="recents_repair_success">Recents provider repaired.</string>
+    <string name="recents_repair_needs_reboot">Repair applied — reboot your device to finish restoring Recents.</string>
+    <string name="recents_repair_failed">Repair failed. Try again after a reboot.</string>
 </resources>

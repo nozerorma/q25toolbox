@@ -330,6 +330,13 @@
     <string name="recents_transparency_desc">Quanto do papel de parede aparece atrás dos cartões. Reinicia o Launcher3 para aplicar.</string>
     <string name="recents_restart_launcher">Reiniciar Launcher3</string>
     <string name="recents_restart_systemui">Reiniciar SystemUI</string>
+    <string name="recents_ota_disclaimer">Desative isto antes de instalar uma atualização do sistema. Uma instalação OTA corrompida foi rastreada até este patch estar ativo durante a atualização.</string>
+    <string name="recents_repair_title">Reparo do provedor de Recentes</string>
+    <string name="recents_repair_desc">Se Recentes/Overview parou de funcionar após uma atualização do sistema, use isto para restaurá-lo.</string>
+    <string name="recents_repair_button">Reparar provedor de Recentes</string>
+    <string name="recents_repair_success">Provedor de Recentes reparado.</string>
+    <string name="recents_repair_needs_reboot">Reparo aplicado — reinicie o dispositivo para concluir a restauração de Recentes.</string>
+    <string name="recents_repair_failed">O reparo falhou. Tente novamente após reiniciar.</string>
 
     <string name="prox_live_status">Monitor de sensor ao vivo</string>
     <string name="prox_unavailable">O sensor de proximidade não está disponível neste dispositivo.</string>

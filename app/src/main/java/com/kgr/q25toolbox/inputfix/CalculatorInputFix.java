@@ -20,6 +20,17 @@ public final class CalculatorInputFix implements InputFix {
             GOOGLE_CALCULATOR_PACKAGE
     );
 
+    /**
+     * Cheap "is the foreground app even a calculator?" check against the package the
+     * accessibility service already tracks, so the caller can skip the
+     * getRootInActiveWindow() binder call this otherwise makes on every digit/operator
+     * keypress in every app. A null package means the caller doesn't know yet - answer
+     * yes and let the root-based check below decide.
+     */
+    public static boolean isCalculatorPackage(String packageName) {
+        return packageName == null || CALCULATOR_PACKAGES.contains(packageName);
+    }
+
     @Override
     public boolean onKeyEvent(AccessibilityService service, KeyEvent event) {
         Q25KeyTranslator.Input input = Q25KeyTranslator.toCalculatorInput(event.getKeyCode());

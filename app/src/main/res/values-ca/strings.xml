@@ -330,6 +330,13 @@
     <string name="recents_transparency_desc">Quant es veu el fons de pantalla darrere de les targetes. Reinicia Launcher3 per aplicar-ho.</string>
     <string name="recents_restart_launcher">Reinicia Launcher3</string>
     <string name="recents_restart_systemui">Reinicia SystemUI</string>
+    <string name="recents_ota_disclaimer">Desactiva això abans d\'instal·lar una actualització del sistema. S\'ha rastrejat una instal·lació OTA corrupta fins a aquest pedaç actiu durant l\'actualització.</string>
+    <string name="recents_repair_title">Reparació del proveïdor de Recents</string>
+    <string name="recents_repair_desc">Si Recents/Overview ha deixat de funcionar després d\'una actualització del sistema, fes servir això per restaurar-lo.</string>
+    <string name="recents_repair_button">Repara el proveïdor de Recents</string>
+    <string name="recents_repair_success">Proveïdor de Recents reparat.</string>
+    <string name="recents_repair_needs_reboot">Reparació aplicada — reinicia el dispositiu per acabar de restaurar Recents.</string>
+    <string name="recents_repair_failed">La reparació ha fallat. Torna-ho a provar després de reiniciar.</string>
 
     <string name="prox_live_status">Monitor de sensor en directe</string>
     <string name="prox_unavailable">El sensor de proximitat no està disponible en aquest dispositiu.</string>

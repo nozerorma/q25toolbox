@@ -10,6 +10,7 @@ import android.content.SharedPreferences
 import android.os.BatteryManager
 import android.util.Log
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -20,6 +21,8 @@ import com.kgr.q25toolbox.inputfix.ComposerEnterKeyHandler
 import com.kgr.q25toolbox.modules.AppScalingController
 import com.kgr.q25toolbox.modules.AutoFocusController
 import com.kgr.q25toolbox.modules.BatteryUsageController
+import com.kgr.q25toolbox.modules.TickerController
+import com.kgr.q25toolbox.modules.TickerSettings
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -65,6 +68,15 @@ class Q25AccessibilityService : AccessibilityService() {
         // to the app instead of being intercepted/translated by the normal keyboard.
         const val PASSTHRU_IME = "com.kgr.q25toolbox/.service.Q25PassthroughIme"
 
+        // How long an auto-focus injection waits for the field it just asked to focus to
+        // actually report input focus, and how long it then lets that focus settle.
+        private const val AUTO_FOCUS_FOCUS_TIMEOUT_MS = 1000L
+        private const val AUTO_FOCUS_SETTLE_MS = 150L
+        // How long a "this window has no editable field" result stays trusted before the tree
+        // is walked again. Long enough to cover typing a word, short enough that a screen that
+        // gains an input field without a window event is picked up almost immediately.
+        private const val NO_EDITABLE_CACHE_MS = 1500L
+
         // The live service instance, so other in-process code (TickerOverlayController)
         // can add a TYPE_ACCESSIBILITY_OVERLAY window - that window type is only usable
         // via a WindowManager obtained from a running AccessibilityService's own Context,
@@ -94,6 +106,12 @@ class Q25AccessibilityService : AccessibilityService() {
     // one on the same single thread was delaying the IME switch by that much, which is exactly
     // what caused the "first keypress after switching apps doesn't register" symptom.
     private val imeWorker: ExecutorService = Executors.newSingleThreadExecutor()
+    // Auto-focus injection gets its own thread for the same reason, and now more urgently: it
+    // holds the keystream (every key typed while it runs is queued for it - see
+    // autoFocusInjecting), so letting it sit behind `wm size` from a per-app scaling switch, or
+    // behind the 5s sleep in scheduleCallEndScreenRecovery, would stall the typed characters
+    // for as long as that took instead of just the injection itself.
+    private val autoFocusWorker: ExecutorService = Executors.newSingleThreadExecutor()
 
     // Resets resolution to native when the screen turns off (lock button).
     private val screenOffReceiver = object : BroadcastReceiver() {
@@ -155,10 +173,32 @@ class Q25AccessibilityService : AccessibilityService() {
     @Volatile private var imeBlockApplied = false // last show_ime value we pushed (true = suppressed)
     @Volatile private var foregroundPkg: String? = null // last seen foreground app package
     @Volatile private var callActive = false // true while the actual in-call action bar is up
-    private var consumedAutofocusKeycode = -1
+    // Keycodes whose ACTION_DOWN auto-focus consumed, so their matching ACTION_UP is
+    // consumed too. A set rather than a single keycode because a whole burst of keys can be
+    // consumed while one injection is in flight (see autoFocusInjecting).
+    private val consumedAutofocusKeys = mutableSetOf<Int>()
     // Set right before a focus-and-type attempt starts waiting, so onAccessibilityEvent can
     // wake it the instant the target field actually gets input focus (see onKeyEvent / onAccessibilityEvent).
     @Volatile private var focusLatch: CountDownLatch? = null
+    // True from the moment auto-focus consumes a key until its text has actually been written
+    // into the field. Everything typed in that window is consumed and appended to
+    // [pendingAutoFocusKeys] instead of being left to the IME: the injection can take up to a
+    // second (waiting for focus to land), and letting the IME handle keys 2..n in the meantime
+    // meant our ACTION_SET_TEXT later overwrote the field with a snapshot taken before them -
+    // the "letters come out doubled / in the wrong order right after switching apps" symptom.
+    @Volatile private var autoFocusInjecting = false
+    // (keycode, character typed) pairs, in press order. The keycode is kept alongside the
+    // character because the dialer's number field wants the key's phone-keypad digit instead
+    // (F -> 6), and which of the two applies is only known once we see the field we landed in.
+    private val pendingAutoFocusKeys = mutableListOf<Pair<Int, Char>>()
+    private val autoFocusLock = Any()
+    // Window id + timestamp of the last tree walk that found no editable field, so a long
+    // burst of typing into a screen that has nothing to focus doesn't re-walk the whole node
+    // tree on the main thread for every single keystroke. Deliberately time-bounded rather
+    // than held until the next window change: content can gain an input field without any
+    // window event (a browser navigating within the same window, for one).
+    private var noEditableWindowId = -1
+    private var noEditableAtMs = 0L
     private var prefs: SharedPreferences? = null
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -191,6 +231,12 @@ class Q25AccessibilityService : AccessibilityService() {
             imeBlockApplied = (curIme == PASSTHRU_IME)
         }
 
+        // The ticker can only render through this service (TYPE_ACCESSIBILITY_OVERLAY), so
+        // heads-up suppression is re-asserted when it connects and lifted again in onDestroy -
+        // otherwise turning accessibility off would leave heads-up popups globally disabled
+        // with nothing left to show notifications in their place.
+        worker.execute { TickerController.syncHeadsUpSuppression(this) }
+
         registerReceiver(screenOffReceiver, IntentFilter(Intent.ACTION_SCREEN_OFF))
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
@@ -211,11 +257,25 @@ class Q25AccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
 
-        val pkg = foregroundAppPackage()
-        if (pkg != null && pkg != foregroundPkg) {
-            foregroundPkg = pkg
-            reconcileImeBlock()
-            reconcileScaling()
+        // Only re-derive the foreground app when a window actually changed. This used to run
+        // for every event, including the typeViewFocused ones that fire continuously while
+        // typing or scrolling - and each call is a windows() query plus a root-node fetch per
+        // window, i.e. several synchronous binder round-trips on the main looper, which is the
+        // same thread onKeyEvent is delivered on. A window event whose package we're already
+        // in can't have changed the foreground app either, so that early-outs for free.
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
+            event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED
+        ) {
+            val eventPkg = event.packageName?.toString()
+            if (eventPkg == null || eventPkg != foregroundPkg) {
+                val pkg = foregroundAppPackage()
+                if (pkg != null && pkg != foregroundPkg) {
+                    foregroundPkg = pkg
+                    noEditableWindowId = -1
+                    reconcileImeBlock()
+                    reconcileScaling()
+                }
+            }
         }
 
         if (inCallShortcutsEnabled() && isGoogleDialerForeground()) {
@@ -526,15 +586,37 @@ class Q25AccessibilityService : AccessibilityService() {
             if (event.action == KeyEvent.ACTION_DOWN) {
                 val unicodeChar = event.unicodeChar
                 if (unicodeChar > 0 && event.repeatCount == 0 && !event.isAltPressed && !event.isCtrlPressed) {
+                    // An injection is already in flight: claim this key too and hand it to that
+                    // injection, so keys 2..n land in the same ACTION_SET_TEXT, in order, instead
+                    // of racing it through the IME. Cheap enough for the main thread - the worker
+                    // only ever holds this lock to copy the list, never across a binder call.
+                    val queued = synchronized(autoFocusLock) {
+                        if (autoFocusInjecting) {
+                            pendingAutoFocusKeys.add(kc to unicodeChar.toChar())
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                    if (queued) {
+                        consumedAutofocusKeys.add(kc)
+                        return true
+                    }
+
                     val root = rootInActiveWindow
                     if (root != null) {
                         try {
                             val alreadyFocused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
                             val alreadyFocusedIsTextField = alreadyFocused?.let { AutoFocusController.isEditableTextField(it) } ?: false
                             alreadyFocused?.recycle()
-                            if (!alreadyFocusedIsTextField) {
+                            if (!alreadyFocusedIsTextField && !recentlyFoundNoEditableField(root)) {
                                 val inputNode = AutoFocusController.findFirstEditableNode(root)
-                                if (inputNode != null) {
+                                if (inputNode == null) {
+                                    // Nothing to focus on this screen. Remember that briefly so a
+                                    // whole typed word doesn't re-walk the entire node tree - on
+                                    // the main thread, ahead of the key filter - once per letter.
+                                    rememberNoEditableField(root)
+                                } else {
                                     try {
                                         // Some search boxes (Maps, Gmail) actually activate via
                                         // ACTION_CLICK (opening a full search overlay/activity),
@@ -543,7 +625,12 @@ class Q25AccessibilityService : AccessibilityService() {
                                         // focus to land before injecting the triggering key.
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
                                         inputNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                                        consumedAutofocusKeycode = kc
+                                        consumedAutofocusKeys.add(kc)
+                                        synchronized(autoFocusLock) {
+                                            pendingAutoFocusKeys.clear()
+                                            pendingAutoFocusKeys.add(kc to unicodeChar.toChar())
+                                            autoFocusInjecting = true
+                                        }
                                         // onAccessibilityEvent counts this down the instant the target field
                                         // actually receives input focus, so the common case wakes in a few ms
                                         // instead of waiting out a fixed poll interval. The 1s budget below is
@@ -551,67 +638,7 @@ class Q25AccessibilityService : AccessibilityService() {
                                         // the previous worst-case wait, just no longer the typical one).
                                         val latch = CountDownLatch(1)
                                         focusLatch = latch
-                                        worker.execute {
-                                            val landedInTime = try {
-                                                latch.await(1000, TimeUnit.MILLISECONDS)
-                                            } catch (_: InterruptedException) {
-                                                false
-                                            }
-                                            focusLatch = null
-                                            // Must specifically be the editable field, not just any focus
-                                            // holder - Gmail's search transition (a full overlay/activity,
-                                            // unlike Maps' inline omnibox) briefly hands input focus to
-                                            // intermediate widgets (e.g. the overlay's toolbar/back button)
-                                            // before the real search box gets it, and injecting too early
-                                            // against one of those drops the keystroke entirely.
-                                            val hasInputFocus = landedInTime && (rootInActiveWindow?.let { r ->
-                                                try {
-                                                    val focused = r.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
-                                                    val isEditable = focused?.let { AutoFocusController.isEditableTextField(it) } ?: false
-                                                    focused?.recycle()
-                                                    isEditable
-                                                } finally {
-                                                    r.recycle()
-                                                }
-                                            } ?: false)
-                                            if (hasInputFocus) Thread.sleep(150)
-                                            // Re-injecting via "input keyevent" turned out unreliable
-                                            // here: it reports shell-level success, but confirmed via
-                                            // logging that the dialer's phone-number field's text never
-                                            // actually changes - the synthetic event is silently dropped
-                                            // (and doesn't even re-enter this filter, unlike a real
-                                            // keypress). Setting the text directly through the
-                                            // accessibility API instead - the same mechanism assistive
-                                            // typing tools are meant to use - sidesteps IME/input-
-                                            // connection timing entirely rather than fighting it.
-                                            val target = rootInActiveWindow?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
-                                            if (target != null) {
-                                                try {
-                                                    val current = if (target.isShowingHintText) "" else (target.text?.toString() ?: "")
-                                                    // In the dialer, the physical letter keys are meant to
-                                                    // type their phone-keypad digit (F -> 6), not the raw
-                                                    // letter the key produces - but only on the actual
-                                                    // Dialpad number-entry field. isGoogleDialerForeground()
-                                                    // alone can't tell the Dialpad tab apart from Contacts
-                                                    // search / Favorites within the same app, which would
-                                                    // otherwise turn contact-name searches into digits too.
-                                                    val insertedChar = if (isGoogleDialerForeground() && isDialpadDigitsField(target)) {
-                                                        dialerDigitChar(kc) ?: unicodeChar.toChar()
-                                                    } else {
-                                                        unicodeChar.toChar()
-                                                    }
-                                                    val args = Bundle().apply {
-                                                        putCharSequence(
-                                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-                                                            current + insertedChar
-                                                        )
-                                                    }
-                                                    target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
-                                                } finally {
-                                                    target.recycle()
-                                                }
-                                            }
-                                        }
+                                        autoFocusWorker.execute { runAutoFocusInjection(latch) }
                                         return true // Consume original press event
                                     } finally {
                                         inputNode.recycle()
@@ -624,19 +651,23 @@ class Q25AccessibilityService : AccessibilityService() {
                     }
                 }
             } else if (event.action == KeyEvent.ACTION_UP) {
-                if (kc == consumedAutofocusKeycode) {
-                    consumedAutofocusKeycode = -1
+                if (consumedAutofocusKeys.remove(kc)) {
                     return true // Consume corresponding key release event
                 }
             }
         }
-
-        // Ported q25-input-helper fixes. Each checks the foreground app itself,
-        // so they're safe to call for every key and no-op elsewhere. Calculator
-        // claims digit/operator keys; chat composer claims Enter - disjoint, so
-        // order between them doesn't matter.
-        if (calculatorEnabled() && calculatorFix.onKeyEvent(this, event)) return true
-        if (chatComposerEnabled() && composerHandler.onKeyEvent(this, event)) return true
+        // Ported q25-input-helper fixes. Calculator claims digit/operator keys; chat composer
+        // claims Enter - disjoint, so order between them doesn't matter. Both are pre-filtered
+        // against the foreground package we already track: their own package check reads it off
+        // getRootInActiveWindow(), so without this they each cost a binder round-trip on the
+        // main thread for every digit (calculator) or Enter (composer) typed in any app at all.
+        val fgPkg = foregroundPkg
+        if (calculatorEnabled() && CalculatorInputFix.isCalculatorPackage(fgPkg) &&
+            calculatorFix.onKeyEvent(this, event)
+        ) return true
+        if (chatComposerEnabled() && composerHandler.supportsPackage(fgPkg) &&
+            composerHandler.onKeyEvent(this, event)
+        ) return true
 
         // PIN Input: map physical keys to the lockscreen PIN pad.
         if (!pinInputEnabled()) return false
@@ -667,6 +698,127 @@ class Q25AccessibilityService : AccessibilityService() {
         } finally {
             root.recycle()
         }
+    }
+
+    // ------------------------------------------------------- AutoFocus injection
+
+    private fun recentlyFoundNoEditableField(root: AccessibilityNodeInfo): Boolean =
+        root.windowId == noEditableWindowId &&
+            (SystemClock.uptimeMillis() - noEditableAtMs) < NO_EDITABLE_CACHE_MS
+
+    private fun rememberNoEditableField(root: AccessibilityNodeInfo) {
+        noEditableWindowId = root.windowId
+        noEditableAtMs = SystemClock.uptimeMillis()
+    }
+
+    /**
+     * Waits for the field auto-focus just asked for to actually take input focus, then writes
+     * every key consumed since (see [autoFocusInjecting]) into it in one go, draining any that
+     * arrived while the write itself was in flight.
+     *
+     * Runs on [worker]; only the list handoff is synchronized, never the accessibility calls.
+     */
+    private fun runAutoFocusInjection(latch: CountDownLatch) {
+        try {
+            val landedInTime = try {
+                latch.await(AUTO_FOCUS_FOCUS_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+            } catch (_: InterruptedException) {
+                false
+            }
+            focusLatch = null
+            // The field can report focus a beat before its input connection is actually live -
+            // injecting into that gap drops the text. Only worth waiting out when focus did land;
+            // if it never did, the insert below will just fail its editability check and bail.
+            if (landedInTime) Thread.sleep(AUTO_FOCUS_SETTLE_MS)
+
+            while (true) {
+                val batch = synchronized(autoFocusLock) {
+                    val copy = pendingAutoFocusKeys.toList()
+                    pendingAutoFocusKeys.clear()
+                    if (copy.isEmpty()) autoFocusInjecting = false
+                    copy
+                }
+                if (batch.isEmpty()) return
+                if (!insertAutoFocusText(batch)) {
+                    Log.d("Q25Toolbox", "autoFocus: no editable field took focus, dropped ${batch.size} key(s)")
+                    return
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Q25Toolbox", "autoFocus injection failed", e)
+        } finally {
+            synchronized(autoFocusLock) {
+                pendingAutoFocusKeys.clear()
+                autoFocusInjecting = false
+            }
+        }
+    }
+
+    /**
+     * Appends [batch] to whatever editable field currently holds input focus, returning false
+     * (writing nothing) if that isn't an editable text field.
+     *
+     * Re-injecting via "input keyevent" was tried here first and is unreliable: it reports
+     * shell-level success, but confirmed via logging that the dialer's phone-number field's text
+     * never actually changes - the synthetic event is silently dropped (and doesn't even re-enter
+     * this filter, unlike a real keypress). Setting the text directly through the accessibility
+     * API instead - the same mechanism assistive typing tools are meant to use - sidesteps
+     * IME/input-connection timing entirely rather than fighting it.
+     */
+    private fun insertAutoFocusText(batch: List<Pair<Int, Char>>): Boolean {
+        val root = rootInActiveWindow ?: return false
+        val focused = try {
+            root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+        } finally {
+            root.recycle()
+        }
+        val target = focused ?: return false
+        try {
+            // Must specifically be the editable field, not just any focus holder - Gmail's search
+            // transition (a full overlay/activity, unlike Maps' inline omnibox) briefly hands input
+            // focus to intermediate widgets (e.g. the overlay's toolbar/back button) before the real
+            // search box gets it, and writing to one of those loses the keystroke entirely.
+            if (!AutoFocusController.isEditableTextField(target)) return false
+            // In the dialer, the physical letter keys are meant to type their phone-keypad digit
+            // (F -> 6), not the raw letter the key produces - but only on the actual Dialpad
+            // number-entry field. isGoogleDialerForeground() alone can't tell the Dialpad tab apart
+            // from Contacts search / Favorites within the same app, which would otherwise turn
+            // contact-name searches into digits too.
+            val asDialpad = isGoogleDialerForeground() && isDialpadDigitsField(target)
+            val addition = buildString {
+                for ((keycode, typed) in batch) {
+                    append(if (asDialpad) (dialerDigitChar(keycode) ?: typed) else typed)
+                }
+            }
+            val current = if (target.isShowingHintText) "" else (target.text?.toString() ?: "")
+            val updated = current + addition
+            val args = Bundle().apply {
+                putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, updated)
+            }
+            if (!target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)) return false
+            setCaretToEnd(target, updated.length)
+            return true
+        } finally {
+            target.recycle()
+        }
+    }
+
+    /**
+     * Puts the caret after the text we just wrote and, more to the point, tells the IME about it.
+     *
+     * Without this the IME is left believing the cursor is wherever it was before the
+     * ACTION_SET_TEXT (position 0 on a field it thinks is still empty), so the next physical key
+     * it does handle gets inserted at the front and auto-capitalized - the caps-mode lookup at
+     * offset 0 reports "start of sentence". That is exactly the "first letter after switching apps
+     * comes out capitalized, or the letters come out doubled" behaviour: not the keyboard, but a
+     * cursor the keyboard was never told had moved.
+     */
+    private fun setCaretToEnd(target: AccessibilityNodeInfo, end: Int) {
+        val args = Bundle().apply {
+            putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, end)
+            putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, end)
+        }
+        target.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, args)
     }
 
     private fun findNodeByViewIdFirst(root: AccessibilityNodeInfo, viewId: String): AccessibilityNodeInfo? {
@@ -1022,10 +1174,25 @@ class Q25AccessibilityService : AccessibilityService() {
         if (instance === this) instance = null
         restoreImeBlock()
         restoreScaling()
+        restoreHeadsUp()
         prefs?.unregisterOnSharedPreferenceChangeListener(prefListener)
         try { unregisterReceiver(screenOffReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(batteryReceiver) } catch (_: Exception) {}
         worker.shutdown()
+        imeWorker.shutdown()
+        autoFocusWorker.shutdown()
         super.onDestroy()
+    }
+
+    /**
+     * Hand heads-up popups back to SystemUI on teardown. The ticker renders through this
+     * service's own window (TYPE_ACCESSIBILITY_OVERLAY), so once it's gone there is nothing
+     * left to display notifications in - leaving them suppressed would silently swallow every
+     * notification popup. [TickerController.syncHeadsUpSuppression] re-applies it when the
+     * service comes back.
+     */
+    private fun restoreHeadsUp() {
+        if (!TickerSettings.isEnabled(this)) return
+        RootShell.run("settings put global heads_up_notifications_enabled 1")
     }
 }

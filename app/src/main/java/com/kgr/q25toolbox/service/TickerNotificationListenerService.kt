@@ -3,14 +3,16 @@ package com.kgr.q25toolbox.service
 import android.app.Notification
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.modules.TickerColorResolver
+import com.kgr.q25toolbox.modules.TickerController
 import com.kgr.q25toolbox.modules.TickerSettings
+import java.util.concurrent.Executors
 
 /**
  * Watches posted notifications and hands qualifying ones to [TickerOverlayController]
  * instead of letting them show as heads-up (heads-up itself is killed system-wide by
- * [com.kgr.q25toolbox.modules.TickerController] while this module is enabled).
+ * [TickerController] for as long as this module is enabled - see its doc for why that
+ * is latched rather than toggled per notification).
  *
  * Granted via root (`cmd notification allow_listener`) rather than the manual
  * "Notification access" settings screen - see [com.kgr.q25toolbox.modules.TickerController].
@@ -21,6 +23,22 @@ class TickerNotificationListenerService : NotificationListenerService() {
     private var lastTickerText: String? = null
     private var lastTickerTime: Long = 0L
 
+    // Root calls must never run on this service's main thread: it is the same main looper
+    // the accessibility service's onKeyEvent is delivered on, and a blocked looper there
+    // means keystrokes time out of the accessibility key filter and reach the app raw.
+    private val worker = Executors.newSingleThreadExecutor()
+
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+        val context = applicationContext
+        worker.execute { TickerController.syncHeadsUpSuppression(context) }
+    }
+
+    override fun onDestroy() {
+        worker.shutdown()
+        super.onDestroy()
+    }
+
     override fun onNotificationPosted(sbn: StatusBarNotification?, rankingMap: RankingMap?) {
         if (sbn == null) return
         val context = applicationContext
@@ -30,10 +48,7 @@ class TickerNotificationListenerService : NotificationListenerService() {
         val notification = sbn.notification ?: return
 
         // 1. App filter
-        if (sbn.packageName in TickerSettings.blockedApps(context)) {
-            ensureHeadsUpEnabled()
-            return
-        }
+        if (sbn.packageName in TickerSettings.blockedApps(context)) return
 
         // 2. Group summary filter
         val isGroupSummary = notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
@@ -43,25 +58,16 @@ class TickerNotificationListenerService : NotificationListenerService() {
         val isOngoing = sbn.isOngoing ||
             (notification.flags and (Notification.FLAG_ONGOING_EVENT or Notification.FLAG_FOREGROUND_SERVICE)) != 0
         val includeOngoing = TickerSettings.includeOngoing(context)
-        if (isOngoing && !includeOngoing) {
-            ensureHeadsUpEnabled()
-            return
-        }
+        if (isOngoing && !includeOngoing) return
 
         // 4. Category filter (with intelligent fallback for apps using MessagingStyle/CallStyle without setting category)
         val category = resolveCategory(notification, sbn.packageName)
-        if (category != null && category in TickerSettings.blockedCategories(context)) {
-            ensureHeadsUpEnabled()
-            return
-        }
+        if (category != null && category in TickerSettings.blockedCategories(context)) return
 
         // 5. Importance filter (ongoing notifications explicitly allowed by user bypass minImportance floor)
         val ranking = Ranking()
         if (rankingMap != null && rankingMap.getRanking(sbn.key, ranking)) {
-            if (!isOngoing && ranking.importance < TickerSettings.minImportance(context)) {
-                ensureHeadsUpEnabled()
-                return
-            }
+            if (!isOngoing && ranking.importance < TickerSettings.minImportance(context)) return
         }
 
         val extras = notification.extras
@@ -95,10 +101,6 @@ class TickerNotificationListenerService : NotificationListenerService() {
             contentIntent = if (TickerSettings.isTapToOpen(context)) notification.contentIntent else null,
             backgroundColor = TickerColorResolver.resolveBackgroundColor(context, sbn.packageName, notification),
         )
-    }
-
-    private fun ensureHeadsUpEnabled() {
-        RootShell.run("settings put global heads_up_notifications_enabled 1")
     }
 
     private fun resolveCategory(notification: Notification, packageName: String): String? {

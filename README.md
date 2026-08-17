@@ -102,6 +102,15 @@ the build script. Until then, both build types are signed with the debug key.
   focus - woken by the next relevant accessibility event rather than a fixed
   poll interval, with a 1s timeout as a safety net for apps where that event
   never cleanly fires.
+- Each insertion is followed by `ACTION_SET_SELECTION` to the end of the text.
+  Without it the IME still believes the caret is at offset 0 on an empty
+  field, and inserts the *next* typed letter at the front, auto-capitalized.
+- Keys pressed while an insertion is in flight are claimed and appended to
+  that same insertion in press order, rather than being left to the IME and
+  then overwritten by an `ACTION_SET_TEXT` snapshot taken before them.
+- A negative "this window has no editable field" result is cached briefly, so
+  typing into a screen with nothing to focus doesn't re-walk the entire node
+  tree, on the main thread, once per letter.
 - The per-app target list is stored in the same `q25tweaks` prefs set used by
   the other accessibility-service modules, so the behavior can be enabled or
   disabled independently for each app.
@@ -223,11 +232,16 @@ the build script. Until then, both build types are signed with the debug key.
   `SearchLauncherQuickStep.apk`, the AOSP/QuickStep launcher that provides
   gesture-nav Recents on this device regardless of which app is set as
   default Home.
-- The patch forces `isTablet` and the `ENABLE_GRID_ONLY_OVERVIEW` feature flag
-  true at every read site scoped to Recents/Overview code (`RecentsView`,
-  `BaseActivityInterface`, `TaskView`, and ~15 supporting classes) -
-  deliberately **never** in `DeviceProfile` itself, so the workspace/hotseat
-  and screen density are untouched. Also backfills the grid-mode resource
+- The patch forces `isTablet` true at all 25 read sites across the six
+  Recents-scoped classes (`RecentsView`, `TaskView`, `BaseActivityInterface`,
+  `TaskOverlayFactory`, `OverviewActionsView`, `RecentsView$20`) and flips
+  `ENABLE_GRID_ONLY_OVERVIEW` from `DISABLED` to `ENABLED` at its
+  `FeatureFlags` construction site - deliberately **never** in `DeviceProfile`
+  itself, so the workspace/hotseat and screen density are untouched.
+  `isTablet` is read in 48 classes app-wide; the remaining ~20 quickstep
+  classes and a few `uioverrides.states` ones are deliberately left unpatched
+  pending case-by-case review, rather than assumed irrelevant - patching them
+  blind risks forcing tablet layout onto the home screen or app drawer. Also backfills the grid-mode resource
   dimens (`overview_grid_row_spacing`, `overview_grid_side_margin`,
   `task_thumbnail_icon_drawable_size_grid`) that are `0` on the phone resource
   bucket - forcing the boolean flags alone produces a broken "snake" layout
@@ -260,14 +274,51 @@ the build script. Until then, both build types are signed with the debug key.
   now forces an immediate `switchToScreenshot()` instead of leaving it live.
 - Transition duration cut from 250ms to 100ms (380ms to 140ms for the
   gesture-nav variant).
+- **Turn the toggle off before installing a system update** (the screen says so
+  too). A BenOS OTA that installed while the bind mount was active left the
+  device with a `SearchLauncherQuickStep.apk` whose `resources.arsc` was stored
+  uncompressed but not 4-byte aligned - which PackageManager silently refuses at
+  its boot-time scan, so `com.android.launcher3` never registers and there is no
+  Recents provider at all, toggle on or off.
+- **Recents Provider Repair** is the recovery path for exactly that state: it
+  pulls whatever launcher build is actually installed, realigns and re-signs it
+  on-device, mounts the result, and says whether a reboot is still needed (the
+  alignment check only runs at PackageManager's own boot-time scan, so a live
+  file swap alone doesn't retrigger it). Repairing from the live apk rather than
+  shipping one fixed copy means it isn't tied to a single BenOS version.
+- The realign/re-sign step is `ApkAligner` + `OnDeviceApkSigner` in `core/`.
+  `ApkAligner` is a from-scratch pure-Kotlin reimplementation of `zipalign`'s
+  alignment step (padding each STORED entry's local-header extra field, then
+  rewriting the Central Directory/EOCD offsets), so no arm64 `zipalign` binary
+  has to be bundled; it throws rather than emit a corrupt apk on layouts it
+  can't handle safely (data descriptors, ZIP64), and has unit-test coverage
+  including a regression test for an already-signed input whose APK Signing
+  Block sits between the last entry and the Central Directory.
+  `OnDeviceApkSigner` re-signs v2/v3 via Google's `apksig` with a throwaway key
+  generated into, and never leaving, AndroidKeyStore - which is safe *because*
+  the target is installed by priv-app folder placement rather than
+  `pm install`, so its permission grants are folder-based, not
+  signature-based.
 
 ### Ticker Notifications (`TickerController` + `TickerOverlayController`)
 - A "Super Status Bar"-style scrolling banner instead of heads-up popups.
   `TickerNotificationListenerService` watches posted notifications (granted
   via root's `cmd notification allow_listener`, no manual "Notification
   access" screen needed) and hands qualifying ones to
-  `TickerOverlayController`, which draws the banner and manages heads-up
-  popups while enabled.
+  `TickerOverlayController`, which draws the banner.
+- Heads-up popups are suppressed by latching `heads_up_notifications_enabled`
+  off for as long as the module is enabled (re-asserted when the listener
+  connects, lifted when the module is disabled or the accessibility service
+  goes away). It is deliberately *not* toggled per notification: SystemUI
+  decides whether a notification becomes a heads-up at post time, in parallel
+  with the listener callback, so a per-notification flip is a race it loses
+  often enough to look random. The trade-off is that blocked/filtered
+  notifications get no heads-up either - they post silently to the shade
+  (calls and alarms use full-screen intents, which this setting doesn't gate).
+- Swiping down on the banner opens the notification shade, via the
+  accessibility service's `GLOBAL_ACTION_NOTIFICATIONS` - the ticker covers the
+  status bar while it's up, so it forwards that gesture rather than swallowing
+  it, and dismisses itself as the shade opens.
 - The banner is a `TYPE_ACCESSIBILITY_OVERLAY` window, not
   `TYPE_APPLICATION_OVERLAY`/`SYSTEM_ALERT_WINDOW` - the latter renders
   *beneath* the real status bar on this device regardless of window flags.
@@ -281,8 +332,7 @@ the build script. Until then, both build types are signed with the debug key.
   staying fully visible while text scrolls underneath it.
 - Configurable: tap-to-open, minimum notification priority, per-app and
   per-category blocklists (with fallback smart category detection for
-  `MessagingStyle`/`CallStyle` and natural SystemUI heads-up popups for blocked
-  notifications), whether ongoing notifications (media/downloads) get a
+  `MessagingStyle`/`CallStyle`), whether ongoing notifications (media/downloads) get a
   ticker, lines of body text shown, scroll speed/start delay (defaults: 1.5s
   delay, 100 dp/s speed), and background color (fixed preset, raw APK icon /
   notification brand color muted via `androidx.palette` bypassing icon packs, or
@@ -301,11 +351,22 @@ the build script. Until then, both build types are signed with the debug key.
 - A root watchdog daemon (`service.d/bt_idle.sh`) that checks once per minute
   whether Bluetooth has any device actively connected and turns it off after
   a configurable number of idle minutes (5 / 10 / 15 / 30 / 60, default 15).
-- Connection detection uses five strategies against `dumpsys
-  bluetooth_manager`: device table status, active A2DP/Headset device,
-  `mIsPlaying` flag, profile connection state, and GATT client/server map
-  entries. A PID+cmdline lock (same as Extra Dim/Telemetry) ensures only one
-  daemon instance runs at a time.
+- Idle is tracked as a wall-clock (`date +%s`) deadline, not as a count of
+  60s loop passes: `sleep` runs on `CLOCK_MONOTONIC`, which does not advance
+  while the device is suspended, so counting passes measured awake time only
+  and overnight the radio stayed on far past the timeout.
+- Connection detection keys on four deliberately specific signals against
+  `dumpsys bluetooth_manager`: the adapter's own `AdapterProperties
+  ConnectionState` (which covers LE-only devices like a watch), the
+  A2DP/Headset active device, the `mIsPlaying` flag, and AVRCP's volume-table
+  `Connected` marker. Several independent signals on purpose - one going stale
+  on a ROM update shouldn't be able to switch Bluetooth off under a device
+  that's in use - but each one specific, since a false "connected" resets the
+  idle timer silently and forever.
+- The disable is verified, not fire-and-forget: it confirms the radio went
+  off, falls back to `svc bluetooth disable`, and appends to a small rotating
+  `/data/adb/.bt_idle.log`. A PID+cmdline lock (same as Extra Dim/Telemetry)
+  ensures only one daemon instance runs at a time.
 
 ### Auto-disable Location (`LocationIdleController`)
 - Mirrors Bluetooth Auto-Disable exactly, for Location instead: a root

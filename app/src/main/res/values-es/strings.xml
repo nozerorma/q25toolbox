@@ -330,6 +330,13 @@
     <string name="recents_transparency_desc">Cuánto se ve el fondo de pantalla detrás de las tarjetas. Reinicia Launcher3 para aplicarlo.</string>
     <string name="recents_restart_launcher">Reiniciar Launcher3</string>
     <string name="recents_restart_systemui">Reiniciar SystemUI</string>
+    <string name="recents_ota_disclaimer">Desactiva esto antes de instalar una actualización del sistema. Se ha rastreado una instalación OTA corrupta hasta este parche estando activo durante la actualización.</string>
+    <string name="recents_repair_title">Reparación del proveedor de Recientes</string>
+    <string name="recents_repair_desc">Si Recientes/Overview dejó de funcionar tras una actualización del sistema, usa esto para restaurarlo.</string>
+    <string name="recents_repair_button">Reparar proveedor de Recientes</string>
+    <string name="recents_repair_success">Proveedor de Recientes reparado.</string>
+    <string name="recents_repair_needs_reboot">Reparación aplicada — reinicia el dispositivo para terminar de restaurar Recientes.</string>
+    <string name="recents_repair_failed">La reparación falló. Vuelve a intentarlo tras reiniciar.</string>
 
     <string name="prox_live_status">Monitor de sensor en vivo</string>
     <string name="prox_unavailable">El sensor de proximidad no está disponible en este dispositivo.</string>

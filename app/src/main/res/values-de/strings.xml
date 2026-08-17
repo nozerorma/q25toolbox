@@ -330,6 +330,13 @@
     <string name="recents_transparency_desc">Wie viel vom Hintergrundbild hinter den Karten durchscheint. Startet Launcher3 neu, um es anzuwenden.</string>
     <string name="recents_restart_launcher">Launcher3 neu starten</string>
     <string name="recents_restart_systemui">SystemUI neu starten</string>
+    <string name="recents_ota_disclaimer">Schalte dies vor der Installation eines Systemupdates aus. Eine beschädigte OTA-Installation wurde darauf zurückgeführt, dass dieser Patch während des Updates aktiv war.</string>
+    <string name="recents_repair_title">Reparatur des Recents-Providers</string>
+    <string name="recents_repair_desc">Falls Recents/Übersicht nach einem Systemupdate nicht mehr funktioniert, damit wiederherstellen.</string>
+    <string name="recents_repair_button">Recents-Provider reparieren</string>
+    <string name="recents_repair_success">Recents-Provider repariert.</string>
+    <string name="recents_repair_needs_reboot">Reparatur angewendet — Gerät neu starten, um Recents vollständig wiederherzustellen.</string>
+    <string name="recents_repair_failed">Reparatur fehlgeschlagen. Nach einem Neustart erneut versuchen.</string>
 
     <string name="prox_live_status">Live-Sensorüberwachung</string>
     <string name="prox_unavailable">Der Näherungssensor ist auf diesem Gerät nicht verfügbar.</string>

@@ -1,4 +1,4 @@
-val appVersionName = "v2.0.5"
+val appVersionName = "v2.1"
 
 plugins {
     id("com.android.application")
@@ -17,7 +17,7 @@ android {
         applicationId = "com.kgr.q25toolbox"
         minSdk = 28
         targetSdk = 34
-        versionCode = 27
+        versionCode = 29
         versionName = appVersionName
 
         ndk { abiFilters += "arm64-v8a" }
@@ -86,6 +86,12 @@ dependencies {
     // Root shell access (https://github.com/topjohnwu/libsu)
     implementation("com.github.topjohnwu.libsu:core:5.2.2")
 
+    // Same APK v2/v3 signing engine apksigner CLI wraps - used to re-sign a
+    // realigned copy of whatever com.android.launcher3 build is actually
+    // installed on-device (see RecentsTweaksController.repairRecentsProvider).
+    // Pure Java, no native deps, runs fine under ART.
+    implementation("com.android.tools.build:apksig:8.5.2")
+
     // Contributor avatars on the Settings screen
     implementation("io.coil-kt:coil-compose:2.6.0")
 
@@ -93,4 +99,6 @@ dependencies {
     implementation("androidx.palette:palette-ktx:1.0.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    testImplementation("junit:junit:4.13.2")
 }

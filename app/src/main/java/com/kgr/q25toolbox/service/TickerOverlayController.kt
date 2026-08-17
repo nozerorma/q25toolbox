@@ -3,6 +3,8 @@ package com.kgr.q25toolbox.service
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.accessibilityservice.AccessibilityService
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.res.Resources
@@ -11,8 +13,10 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -20,7 +24,6 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.kgr.q25toolbox.R
-import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.modules.TickerSettings
 import kotlin.math.ceil
 
@@ -55,6 +58,65 @@ object TickerOverlayController {
     /** How long the icon takes to fade out once the text starts scrolling. */
     private const val ICON_FADE_DURATION_MS = 250L
 
+    /** How far down the user has to drag on the ticker before it opens the shade. */
+    private const val SWIPE_OPEN_THRESHOLD_DP = 16f
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun attachGestures(service: AccessibilityService, view: View, contentIntent: PendingIntent?) {
+        val thresholdPx = SWIPE_OPEN_THRESHOLD_DP * service.resources.displayMetrics.density
+        // While the ticker is up it covers the status bar, so a swipe down that starts on it
+        // would otherwise land on whatever app is behind instead of pulling the shade - the
+        // one gesture you'd expect to still work on something occupying the status bar. The
+        // ticker forwards it to the shade itself (via the accessibility global action, which
+        // needs no root and lands immediately) and gets out of the way.
+        var handled = false
+        val detector = GestureDetector(service, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDown(e: MotionEvent): Boolean {
+                handled = false
+                return true
+            }
+
+            override fun onScroll(
+                e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float
+            ): Boolean {
+                val start = e1 ?: return false
+                if (!handled && e2.rawY - start.rawY > thresholdPx) {
+                    handled = true
+                    openNotificationShade(service)
+                }
+                return handled
+            }
+
+            override fun onFling(
+                e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float
+            ): Boolean {
+                if (!handled && velocityY > 0) {
+                    handled = true
+                    openNotificationShade(service)
+                }
+                return handled
+            }
+
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                val intent = contentIntent ?: return false
+                handled = true
+                try {
+                    intent.send()
+                } catch (_: PendingIntent.CanceledException) {
+                    // Notification/app gone by the time the user tapped it - ignore.
+                }
+                hideInternal()
+                return true
+            }
+        })
+        view.setOnTouchListener { _, event -> detector.onTouchEvent(event) }
+    }
+
+    private fun openNotificationShade(service: AccessibilityService) {
+        service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS)
+        hideInternal()
+    }
+
     fun show(
         context: Context,
         icon: Drawable?,
@@ -73,7 +135,6 @@ object TickerOverlayController {
 
         mainHandler.post {
             hideInternal()
-            RootShell.run("settings put global heads_up_notifications_enabled 0")
 
             val wm = service.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val view = LayoutInflater.from(service).inflate(R.layout.ticker_overlay, null)
@@ -95,16 +156,7 @@ object TickerOverlayController {
             textView.text = text
             textView.translationX = 0f
 
-            if (contentIntent != null) {
-                view.setOnClickListener {
-                    try {
-                        contentIntent.send()
-                    } catch (_: PendingIntent.CanceledException) {
-                        // Notification/app gone by the time the user tapped it - ignore.
-                    }
-                    hideInternal()
-                }
-            }
+            attachGestures(service, view, contentIntent)
 
             // The dimen-resource guess below is only a starting point for the very first
             // frame; setOnApplyWindowInsetsListener corrects it to the real, live status
@@ -112,14 +164,11 @@ object TickerOverlayController {
             // it, which is the actual DPI/device-independent source of truth.
             //
             // FLAG_LAYOUT_NO_LIMITS | FLAG_LAYOUT_IN_SCREEN is the flag combination used for
-            // this same window type - not touchable-outside if there's nothing to tap (contentIntent
-            // null), otherwise not-touch-modal so the bar itself is tappable but touches elsewhere
-            // pass through.
-            val touchFlag = if (contentIntent != null) {
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            } else {
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            }
+            // this same window type, plus FLAG_NOT_TOUCH_MODAL so the bar itself receives
+            // touches while everything outside it passes straight through. It is always
+            // touchable now, not just when there's a contentIntent to tap: swipe-down-to-open-
+            // the-shade has to work on every ticker, otherwise the ticker silently eats the
+            // status bar's own pull-down gesture for as long as it's on screen.
             val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 fallbackStatusBarHeight(service.resources),
@@ -127,7 +176,7 @@ object TickerOverlayController {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
-                    touchFlag,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 PixelFormat.TRANSLUCENT
             ).apply { gravity = Gravity.TOP }
 
@@ -213,7 +262,10 @@ object TickerOverlayController {
         } catch (_: IllegalArgumentException) {
             // Already detached.
         }
-        RootShell.run("settings put global heads_up_notifications_enabled 1")
+        // Deliberately does NOT re-enable heads-up here. That used to run on every ticker
+        // teardown - a blocking root call on the main looper, and it left heads-up back on
+        // between tickers, which is what let notifications posted in that gap pop up anyway.
+        // Suppression is latched by TickerController for as long as the module is enabled.
     }
 
     private fun fallbackStatusBarHeight(resources: Resources): Int {

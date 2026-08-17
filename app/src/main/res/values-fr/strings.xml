@@ -330,6 +330,13 @@
     <string name="recents_transparency_desc">Quelle part du fond d\'écran est visible derrière les cartes. Redémarre Launcher3 pour appliquer.</string>
     <string name="recents_restart_launcher">Redémarrer Launcher3</string>
     <string name="recents_restart_systemui">Redémarrer SystemUI</string>
+    <string name="recents_ota_disclaimer">Désactive ceci avant d\'installer une mise à jour système. Une installation OTA corrompue a été retracée à ce correctif actif pendant la mise à jour.</string>
+    <string name="recents_repair_title">Réparation du fournisseur de Récents</string>
+    <string name="recents_repair_desc">Si Récents/Aperçu a cessé de fonctionner après une mise à jour système, utilise ceci pour le restaurer.</string>
+    <string name="recents_repair_button">Réparer le fournisseur de Récents</string>
+    <string name="recents_repair_success">Fournisseur de Récents réparé.</string>
+    <string name="recents_repair_needs_reboot">Réparation appliquée — redémarre l\'appareil pour terminer la restauration de Récents.</string>
+    <string name="recents_repair_failed">Échec de la réparation. Réessaie après un redémarrage.</string>
 
     <string name="prox_live_status">Moniteur du capteur en direct</string>
     <string name="prox_unavailable">Le capteur de proximité n\'est pas disponible sur cet appareil.</string>

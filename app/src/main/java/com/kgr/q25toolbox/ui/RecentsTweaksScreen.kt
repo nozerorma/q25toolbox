@@ -38,6 +38,7 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     var status by remember { mutableStateOf(RecentsTweaksController.RecentsStatus()) }
     var scrimAlpha by remember { mutableStateOf(1f) }
+    var repairMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
     fun updateStatusAsync() {
@@ -65,6 +66,23 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
             val newStatus = RecentsTweaksController.queryStatus()
             withContext(Dispatchers.Main) {
                 status = newStatus
+            }
+        }
+    }
+
+    fun repairRecentsProviderAsync() {
+        scope.launch(Dispatchers.IO) {
+            val result = RecentsTweaksController.repairRecentsProvider(context)
+            delay(200)
+            val newStatus = RecentsTweaksController.queryStatus()
+            val message = when {
+                result.needsReboot -> context.getString(R.string.recents_repair_needs_reboot)
+                result.mounted -> context.getString(R.string.recents_repair_success)
+                else -> context.getString(R.string.recents_repair_failed)
+            }
+            withContext(Dispatchers.Main) {
+                status = newStatus
+                repairMessage = message
             }
         }
     }
@@ -111,6 +129,13 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
                 )
             }
         }
+
+        Text(
+            text = stringResource(R.string.recents_ota_disclaimer),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp)
+        )
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -173,6 +198,41 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(stringResource(R.string.recents_restart_systemui))
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.recents_repair_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(R.string.recents_repair_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                OutlinedButton(
+                    onClick = {
+                        repairMessage = null
+                        repairRecentsProviderAsync()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(stringResource(R.string.recents_repair_button))
+                }
+                repairMessage?.let { message ->
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
 

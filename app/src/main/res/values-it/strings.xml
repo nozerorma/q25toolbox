@@ -330,6 +330,13 @@
     <string name="recents_transparency_desc">Quanto si vede lo sfondo dietro le schede. Riavvia Launcher3 per applicare.</string>
     <string name="recents_restart_launcher">Riavvia Launcher3</string>
     <string name="recents_restart_systemui">Riavvia SystemUI</string>
+    <string name="recents_ota_disclaimer">Disattiva questa opzione prima di installare un aggiornamento di sistema. Un\'installazione OTA corrotta è stata ricondotta a questa patch attiva durante l\'aggiornamento.</string>
+    <string name="recents_repair_title">Riparazione del provider di Recenti</string>
+    <string name="recents_repair_desc">Se Recenti/Panoramica ha smesso di funzionare dopo un aggiornamento di sistema, usa questa opzione per ripristinarlo.</string>
+    <string name="recents_repair_button">Ripara provider di Recenti</string>
+    <string name="recents_repair_success">Provider di Recenti riparato.</string>
+    <string name="recents_repair_needs_reboot">Riparazione applicata — riavvia il dispositivo per completare il ripristino di Recenti.</string>
+    <string name="recents_repair_failed">Riparazione non riuscita. Riprova dopo un riavvio.</string>
 
     <string name="prox_live_status">Monitor del sensore in tempo reale</string>
     <string name="prox_unavailable">Il sensore di prossimità non è disponibile su questo dispositivo.</string>

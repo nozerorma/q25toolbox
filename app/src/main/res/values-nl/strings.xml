@@ -332,6 +332,13 @@
     <string name="recents_transparency_desc">Hoeveel van de achtergrond doorschijnt achter de kaarten. Herstart Launcher3 om toe te passen.</string>
     <string name="recents_restart_launcher">Launcher3 herstarten</string>
     <string name="recents_restart_systemui">SystemUI herstarten</string>
+    <string name="recents_ota_disclaimer">Zet dit uit voordat je een systeemupdate installeert. Een beschadigde OTA-installatie bleek te komen doordat deze patch actief was tijdens de update.</string>
+    <string name="recents_repair_title">Reparatie van Recents-provider</string>
+    <string name="recents_repair_desc">Als Recents/Overzicht na een systeemupdate niet meer werkt, gebruik dit om het te herstellen.</string>
+    <string name="recents_repair_button">Recents-provider repareren</string>
+    <string name="recents_repair_success">Recents-provider gerepareerd.</string>
+    <string name="recents_repair_needs_reboot">Reparatie toegepast — herstart je toestel om Recents volledig te herstellen.</string>
+    <string name="recents_repair_failed">Reparatie mislukt. Probeer het opnieuw na een herstart.</string>
 
     <string name="prox_live_status">Live sensormonitor</string>
     <string name="prox_unavailable">De nabijheidssensor is niet beschikbaar op dit apparaat.</string>

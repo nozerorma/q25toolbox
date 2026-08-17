@@ -4,6 +4,142 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.1] - 2026-08-17
+
+### Added
+- **Recents Provider Repair** (Recents UI Layout screen): a button that
+  restores Recents/Overview if a system update ever ships a broken
+  `com.android.launcher3` again (see Fixed, below). Pulls whatever build is
+  actually installed on the device, realigns and re-signs it on-device, and
+  bind-mounts the result - rather than shipping one fixed apk tied to a single
+  BenOS version, so it isn't invalidated by the next OTA. Reports whether a
+  reboot is needed to finish (PackageManager's alignment check only runs at
+  its own boot-time scan; a live file swap alone doesn't retrigger it).
+- **On-device APK realignment + signing** (`ApkAligner`, `OnDeviceApkSigner`):
+  the mechanism behind the repair button and the Grid Recents toggle.
+  `ApkAligner` is a from-scratch, pure-Kotlin reimplementation of `zipalign`'s
+  alignment step (no native binary bundled - would need a separate arm64
+  build) - pads each STORED entry's local-header extra field so its data
+  starts on a 4-byte boundary, and rewrites the Central Directory/EOCD offsets
+  to match. Verified against a real broken apk pulled from a beta3a device
+  (`zipalign -c` on the output: pass) and covered by unit tests, including a
+  regression test for an already-signed input's APK Signing Block sitting
+  between the last entry and the Central Directory - the first version
+  assumed local headers ran contiguously up to the Central Directory offset,
+  which breaks on any already-signed apk. `OnDeviceApkSigner` re-signs with
+  v2/v3 (mandatory for anything targeting API 30+) using Google's `apksig`
+  library and a throwaway key that's generated into, and never leaves,
+  AndroidKeyStore - safe specifically because TARGET_APK is installed via
+  priv-app folder placement, not `pm install`, so permission grants there are
+  folder-based, not signature-based.
+- **OTA disclaimer** on the Grid Recents toggle: warns to turn it off before
+  installing a system update, per the corruption mechanism described below.
+
+### Fixed
+- **No Recents/Overview after a BenOS OTA** (traced on beta3a, 2026-08-16):
+  the update shipped `SearchLauncherQuickStep.apk` with `resources.arsc`
+  stored uncompressed but not 4-byte aligned, which PackageManager silently
+  refuses at its own boot-time scan - `com.android.launcher3` never gets
+  registered, so there's no swipe-up/hold Recents provider at all, independent
+  of whether Grid Recents is toggled on. Circumstantial evidence points at
+  this app's own bind mount being active *during* the OTA install as the
+  actual trigger (Custota reads/diffs the live partition content; a bind
+  mount substituting a different file at that exact moment could make the
+  update compute or write the wrong bytes for that entry) - hence the new OTA
+  disclaimer rather than just the fix.
+- **Grid Recents toggle had no real effect**: the bundled
+  `SearchLauncherQuickStep_patched.apk` asset was, it turns out, a plain
+  unpatched copy of the stock apk (byte-for-byte identical, confirmed with
+  `cmp`) - the actual two-row grid patch had never been built, despite the
+  toggle applying it "successfully." It's real now: `isTablet` is forced true
+  at all 25 read sites across the six Recents-scoped classes named in this
+  file's own doc comment (`RecentsView`, `TaskView`, `BaseActivityInterface`,
+  `TaskOverlayFactory`, `OverviewActionsView`, `RecentsView$20` -
+  deliberately not `DeviceProfile` itself, to leave the workspace/hotseat
+  alone), and `ENABLE_GRID_ONLY_OVERVIEW` is flipped from `DISABLED` to
+  `ENABLED` at its `FeatureFlags` construction site. `isTablet` is actually
+  read in 48 classes app-wide (including `Workspace`, `InvariantDeviceProfile`,
+  `AllAppsState`); the remaining ~20 quickstep-package classes and a few
+  `uioverrides.states` ones are deliberately not yet patched pending
+  case-by-case review, so as not to risk forcing tablet layout onto the actual
+  home screen or app drawer.
+- **Grid Recents toggle failing on a clean install**: `AssetInstaller`'s
+  `install` call into `/data/adb/q25toolbox/` failed ("No such file or
+  directory") when that directory didn't exist yet, so the bind mount below
+  it silently bound nothing. Reported by a user who traced it exactly to this
+  (v2.0.5, clean install, no prior q25toolbox root data) and supplied the fix.
+  `mkdir -p ... && chmod 755` now runs first, shared by both the toggle and
+  the repair button.
+- **Ticker Notifications - heads-up popups sneaking through**: heads-up
+  suppression was flipped per notification (off when a ticker appeared, back on
+  when it faded or when a notification was filtered out), which is a race
+  SystemUI decides in parallel with our listener callback - so the flag actually
+  spent most of its time back at `1`, and any notification arriving while no
+  ticker was on screen popped up as usual (Substack being the reported case).
+  `heads_up_notifications_enabled` is now **latched** off for as long as the
+  module is enabled, re-asserted whenever the notification listener connects
+  (so a reboot can't quietly restore popups) and lifted again when the module
+  is turned off or the accessibility service goes away - the ticker renders
+  through that service, so without it there would be nothing left to show
+  notifications in. Side effect: blocked apps/categories and below-minimum
+  priority notifications no longer produce a heads-up either - they post
+  silently to the shade. Incoming calls and alarms are unaffected, those use
+  full-screen intents, which this setting doesn't gate.
+- **Bluetooth Auto-Disable not firing**: two independent causes.
+  1. Idle was counted in 60s loop passes, but `sleep` runs on
+     `CLOCK_MONOTONIC`, which doesn't advance while the device is suspended -
+     so the counter measured *awake* time only and overnight, when this matters
+     most, barely moved. Idle is now a wall-clock (`date +%s`) deadline.
+  2. Connection detection counted any `dumpsys bluetooth_manager` line that
+     carried a MAC address and the word "Connected" without the literal
+     "NotConnected" - which also matched ordinary *disconnection* log lines, so
+     the timer got stuck permanently right after you finished using a device.
+     It also treated merely *registered* GATT clients (any app doing a BLE
+     scan) as a live connection. Detection now keys on the adapter's own
+     `AdapterProperties ConnectionState` (which covers LE-only devices such as
+     a watch), the A2DP/Headset active device, `mIsPlaying`, and AVRCP's
+     volume-table `Connected` marker.
+  The disable itself is now verified rather than fire-and-forget: it confirms
+  the radio actually went off, retries via `svc bluetooth disable`, and logs to
+  a small rotating `/data/adb/.bt_idle.log` so a missed shutdown is
+  diagnosable after the fact.
+- **Doubled / wrongly capitalized letters after switching apps**: Auto-Focus
+  inserts the triggering character with `ACTION_SET_TEXT`, but never told the
+  IME where the caret ended up - so the keyboard went on believing the cursor
+  sat at offset 0 of an empty field, inserting the next letter at the front and
+  auto-capitalizing it (caps-mode at offset 0 reports "start of sentence").
+  Every insertion now follows up with `ACTION_SET_SELECTION` to the end of the
+  text. On top of that, keys pressed while an insertion was still in flight
+  (it can wait up to a second for focus to land) went to the IME in parallel
+  and were then overwritten by our `ACTION_SET_TEXT` snapshot; those keys are
+  now claimed and written as part of the same insertion, in press order.
+
+### Changed
+- **Ticker Notifications**: swiping down on the ticker opens the notification
+  shade, instead of the banner silently eating the status bar's own pull-down
+  gesture for as long as it's on screen. The banner window is now always
+  touchable (previously only when tap-to-open was on) and dismisses itself
+  once the shade opens.
+- **Accessibility service overhead**, the "spamming accessibility services"
+  problem, in three parts:
+  - The ticker no longer runs `settings put global ...` (a blocking root shell
+    call) on the **main looper** twice per notification. That's the same looper
+    `onKeyEvent` is delivered on, and the accessibility key filter only has a
+    500ms budget before the system gives up and hands the key to the app
+    anyway - i.e. it could turn a single keypress into a duplicated one.
+  - The foreground app is now re-derived only on window/windows-changed
+    events. It used to run for *every* accessibility event, including the
+    `typeViewFocused` ones that fire continuously while typing, at a cost of a
+    `windows()` query plus a root-node fetch per window each time.
+  - Calculator Keys and Chat Enter-to-Send are pre-filtered against the
+    already-known foreground package, instead of each doing a
+    `getRootInActiveWindow()` binder round-trip for every digit (any app) or
+    Enter (any app) typed. Auto-Focus likewise caches a negative
+    "this window has no editable field" result briefly, so typing a word into a
+    screen with nothing to focus doesn't re-walk the whole node tree per
+    letter, and its injection got its own thread so it can't queue behind
+    `wm size` from a per-app scaling switch.
+
 ## [2.0.5] - 2026-07-28
 
 ### Fixed

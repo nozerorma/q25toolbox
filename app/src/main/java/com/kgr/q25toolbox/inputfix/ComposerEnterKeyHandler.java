@@ -76,6 +76,16 @@ public final class ComposerEnterKeyHandler {
         return DEFAULT_SEND_BUTTON_MATCHERS;
     }
 
+    /**
+     * Cheap "could this handler possibly do anything here?" check against the already-known
+     * foreground package, so the caller can skip the getRootInActiveWindow() binder call
+     * (and the tree walk behind it) on every Enter press in every other app. A null package
+     * means the caller doesn't know yet - answer yes and let the full check decide.
+     */
+    public boolean supportsPackage(CharSequence packageName) {
+        return packageName == null || isSupportedPackage(supportedPackages, packageName);
+    }
+
     public boolean onKeyEvent(AccessibilityService service, KeyEvent event) {
         if (!isHandledEnterEvent(event)) {
             return false;
