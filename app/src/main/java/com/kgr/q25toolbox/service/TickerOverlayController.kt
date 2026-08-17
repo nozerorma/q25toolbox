@@ -24,6 +24,7 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.kgr.q25toolbox.R
+import com.kgr.q25toolbox.modules.TickerController
 import com.kgr.q25toolbox.modules.TickerSettings
 import kotlin.math.ceil
 
@@ -115,6 +116,17 @@ object TickerOverlayController {
     private fun openNotificationShade(service: AccessibilityService) {
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS)
         hideInternal()
+    }
+
+    /**
+     * Whether a ticker could actually be displayed right now: the screen is on, and the
+     * accessibility service is running (its Context is the only one that can add a
+     * TYPE_ACCESSIBILITY_OVERLAY window). Checked by the caller *before* it suppresses any
+     * heads-up popup, so a notification is never left with neither a popup nor a ticker.
+     */
+    fun canShow(context: Context): Boolean {
+        val pm = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
+        return pm.isInteractive && Q25AccessibilityService.instance != null
     }
 
     fun show(
@@ -262,10 +274,10 @@ object TickerOverlayController {
         } catch (_: IllegalArgumentException) {
             // Already detached.
         }
-        // Deliberately does NOT re-enable heads-up here. That used to run on every ticker
-        // teardown - a blocking root call on the main looper, and it left heads-up back on
-        // between tickers, which is what let notifications posted in that gap pop up anyway.
-        // Suppression is latched by TickerController for as long as the module is enabled.
+        // Hand heads-up popups back, after a short grace period and on TickerController's own
+        // thread - never inline here, which is the main looper (see TickerController for what
+        // blocking it does to physical-keyboard input).
+        TickerController.releaseHeadsUpAfterTicker()
     }
 
     private fun fallbackStatusBarHeight(resources: Resources): Int {

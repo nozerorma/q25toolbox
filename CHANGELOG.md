@@ -4,6 +4,46 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [2.1.1] - 2026-08-17
+
+### Fixed
+- **Blocklisted apps stopped showing heads-up popups** (regression in 2.1). 2.1 fixed
+  the "some apps sometimes pop up anyway" leak by latching
+  `heads_up_notifications_enabled` off for as long as the module was enabled - which
+  also silenced the popup for apps and categories on the blocklist, when leaving those
+  alone is the entire point of blocklisting them. Reverted to the pre-2.1 behaviour:
+  heads-up stays **enabled** as the steady state and is turned off only around a ticker,
+  so a notification the ticker declines is not touched at all.
+
+  The leak 2.1 was trying to fix is therefore back, and is a platform limitation rather
+  than a bug that was left in: SystemUI decides heads-up-or-not when a notification is
+  posted, at roughly the same moment the notification listener hears about it, so a
+  global setting flipped from that callback is racing a decision that may already have
+  been made. What can be done about it, and now is:
+  - the suppression write is issued the moment the ticker commits to showing a
+    notification, ahead of the icon load and palette colour extraction that dominate that
+    callback, instead of after them;
+  - it is issued off the main thread (2.1's fix, kept - blocking that looper is what
+    doubled physical keystrokes);
+  - and it lingers 2s past the end of the ticker, so a burst of notifications races once
+    rather than once per notification. Trade-off: a blocklisted notification arriving
+    within that 2s window won't pop up either.
+
+  The mechanism that would fix this properly is a `NotificationAssistantService`, whose
+  `onNotificationEnqueued` hook runs *before* SystemUI sees the notification and can
+  demote a single one below the heads-up threshold. **It isn't available to this app**:
+  the class is `@SystemApi(PRIVILEGED_APPS)`, and `cmd notification allow_assistant`
+  silently refuses a non-privileged component - verified on-device, including with the
+  assistant slot emptied first (`disallow_assistant`), where granting ours left it
+  `null`. It would require q25toolbox to be installed as a privileged/system app.
+
+### Changed
+- The ticker's filter chain (self/group-summary/ongoing/app/category) moved into a shared
+  `TickerFilter`, so the decision to show a ticker and the decision to suppress a popup
+  can't drift apart - a mismatch there swallows a notification silently.
+- No heads-up suppression at all when no ticker could be shown anyway (screen off, or the
+  accessibility service not running), instead of suppressing and displaying nothing.
+
 ## [2.1] - 2026-08-17
 
 ### Added

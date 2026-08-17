@@ -22,7 +22,6 @@ import com.kgr.q25toolbox.modules.AppScalingController
 import com.kgr.q25toolbox.modules.AutoFocusController
 import com.kgr.q25toolbox.modules.BatteryUsageController
 import com.kgr.q25toolbox.modules.TickerController
-import com.kgr.q25toolbox.modules.TickerSettings
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -231,11 +230,12 @@ class Q25AccessibilityService : AccessibilityService() {
             imeBlockApplied = (curIme == PASSTHRU_IME)
         }
 
-        // The ticker can only render through this service (TYPE_ACCESSIBILITY_OVERLAY), so
-        // heads-up suppression is re-asserted when it connects and lifted again in onDestroy -
-        // otherwise turning accessibility off would leave heads-up popups globally disabled
-        // with nothing left to show notifications in their place.
-        worker.execute { TickerController.syncHeadsUpSuppression(this) }
+        // Re-assert what the ticker module needs from the system (assistant access, heads-up
+        // left enabled). The "no accessibility service means no ticker, so don't suppress
+        // anything" case is handled where the suppression decision is actually made, in
+        // TickerNotificationAssistantService, which checks for a live instance per
+        // notification - no global state to leave behind if this service dies.
+        worker.execute { TickerController.syncSystemState(this) }
 
         registerReceiver(screenOffReceiver, IntentFilter(Intent.ACTION_SCREEN_OFF))
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
@@ -1174,7 +1174,6 @@ class Q25AccessibilityService : AccessibilityService() {
         if (instance === this) instance = null
         restoreImeBlock()
         restoreScaling()
-        restoreHeadsUp()
         prefs?.unregisterOnSharedPreferenceChangeListener(prefListener)
         try { unregisterReceiver(screenOffReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(batteryReceiver) } catch (_: Exception) {}
@@ -1184,15 +1183,4 @@ class Q25AccessibilityService : AccessibilityService() {
         super.onDestroy()
     }
 
-    /**
-     * Hand heads-up popups back to SystemUI on teardown. The ticker renders through this
-     * service's own window (TYPE_ACCESSIBILITY_OVERLAY), so once it's gone there is nothing
-     * left to display notifications in - leaving them suppressed would silently swallow every
-     * notification popup. [TickerController.syncHeadsUpSuppression] re-applies it when the
-     * service comes back.
-     */
-    private fun restoreHeadsUp() {
-        if (!TickerSettings.isEnabled(this)) return
-        RootShell.run("settings put global heads_up_notifications_enabled 1")
-    }
 }

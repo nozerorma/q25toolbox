@@ -306,15 +306,21 @@ the build script. Until then, both build types are signed with the debug key.
   via root's `cmd notification allow_listener`, no manual "Notification
   access" screen needed) and hands qualifying ones to
   `TickerOverlayController`, which draws the banner.
-- Heads-up popups are suppressed by latching `heads_up_notifications_enabled`
-  off for as long as the module is enabled (re-asserted when the listener
-  connects, lifted when the module is disabled or the accessibility service
-  goes away). It is deliberately *not* toggled per notification: SystemUI
-  decides whether a notification becomes a heads-up at post time, in parallel
-  with the listener callback, so a per-notification flip is a race it loses
-  often enough to look random. The trade-off is that blocked/filtered
-  notifications get no heads-up either - they post silently to the shade
-  (calls and alarms use full-screen intents, which this setting doesn't gate).
+- Heads-up popups: `heads_up_notifications_enabled` stays **enabled** as the
+  steady state and is turned off only around a ticker, so a notification the
+  ticker declines (a blocklisted app or category) is not touched at all and pops
+  up exactly as it would with this module off.
+  That leaves a race for the ones it does show - SystemUI decides
+  heads-up-or-not at post time, at roughly the same moment the listener hears
+  about it - so one occasionally slips through and shows both. It's narrowed
+  three ways: the write is issued the instant the ticker commits, ahead of the
+  icon/palette work in that callback; never on the main thread; and it lingers
+  2s past the ticker so a burst races once rather than per notification.
+  Latching the setting off for the module's whole lifetime (v2.1) removes the
+  race but silences blocklisted apps too, which is worse - see the 2.1.1
+  changelog entry. The proper fix, a `NotificationAssistantService` demoting
+  single notifications pre-post, needs privileged-app status: `cmd notification
+  allow_assistant` refuses a non-privileged component outright.
 - Swiping down on the banner opens the notification shade, via the
   accessibility service's `GLOBAL_ACTION_NOTIFICATIONS` - the ticker covers the
   status bar while it's up, so it forwards that gesture rather than swallowing

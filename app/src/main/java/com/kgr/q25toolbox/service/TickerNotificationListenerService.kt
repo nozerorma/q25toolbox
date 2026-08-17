@@ -5,14 +5,15 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.kgr.q25toolbox.modules.TickerColorResolver
 import com.kgr.q25toolbox.modules.TickerController
+import com.kgr.q25toolbox.modules.TickerFilter
 import com.kgr.q25toolbox.modules.TickerSettings
 import java.util.concurrent.Executors
 
 /**
- * Watches posted notifications and hands qualifying ones to [TickerOverlayController]
- * instead of letting them show as heads-up (heads-up itself is killed system-wide by
- * [TickerController] for as long as this module is enabled - see its doc for why that
- * is latched rather than toggled per notification).
+ * Watches posted notifications and hands qualifying ones to [TickerOverlayController],
+ * asking [TickerController] to suppress the heads-up popup for those same notifications -
+ * and only those, so a blocklisted app keeps popping up as normal. See TickerController for
+ * why that suppression is a race this can only narrow, not win outright.
  *
  * Granted via root (`cmd notification allow_listener`) rather than the manual
  * "Notification access" settings screen - see [com.kgr.q25toolbox.modules.TickerController].
@@ -31,7 +32,7 @@ class TickerNotificationListenerService : NotificationListenerService() {
     override fun onListenerConnected() {
         super.onListenerConnected()
         val context = applicationContext
-        worker.execute { TickerController.syncHeadsUpSuppression(context) }
+        worker.execute { TickerController.syncSystemState(context) }
     }
 
     override fun onDestroy() {
@@ -47,28 +48,23 @@ class TickerNotificationListenerService : NotificationListenerService() {
 
         val notification = sbn.notification ?: return
 
-        // 1. App filter
-        if (sbn.packageName in TickerSettings.blockedApps(context)) return
+        // App / group-summary / ongoing / category filters, shared with the assistant service.
+        if (!TickerFilter.claims(context, sbn, packageName)) return
 
-        // 2. Group summary filter
-        val isGroupSummary = notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
-        if (isGroupSummary) return
-
-        // 3. Ongoing filter
-        val isOngoing = sbn.isOngoing ||
-            (notification.flags and (Notification.FLAG_ONGOING_EVENT or Notification.FLAG_FOREGROUND_SERVICE)) != 0
-        val includeOngoing = TickerSettings.includeOngoing(context)
-        if (isOngoing && !includeOngoing) return
-
-        // 4. Category filter (with intelligent fallback for apps using MessagingStyle/CallStyle without setting category)
-        val category = resolveCategory(notification, sbn.packageName)
-        if (category != null && category in TickerSettings.blockedCategories(context)) return
-
-        // 5. Importance filter (ongoing notifications explicitly allowed by user bypass minImportance floor)
+        // Minimum-importance floor. Lives here rather than in TickerFilter because it needs
+        // the RankingMap, which doesn't exist yet at the assistant's enqueue-time hook - see
+        // TickerFilter's doc for why that asymmetry is safe. (Ongoing notifications the user
+        // explicitly opted into bypass the floor.)
         val ranking = Ranking()
         if (rankingMap != null && rankingMap.getRanking(sbn.key, ranking)) {
-            if (!isOngoing && ranking.importance < TickerSettings.minImportance(context)) return
+            if (!TickerFilter.isOngoing(sbn) && ranking.importance < TickerSettings.minImportance(context)) return
         }
+
+        // Nothing can render a ticker without the accessibility service (the overlay is a
+        // TYPE_ACCESSIBILITY_OVERLAY window), and heads-up popups don't happen on a dark
+        // screen anyway - in both cases leave the notification entirely alone rather than
+        // suppress a popup and put nothing in its place.
+        if (!TickerOverlayController.canShow(context)) return
 
         val extras = notification.extras
         val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty()
@@ -81,12 +77,18 @@ class TickerNotificationListenerService : NotificationListenerService() {
 
         // Avoid re-triggering rapid duplicate animations for ongoing progress updates
         val now = System.currentTimeMillis()
-        if (isOngoing && sbn.packageName == lastTickerPackage && tickerText == lastTickerText && (now - lastTickerTime) < 3000L) {
+        if (TickerFilter.isOngoing(sbn) && sbn.packageName == lastTickerPackage && tickerText == lastTickerText && (now - lastTickerTime) < 3000L) {
             return
         }
         lastTickerPackage = sbn.packageName
         lastTickerText = tickerText
         lastTickerTime = now
+
+        // Ask for suppression here, the first moment we're committed to showing a ticker -
+        // ahead of the icon load and palette colour extraction below, which are the slow
+        // part of this callback. Every millisecond earlier is a millisecond less of the
+        // window in which SystemUI can decide to pop this notification up as well.
+        TickerController.suppressHeadsUpForTicker()
 
         val icon = try {
             notification.smallIcon?.loadDrawable(context)
@@ -101,54 +103,5 @@ class TickerNotificationListenerService : NotificationListenerService() {
             contentIntent = if (TickerSettings.isTapToOpen(context)) notification.contentIntent else null,
             backgroundColor = TickerColorResolver.resolveBackgroundColor(context, sbn.packageName, notification),
         )
-    }
-
-    private fun resolveCategory(notification: Notification, packageName: String): String? {
-        val cat = notification.category
-        if (!cat.isNullOrBlank()) return cat
-
-        val extras = notification.extras ?: return inferFromPackage(packageName)
-
-        if (extras.containsKey(Notification.EXTRA_MESSAGES) ||
-            extras.containsKey(Notification.EXTRA_MESSAGING_PERSON) ||
-            extras.containsKey("android.messagingStyleUser") ||
-            extras.containsKey(Notification.EXTRA_CONVERSATION_TITLE)
-        ) {
-            return Notification.CATEGORY_MESSAGE
-        }
-
-        if (extras.containsKey(Notification.EXTRA_CALL_TYPE) ||
-            extras.containsKey(Notification.EXTRA_CALL_PERSON) ||
-            extras.containsKey("android.callType")
-        ) {
-            return Notification.CATEGORY_CALL
-        }
-
-        if (extras.containsKey(Notification.EXTRA_MEDIA_SESSION) ||
-            extras.containsKey(Notification.EXTRA_COMPACT_ACTIONS)
-        ) {
-            return Notification.CATEGORY_TRANSPORT
-        }
-
-        if (extras.containsKey(Notification.EXTRA_PROGRESS) ||
-            extras.containsKey(Notification.EXTRA_PROGRESS_MAX)
-        ) {
-            return Notification.CATEGORY_PROGRESS
-        }
-
-        return inferFromPackage(packageName)
-    }
-
-    private fun inferFromPackage(packageName: String): String? {
-        val pkg = packageName.lowercase()
-        return when {
-            pkg.contains("messaging") || pkg.contains("whatsapp") || pkg.contains("telegram") ||
-                pkg.contains("signal") || pkg.contains("sms") || pkg.contains("mms") -> Notification.CATEGORY_MESSAGE
-            pkg.contains("dialer") || pkg.contains("telecom") || pkg.contains("phone") -> Notification.CATEGORY_CALL
-            pkg.contains("gmail") || pkg.contains("mail") || pkg.contains("email") || pkg.contains("outlook") -> Notification.CATEGORY_EMAIL
-            pkg.contains("clock") || pkg.contains("alarm") || pkg.contains("timer") -> Notification.CATEGORY_ALARM
-            pkg.contains("spotify") || pkg.contains("music") || pkg.contains("youtube") || pkg.contains("audio") -> Notification.CATEGORY_TRANSPORT
-            else -> null
-        }
     }
 }
