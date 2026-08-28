@@ -66,8 +66,16 @@ object DaemonMaintenance {
                 LocationIdleController.setEnabled(context, true, minutes)
             }
         }
+        // v3: tear down the pre-v3 bind-mounted grid patch (module + patched
+        // apk + boot script + mount). Runs before the repair-heal check so a
+        // stale legacy boot script does not look like a repair that needs
+        // healing. The grid/masonry layout is an LSPosed hook now.
+        RecentsTweaksController.cleanupLegacyGridPatch()
+
+        // Only heals the OTA "no Recents provider" repair bind-mount, if the
+        // user ever ran it.
         if (RecentsTweaksController.isPersisted() && !RecentsTweaksController.isHealthy(context)) {
-            RecentsTweaksController.setNativeGridPatch(context, true)
+            RecentsTweaksController.repairRecentsProvider(context)
         }
 
         for ((script, lock) in DEPRECATED_SCRIPTS) {

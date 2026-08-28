@@ -324,13 +324,10 @@
 
     <string name="title_recents_tweaks">Layout da interface de Recentes</string>
     <string name="subtitle_recents_tweaks">Layout multi-app em Recentes por meio de um patch cirúrgico do RecentsView</string>
-    <string name="recents_patch_card_title">Grade nativa de Recentes</string>
-    <string name="recents_patch_card_desc">Aplica patch diretamente no RecentsView e no BaseActivityInterface para forçar a visão geral de Recentes em grade de duas linhas na DPI nativa, sem alterar o status de tablet do DeviceProfile para a tela inicial/hotseat nem a densidade da tela.</string>
     <string name="recents_transparency_title">Transparência do fundo</string>
     <string name="recents_transparency_desc">Quanto do papel de parede aparece atrás dos cartões. Reinicia o Launcher3 para aplicar.</string>
     <string name="recents_restart_launcher">Reiniciar Launcher3</string>
     <string name="recents_restart_systemui">Reiniciar SystemUI</string>
-    <string name="recents_ota_disclaimer">Desative isto antes de instalar uma atualização do sistema. Uma instalação OTA corrompida foi rastreada até este patch estar ativo durante a atualização.</string>
     <string name="recents_repair_title">Reparo do provedor de Recentes</string>
     <string name="recents_repair_desc">Se Recentes/Overview parou de funcionar após uma atualização do sistema, use isto para restaurá-lo.</string>
     <string name="recents_repair_button">Reparar provedor de Recentes</string>

@@ -45,7 +45,7 @@
     <string name="subtitle_app_scaling">Force phone layout on misbehaving apps</string>
     <string name="subtitle_key_remap">Map a spare key to Right Ctrl</string>
     <string name="subtitle_ticker_notifications">Scrolling status-bar banner instead of heads-up</string>
-    <string name="subtitle_recents_tweaks">Multi-app Overview layout via a surgical RecentsView patch</string>
+    <string name="subtitle_recents_tweaks">Two-row grid / masonry Overview via LSPosed</string>
 
 
     <!-- Info Screen -->
@@ -345,13 +345,26 @@
     <string name="prox_factory_test_button">Launch Factory Test Mode</string>
 
     <!-- Recents UI Tweaks Screen -->
-    <string name="recents_patch_card_title">Native Grid Recents</string>
-    <string name="recents_patch_card_desc">Patches RecentsView and BaseActivityInterface directly to force the two-row Grid Recents overview at native DPI, without changing DeviceProfile\'s tablet status for the workspace/hotseat or the screen density.</string>
+    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_ok">Got it</string>
+    <string name="whats_new_headline">The Grid Recents overview now REQUIRES an Xposed framework (LSPosed / Vector).</string>
+    <string name="whats_new_body">v3.0 replaces the old bundled-launcher grid patch with an LSPosed module. It survives system updates and can no longer break Recents, but it only works with LSPosed or Vector installed (on KernelSU / APatch / Magisk). Enable and scope the module from the Recents UI Layout screen.\n\nEverything else is unchanged and needs no framework. Without one, Recents is simply stock.\n\nIf you were using the grid on 2.x, this build removes that old patch on first launch. There is also a new Masonry mode (staggered tiles).</string>
+    <string name="whats_new_matrix_title">Which version do I want?</string>
+    <string name="whats_new_matrix">v3.0+  :  any stock-based Q25 ROM, with LSPosed / Vector\n2.1.1  :  BenOS beta3, no Xposed framework\n2.0.5  :  BenOS pre-beta3a / older stock</string>
+    <string name="recents_intro">Makes Recents/Overview show two rows of smaller task cards, tablet-style, instead of the stock single row. It runs entirely through an LSPosed hook inside the launcher; this screen only stores the setting and restarts the launcher.</string>
+    <string name="recents_section_lsposed">LSPosed needed</string>
+    <string name="recents_xposed_ok">LSPosed module active.</string>
+    <string name="recents_xposed_missing">LSPosed module not active.</string>
+    <string name="recents_xposed_hint">Open your Xposed manager (LSPosed / Vector), enable \"Q25 Toolbox\", tick the launcher (com.android.launcher3) and this app in its scope, then force-stop the launcher. Requires an Xposed framework on KernelSU / APatch / Magisk.</string>
+    <string name="recents_layout_title">Overview layout</string>
+    <string name="recents_layout_desc">Grid forces the launcher\'s tablet two-row layout for Recents (the home screen and hotseat may shift slightly, since they share the layout profile). Masonry is Grid with staggered tile heights and square corners.</string>
+    <string name="recents_mode_stock">Stock (single row)</string>
+    <string name="recents_mode_grid">Grid (two rows)</string>
+    <string name="recents_mode_masonry">Masonry (two rows, staggered)</string>
     <string name="recents_transparency_title">Background Transparency</string>
-    <string name="recents_transparency_desc">How much of the wallpaper shows through behind the cards. Restarts Launcher3 to apply.</string>
-    <string name="recents_restart_launcher">Restart Launcher3</string>
+    <string name="recents_transparency_desc">How much of the wallpaper shows through behind the cards. Restarts the launcher to apply.</string>
+    <string name="recents_restart_launcher">Restart Launcher</string>
     <string name="recents_restart_systemui">Restart SystemUI</string>
-    <string name="recents_ota_disclaimer">Turn this off before installing a system update. A corrupted OTA install has been traced back to this patch being active mid-update.</string>
     <string name="recents_repair_title">Recents Provider Repair</string>
     <string name="recents_repair_desc">If Recents/Overview stopped working after a system update, use this to restore it.</string>
     <string name="recents_repair_button">Repair Recents Provider</string>

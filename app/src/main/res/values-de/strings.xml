@@ -324,13 +324,10 @@
 
     <string name="title_recents_tweaks">Recents-UI-Layout</string>
     <string name="subtitle_recents_tweaks">Mehrere Apps im Overview-Layout durch einen chirurgischen RecentsView-Patch</string>
-    <string name="recents_patch_card_title">Natives Grid Recents</string>
-    <string name="recents_patch_card_desc">Patcht RecentsView und BaseActivityInterface direkt, um die zweizeilige Grid-Recents-Übersicht bei nativer DPI zu erzwingen, ohne den Tablet-Status von DeviceProfile für Homescreen/Hotseat oder die Bildschirmdichte zu ändern.</string>
     <string name="recents_transparency_title">Hintergrundtransparenz</string>
     <string name="recents_transparency_desc">Wie viel vom Hintergrundbild hinter den Karten durchscheint. Startet Launcher3 neu, um es anzuwenden.</string>
     <string name="recents_restart_launcher">Launcher3 neu starten</string>
     <string name="recents_restart_systemui">SystemUI neu starten</string>
-    <string name="recents_ota_disclaimer">Schalte dies vor der Installation eines Systemupdates aus. Eine beschädigte OTA-Installation wurde darauf zurückgeführt, dass dieser Patch während des Updates aktiv war.</string>
     <string name="recents_repair_title">Reparatur des Recents-Providers</string>
     <string name="recents_repair_desc">Falls Recents/Übersicht nach einem Systemupdate nicht mehr funktioniert, damit wiederherstellen.</string>
     <string name="recents_repair_button">Recents-Provider reparieren</string>

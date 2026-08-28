@@ -19,6 +19,21 @@
         android:theme="@style/Theme.Q25Toolbox"
         android:supportsRtl="true">
 
+        <!-- Xposed / LSPosed module metadata. Enable in LSPosed / Vector and
+             scope to the launcher to get the grid / masonry Overview. -->
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="Two-row grid / masonry Recents/Overview for Launcher3 QuickStep" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="54" />
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposed_scope" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

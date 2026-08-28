@@ -4,6 +4,71 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [3.0] - 2026-08-28
+
+First build whose Recents feature is an **LSPosed module**. This opens the
+door to further hook-based mods (phone app, etc.). versionCode 30 → 31.
+
+### Changed - Recents grid now needs an Xposed framework
+
+- **The bundled patched-launcher mechanism is gone.** Through 2.1.1 the grid
+  patch shipped a 28 MB pre-patched copy of `SearchLauncherQuickStep.apk`
+  and bind-mounted it over the system file. That build was locked to one
+  exact BenOS version: a device on a different OTA got the wrong launcher
+  binary mounted over its own, and a mismatch could take Recents/Overview
+  down entirely (the corruption traced in the 2.1 notes). Chasing every OTA
+  was structural, not a bug to fix.
+- **Replaced by an LSPosed module** (`RecentsHookInit`, scoped to
+  `com.android.launcher3`). It patches whatever launcher is actually running,
+  in memory, by method name, so nothing is shipped or mounted and it survives
+  OTAs on the same Android major with no per-OTA maintenance. Its worst case
+  is "grid silently falls back to stock", not "no Overview at all". Verified
+  against the decompiled BenOS `SearchLauncherQuickStep.apk`: forces
+  `DisplayController.Info.isTablet` → true (the sole lever the grid geometry
+  reads), no-ops `DeviceProfile.recalculateHotseatWidthAndBorderSpace()`
+  (which divides by zero when a phone is forced tablet, and whose hotseat is
+  never shown here anyway), backfills the `overview_grid_*` /
+  `task_thumbnail_icon_drawable_size_grid` dimens that are `0dp` in the phone
+  resource bucket, clears `isTaskbarPresent`, and pins `RecentsView.showAsGrid()`.
+- **Requires** LSPosed or Vector on KernelSU / APatch / Magisk. Without a
+  framework, Recents is stock and every other module is unaffected. The
+  Recents screen shows whether the module is active and how to enable it.
+
+### Added
+
+- **Masonry Overview mode.** Grid layout plus staggered per-tile heights: each
+  task box is shortened by a fixed factor keyed on its task id, and the
+  launcher's own `updateGridProperties` re-centres it, so tiles end up
+  staggered without touching the scroll or swipe-to-dismiss maths. Square
+  tile corners (`TaskCornerRadius.get` → 0), closer to the BlackBerry
+  productivity-tab look. Three-way selector on the Recents screen:
+  Stock / Grid / Masonry.
+- **Overview background transparency** slider is retained, now applied by the
+  hook to `OverviewState.getWorkspaceScrimColor` and
+  `fallback.RecentsState.getScrimColor`.
+
+### Kept
+
+- **Repair Recents Provider** stays, as pure APK-level recovery for the BenOS
+  OTA that ships a misaligned `resources.arsc` and leaves the device with no
+  Overview provider. It now re-aligns and re-signs the device's *own*
+  installed launcher (no bundled asset), so it has no version-lock problem.
+
+### Migration
+
+- On the first launch after updating from 2.x, the pre-v3 bind-mount grid
+  patch is torn down automatically: the KernelSU module `q25_recents`, the
+  patched apk under `/data/adb/q25toolbox/`, the `service.d` boot script, and
+  the live mount. Idempotent, runs from `DaemonMaintenance`.
+
+### Compatibility
+
+| App version | Use it if | Recents grid |
+| --- | --- | --- |
+| **v3.0+** | any stock-based Q25 ROM, with LSPosed / Vector available | LSPosed hook, OTA-resilient |
+| **2.1.1** | BenOS beta3, no Xposed framework | bundled patched-apk bind-mount |
+| **2.0.5** | BenOS pre-beta3a / older stock | older patched-apk |
+
 ## [2.1.1] - 2026-08-17
 
 ### Fixed

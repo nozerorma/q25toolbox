@@ -11,10 +11,10 @@ bottom-bar sections:
   keyboard, per-app keyboard block, chat Enter-to-send, calculator-key
   routing, IME suggestion shortcuts, and in-call shortcuts.
 - **Screen** — extra dimming, per-app display scaling, and Recents UI Layout:
-  a surgical binary patch forcing the real two-row Grid Recents overview at
-  native DPI (not a DPI/resolution swap), with an adjustable background
-  transparency slider, symmetric grid margins, a fix for the "live tile"
-  artifact when opening Recents from Home, and a snappier transition.
+  an LSPosed module (v3.0+) forcing the real two-row Grid Recents overview,
+  with a Masonry (staggered-tile) variant, an adjustable background
+  transparency slider, and an APK-level Recents Provider Repair for the BenOS
+  OTA that breaks Overview.
 - **System** — BesLoudness speaker enhancement (with an optional night
   schedule), auto-focus input, Ticker Notifications, and Proximity Sensor
   Workarounds (auto-recovering the screen/keyboard after a stuck-near sensor
@@ -30,6 +30,20 @@ Ported from [Key2 Toolbox](../Key2Toolbox), the same app built for the
 BlackBerry Key2. Most of the UI and architecture carried over unchanged; the
 hardware underneath several modules did not, so a few Key2-only features
 (ZRAM control, the Key2 App Spoof module) were left out of this Q25 build.
+
+## Version compatibility
+
+| App version | Use it if | Recents grid |
+| --- | --- | --- |
+| **v3.0+** | any stock-based Q25 ROM, with an Xposed framework (LSPosed / Vector) available | LSPosed hook, survives OTAs |
+| **2.1.1** | BenOS beta3, no Xposed framework | bundled patched-launcher bind-mount |
+| **2.0.5** | BenOS pre-beta3a / older stock | older patched-launcher |
+
+From v3.0 the Grid/Masonry Recents overview is an LSPosed module. Every other
+module works without a framework, and Recents falls back to stock. If you had
+the bind-mounted grid from 2.x, v3.0 removes it on first launch.
+
+## Architecture
 
 The UI follows Material You (Monet), in light or dark to match the system.
 Most modules are stateless: they fire root commands on demand and persist by
@@ -226,66 +240,75 @@ the build script. Until then, both build types are signed with the debug key.
   each app's own Play Integrity/anti-tampering checks (account sync,
   subscription login).
 
-### Recents UI Layout (`RecentsTweaksController`)
+### Recents UI Layout (`RecentsTweaksController` + `xposed/RecentsHookInit`)
+
+| Grid | Masonry |
+| --- | --- |
+| ![Grid Recents](docs/recents-grid.png) | ![Masonry Recents](docs/recents-masonry.png) |
+
+As of v3.0 this is an **LSPosed module**, not a binary patch. It needs an
+Xposed framework (LSPosed / Vector on KernelSU / APatch / Magisk); without
+one, Recents stays stock and nothing else is affected. The Recents screen
+shows whether the module is active and how to scope it.
+
 - Forces the real two-row Grid Recents overview (multiple task cards
-  on-screen, not one-app-per-swipe) at native 208 DPI on
-  `SearchLauncherQuickStep.apk`, the AOSP/QuickStep launcher that provides
-  gesture-nav Recents on this device regardless of which app is set as
-  default Home.
-- The patch forces `isTablet` true at all 25 read sites across the six
-  Recents-scoped classes (`RecentsView`, `TaskView`, `BaseActivityInterface`,
-  `TaskOverlayFactory`, `OverviewActionsView`, `RecentsView$20`) and flips
-  `ENABLE_GRID_ONLY_OVERVIEW` from `DISABLED` to `ENABLED` at its
-  `FeatureFlags` construction site - deliberately **never** in `DeviceProfile`
-  itself, so the workspace/hotseat and screen density are untouched.
-  `isTablet` is read in 48 classes app-wide; the remaining ~20 quickstep
-  classes and a few `uioverrides.states` ones are deliberately left unpatched
-  pending case-by-case review, rather than assumed irrelevant - patching them
-  blind risks forcing tablet layout onto the home screen or app drawer. Also backfills the grid-mode resource
-  dimens (`overview_grid_row_spacing`, `overview_grid_side_margin`,
-  `task_thumbnail_icon_drawable_size_grid`) that are `0` on the phone resource
-  bucket - forcing the boolean flags alone produces a broken "snake" layout
-  (tasks alternating top/bottom row with zero spacing) since Android still
-  resolves those dimens from the phone bucket at native DPI.
-- Applied via a bind-mount of the patched APK (bundled as an app asset, via
-  `AssetInstaller`) over the real `/system_ext` launcher, toggleable and
-  fully reversible. Every mount/unmount and status check runs inside PID 1's
-  mount namespace via `nsenter` - this app's own process (like every app on
-  this ROM) gets a private mount namespace at fork, so a bind mount/status
-  check done in its own root shell is invisible to `com.android.launcher3`'s
-  namespace otherwise, same reason `TelemetryController` needs `nsenter` for
-  `/data/data` visibility.
-- "Restart Launcher3" / "Restart SystemUI" actions use a hard `kill -9` on the
-  actual PID - `am force-stop` is a no-op for persistent processes like
-  SystemUI (confirmed on-device: identical PID before/after).
+  on-screen, not one-app-per-swipe) on `SearchLauncherQuickStep.apk`, the
+  AOSP/QuickStep launcher that provides gesture-nav Recents on this device
+  regardless of which app is set as default Home.
+- `RecentsHookInit` (scoped to `com.android.launcher3`) hooks whatever
+  launcher build is actually running, by method name, in memory. Verified
+  against the decompiled BenOS launcher:
+  - `DisplayController.Info.isTablet(WindowBounds)` -> true while a grid mode
+    is active. The `DeviceProfile` constructor derives `isTablet` from it
+    before computing any Overview geometry, and that geometry (task sizing,
+    the grid maths, ~15 read sites in `RecentsView`) branches on the
+    `isTablet` field, not on `RecentsView.showAsGrid()`. `showAsGrid()` is
+    pinned too, mainly for a deterministic off state.
+  - `DeviceProfile.recalculateHotseatWidthAndBorderSpace()` is no-oped while a
+    grid mode is active: forcing a phone to tablet makes it run (it is
+    skipped on a non-scalable-grid phone) and divide by
+    `numShownHotseatIcons - 1` (= 0). The launcher's own hotseat is never
+    shown here (third-party Home), so this is safe.
+  - `overview_grid_row_spacing`, `overview_grid_side_margin` and
+    `task_thumbnail_icon_drawable_size_grid` are backfilled on the
+    `DeviceProfile` when they resolve to `0` from the phone resource bucket -
+    without this the grid lays out with 0-size task icons and no row gap.
+  - `isTaskbarPresent` is cleared after `DeviceProfile` construction so the
+    forced-tablet profile does not bring the floating taskbar.
+- Because it is a runtime hook and not a mounted file, it survives BenOS OTAs
+  on the same Android major with no per-OTA maintenance, and it cannot leave
+  the device with no Overview provider - its failure mode is "grid silently
+  falls back to stock". This replaces the pre-v3 mechanism (a bundled 28 MB
+  patched launcher, bind-mounted over `/system_ext`), which was locked to one
+  exact BenOS build. Updating from 2.x tears that mechanism down automatically
+  on first launch (`RecentsTweaksController.cleanupLegacyGridPatch`, run from
+  `DaemonMaintenance`): the KernelSU module `q25_recents`, the patched apk,
+  the `service.d` boot script, and the live mount.
+- **Masonry** mode is Grid plus staggered per-tile heights: each `TaskView`
+  box is shortened by a fixed factor keyed on its task id, in
+  `TaskView.updateTaskSize()`, and the launcher's own `updateGridProperties`
+  re-centres it - so tiles end up staggered without touching the scroll or
+  swipe-to-dismiss maths. Focused/desktop tasks are left full size. Square
+  tile corners (`TaskCornerRadius.get` -> 0). Selector on the Recents screen:
+  Stock / Grid / Masonry, stored in `bb_recents_layout_mode`
+  (`Settings.Global`, world-readable so the hook reads it with no permission).
 - **Background Transparency** slider: how much of the wallpaper shows through
-  behind the grid cards. Backed by a `q25_recents_scrim_alpha` `Settings.
-  Global` key that the patch reads live at render time, so changing it only
-  needs a Launcher3 restart, not a new patch build.
-- The grid's margins are symmetric on all four sides (each mirrors its own
-  real inset rather than reusing the top/left one, which looked symmetric in
-  the numbers but not visually, since the real status bar height folded into
-  the top inset has no equivalent on the bottom), with a small proportional
-  top-only offset to center the block within that rect.
-- Opening Recents directly from Home no longer shows a live-updating patch of
-  the home screen floating over the grid - Android's gesture nav renders the
-  most-recently-used task (Home, in that case) as a live `SurfaceView` mirror
-  rather than a screenshot for a seamless swipe animation; `onGestureAnimationEnd()`
-  now forces an immediate `switchToScreenshot()` instead of leaving it live.
-- Transition duration cut from 250ms to 100ms (380ms to 140ms for the
-  gesture-nav variant).
-- **Turn the toggle off before installing a system update** (the screen says so
-  too). A BenOS OTA that installed while the bind mount was active left the
-  device with a `SearchLauncherQuickStep.apk` whose `resources.arsc` was stored
-  uncompressed but not 4-byte aligned - which PackageManager silently refuses at
-  its boot-time scan, so `com.android.launcher3` never registers and there is no
-  Recents provider at all, toggle on or off.
-- **Recents Provider Repair** is the recovery path for exactly that state: it
-  pulls whatever launcher build is actually installed, realigns and re-signs it
-  on-device, mounts the result, and says whether a reboot is still needed (the
-  alignment check only runs at PackageManager's own boot-time scan, so a live
-  file swap alone doesn't retrigger it). Repairing from the live apk rather than
-  shipping one fixed copy means it isn't tied to a single BenOS version.
+  behind the grid cards. Backed by `q25_recents_scrim_alpha`; the hook scales
+  the alpha of `OverviewState.getWorkspaceScrimColor` /
+  `fallback.RecentsState.getScrimColor`. A launcher restart applies it.
+- "Restart Launcher" / "Restart SystemUI" actions use a hard `kill -9` on the
+  actual PID - `am force-stop` is a no-op for persistent processes.
+
+- **Recents Provider Repair** is unchanged and still APK-level. It is the
+  recovery path for the BenOS OTA that ships `SearchLauncherQuickStep.apk`
+  with `resources.arsc` stored uncompressed but not 4-byte aligned - which
+  PackageManager silently refuses at its boot-time scan, so
+  `com.android.launcher3` never registers and there is no Recents provider at
+  all. Repair pulls whatever launcher build is actually installed, realigns
+  and re-signs it on-device, bind-mounts the result (persisted via a
+  `service.d` boot script), and says whether a reboot is still needed (the
+  alignment check only runs at PackageManager's own boot-time scan). It uses
+  the device's own apk, so it has no version-lock problem.
 - The realign/re-sign step is `ApkAligner` + `OnDeviceApkSigner` in `core/`.
   `ApkAligner` is a from-scratch pure-Kotlin reimplementation of `zipalign`'s
   alignment step (padding each STORED entry's local-header extra field, then

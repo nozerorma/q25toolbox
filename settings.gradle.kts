@@ -12,6 +12,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://jitpack.io") } // required for libsu
+        maven { url = uri("https://api.xposed.info/") } // required for the Xposed API stub
     }
 }
 

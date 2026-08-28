@@ -78,6 +78,8 @@ fun HomeScreen() {
 
     BackHandler(enabled = detail != null) { detailRoute = null }
 
+    WhatsNewDialog()
+
     Scaffold(
         bottomBar = {
             NavigationBar {

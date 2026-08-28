@@ -324,13 +324,10 @@
 
     <string name="title_recents_tweaks">Disposition de l\'interface Récents</string>
     <string name="subtitle_recents_tweaks">Disposition multi-app dans Récents via un correctif chirurgical de RecentsView</string>
-    <string name="recents_patch_card_title">Grille native de Récents</string>
-    <string name="recents_patch_card_desc">Patche directement RecentsView et BaseActivityInterface pour forcer l\'aperçu Récents en grille à deux rangées à la DPI native, sans modifier l\'état tablette de DeviceProfile pour l\'écran d\'accueil/hotseat ni la densité d\'écran.</string>
     <string name="recents_transparency_title">Transparence de l\'arrière-plan</string>
     <string name="recents_transparency_desc">Quelle part du fond d\'écran est visible derrière les cartes. Redémarre Launcher3 pour appliquer.</string>
     <string name="recents_restart_launcher">Redémarrer Launcher3</string>
     <string name="recents_restart_systemui">Redémarrer SystemUI</string>
-    <string name="recents_ota_disclaimer">Désactive ceci avant d\'installer une mise à jour système. Une installation OTA corrompue a été retracée à ce correctif actif pendant la mise à jour.</string>
     <string name="recents_repair_title">Réparation du fournisseur de Récents</string>
     <string name="recents_repair_desc">Si Récents/Aperçu a cessé de fonctionner après une mise à jour système, utilise ceci pour le restaurer.</string>
     <string name="recents_repair_button">Réparer le fournisseur de Récents</string>

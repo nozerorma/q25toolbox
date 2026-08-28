@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- LSPosed scope for RecentsHookInit. BenOS ships Google's launcher as
+         com.android.launcher3; the Trebuchet name is a guard against a rename. -->
+    <string-array name="xposed_scope">
+        <item>com.android.launcher3</item>
+        <item>org.lineageos.trebuchet</item>
+    </string-array>
+</resources>

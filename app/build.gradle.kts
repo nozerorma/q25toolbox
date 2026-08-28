@@ -1,4 +1,4 @@
-val appVersionName = "v2.1.1"
+val appVersionName = "v3.0"
 
 plugins {
     id("com.android.application")
@@ -17,7 +17,7 @@ android {
         applicationId = "com.kgr.q25toolbox"
         minSdk = 28
         targetSdk = 34
-        versionCode = 30
+        versionCode = 31
         versionName = appVersionName
 
         ndk { abiFilters += "arm64-v8a" }
@@ -97,6 +97,11 @@ dependencies {
 
     // Dominant-color extraction for the ticker's app-icon color mode
     implementation("androidx.palette:palette-ktx:1.0.0")
+
+    // Xposed / LSPosed API stub - compile-only, provided by the framework at
+    // runtime. Used by com.kgr.q25toolbox.xposed.RecentsHookInit for the grid /
+    // masonry Overview.
+    compileOnly("de.robv.android.xposed:api:82")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 

@@ -1,21 +1,24 @@
 package com.kgr.q25toolbox.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.modules.RecentsTweaksController
+import com.kgr.q25toolbox.modules.RecentsTweaksController.LayoutMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,20 +40,28 @@ import kotlinx.coroutines.withContext
 @Composable
 fun RecentsTweaksScreen(onBack: () -> Unit) {
     val context = LocalContext.current
-    var status by remember { mutableStateOf(RecentsTweaksController.RecentsStatus()) }
-    var scrimAlpha by remember { mutableStateOf(1f) }
-    var repairMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
-    fun updateStatusAsync() {
-        scope.launch(Dispatchers.IO) {
-            val newStatus = RecentsTweaksController.queryStatus()
-            val alpha = RecentsTweaksController.getScrimAlpha()
+    var xposedActive by remember { mutableStateOf(RecentsTweaksController.isXposedActive()) }
+    var mode by remember { mutableStateOf(LayoutMode.STOCK) }
+    var scrimAlpha by remember { mutableFloatStateOf(1f) }
+    var repairMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            val m = RecentsTweaksController.getLayoutMode()
+            val a = RecentsTweaksController.getScrimAlpha()
             withContext(Dispatchers.Main) {
-                status = newStatus
-                scrimAlpha = alpha
+                mode = m
+                scrimAlpha = a
+                xposedActive = RecentsTweaksController.isXposedActive()
             }
         }
+    }
+
+    fun setModeAsync(newMode: LayoutMode) {
+        mode = newMode
+        scope.launch(Dispatchers.IO) { RecentsTweaksController.setLayoutMode(newMode) }
     }
 
     fun commitScrimAlphaAsync(alpha: Float) {
@@ -59,83 +71,96 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
         }
     }
 
-    fun toggleNativePatchAsync(enable: Boolean) {
-        scope.launch(Dispatchers.IO) {
-            RecentsTweaksController.setNativeGridPatch(context, enable)
-            delay(200)
-            val newStatus = RecentsTweaksController.queryStatus()
-            withContext(Dispatchers.Main) {
-                status = newStatus
-            }
-        }
-    }
-
     fun repairRecentsProviderAsync() {
         scope.launch(Dispatchers.IO) {
             val result = RecentsTweaksController.repairRecentsProvider(context)
             delay(200)
-            val newStatus = RecentsTweaksController.queryStatus()
             val message = when {
                 result.needsReboot -> context.getString(R.string.recents_repair_needs_reboot)
                 result.mounted -> context.getString(R.string.recents_repair_success)
                 else -> context.getString(R.string.recents_repair_failed)
             }
-            withContext(Dispatchers.Main) {
-                status = newStatus
-                repairMessage = message
-            }
+            withContext(Dispatchers.Main) { repairMessage = message }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        updateStatusAsync()
     }
 
     ScreenScaffold(
         title = stringResource(R.string.title_recents_tweaks),
         onBack = onBack
     ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Text(
+            stringResource(R.string.recents_intro),
+            style = MaterialTheme.typography.bodySmall
+        )
+
+        DescriptionDivider()
+        Text(
+            stringResource(R.string.recents_section_lsposed),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    stringResource(
+                        if (xposedActive) R.string.recents_xposed_ok
+                        else R.string.recents_xposed_missing
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (xposedActive) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error
+                )
+                if (!xposedActive) {
                     Text(
-                        text = stringResource(R.string.recents_patch_card_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = stringResource(R.string.recents_patch_card_desc),
+                        stringResource(R.string.recents_xposed_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-
-                Switch(
-                    checked = status.isNativePatchActive,
-                    onCheckedChange = { checked ->
-                        toggleNativePatchAsync(checked)
-                    }
-                )
             }
         }
 
-        Text(
-            text = stringResource(R.string.recents_ota_disclaimer),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp)
-        )
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    stringResource(R.string.recents_layout_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    stringResource(R.string.recents_layout_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+                val options = listOf(
+                    LayoutMode.STOCK to R.string.recents_mode_stock,
+                    LayoutMode.GRID to R.string.recents_mode_grid,
+                    LayoutMode.MASONRY to R.string.recents_mode_masonry
+                )
+                options.forEach { (value, labelRes) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { setModeAsync(value) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(selected = mode == value, onClick = { setModeAsync(value) })
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(labelRes), style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            }
+        }
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -147,18 +172,18 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = stringResource(R.string.recents_transparency_title),
+                        stringResource(R.string.recents_transparency_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "${(scrimAlpha * 100).toInt()}%",
+                        "${(scrimAlpha * 100).toInt()}%",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
                 Text(
-                    text = stringResource(R.string.recents_transparency_desc),
+                    stringResource(R.string.recents_transparency_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -171,34 +196,20 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
             }
         }
 
-        // Restart Action Buttons
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedButton(
-                onClick = {
-                    scope.launch(Dispatchers.IO) {
-                        RecentsTweaksController.restartLauncher()
-                    }
-                },
+                onClick = { scope.launch(Dispatchers.IO) { RecentsTweaksController.restartLauncher() } },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(stringResource(R.string.recents_restart_launcher))
-            }
-
+            ) { Text(stringResource(R.string.recents_restart_launcher)) }
             OutlinedButton(
-                onClick = {
-                    scope.launch(Dispatchers.IO) {
-                        RecentsTweaksController.restartSystemUi()
-                    }
-                },
+                onClick = { scope.launch(Dispatchers.IO) { RecentsTweaksController.restartSystemUi() } },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(stringResource(R.string.recents_restart_systemui))
-            }
+            ) { Text(stringResource(R.string.recents_restart_systemui)) }
         }
 
         Card(modifier = Modifier.fillMaxWidth()) {
@@ -207,12 +218,12 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.recents_repair_title),
+                    stringResource(R.string.recents_repair_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = stringResource(R.string.recents_repair_desc),
+                    stringResource(R.string.recents_repair_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -223,23 +234,16 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(stringResource(R.string.recents_repair_button))
-                }
-                repairMessage?.let { message ->
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                ) { Text(stringResource(R.string.recents_repair_button)) }
+                repairMessage?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                 }
             }
         }
 
         DescriptionDivider()
-
         Text(
-            text = stringResource(R.string.subtitle_recents_tweaks),
+            stringResource(R.string.subtitle_recents_tweaks),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
