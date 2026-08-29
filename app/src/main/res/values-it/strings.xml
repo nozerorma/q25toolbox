@@ -382,4 +382,36 @@
     <string name="settings_import_script_modules_restored"> Ripristinati e applicati in tempo reale anche: %1$s.</string>
     <string name="settings_import_failed">Ripristino non riuscito: %1$s: %2$s</string>
     <string name="settings_select_module">Seleziona almeno un modulo.</string>
+    <string name="title_adblock">AdBlock</string>
+    <string name="subtitle_adblock">Blocco di pubblicità e tracker basato su hosts systemless</string>
+    <string name="adblock_command_failed">Comando non riuscito</string>
+    <string name="adblock_cd_back">Indietro</string>
+    <string name="adblock_cd_remove">Rimuovi</string>
+    <string name="adblock_cd_remove_source">Rimuovi sorgente</string>
+    <string name="adblock_reset_dialog_title">Ripristinare i valori predefiniti?</string>
+    <string name="adblock_reset_dialog_desc">Rimuove tutte le sorgenti, i domini aggiunti/rimossi/in whitelist e ripristina la blacklist predefinita inclusa. Non può essere annullato.</string>
+    <string name="adblock_reset_confirm">Ripristina</string>
+    <string name="adblock_reset_done">Ripristinati i valori predefiniti.</string>
+    <string name="adblock_reset_button">Ripristina i valori predefiniti</string>
+    <string name="adblock_not_installed_desc">AdBlock non è ancora installato. Questo distribuisce un modulo systemless-hosts che sovrappone a /system/etc/hosts una blacklist compilata.</string>
+    <string name="adblock_install">Installa</string>
+    <string name="adblock_installed_message">Installato. Riavvia per attivare il filtraggio.</string>
+    <string name="adblock_reboot_required">È necessario riavviare per attivare l\'overlay di hosts. Le modifiche ai contenuti qui sotto verranno applicate automaticamente dopo il riavvio.</string>
+    <string name="adblock_filtering_title">Filtraggio</string>
+    <string name="adblock_blocked_entries">%1$d voci bloccate</string>
+    <string name="adblock_section_manage_entries">Gestisci voci</string>
+    <string name="adblock_search_label">Cerca domini bloccati</string>
+    <string name="adblock_add_domain_label">Aggiungi dominio o *.glob</string>
+    <string name="adblock_add">Aggiungi</string>
+    <string name="adblock_section_whitelist">Whitelist</string>
+    <string name="adblock_whitelist_desc">I domini qui non vengono mai bloccati, anche se una sorgente o una voce manuale li include.</string>
+    <string name="adblock_whitelist_input_label">Dominio in whitelist o *.glob</string>
+    <string name="adblock_section_sources">Sorgenti</string>
+    <string name="adblock_source_url_label">URL sorgente (hosts o elenco di domini)</string>
+    <string name="adblock_update_sources_now">Aggiorna le sorgenti ora</string>
+    <string name="adblock_section_danger_zone">Zona pericolosa</string>
+    <string name="adblock_update_status_updating">Aggiornamento…</string>
+    <string name="adblock_update_status_done">Aggiornato</string>
+    <string name="adblock_update_status_error">Errore: %1$s</string>
+
 </resources>

@@ -382,4 +382,36 @@
     <string name="settings_import_script_modules_restored"> Également restaurés et appliqués en direct : %1$s.</string>
     <string name="settings_import_failed">Échec de la restauration : %1$s : %2$s</string>
     <string name="settings_select_module">Sélectionne au moins un module.</string>
+    <string name="title_adblock">AdBlock</string>
+    <string name="subtitle_adblock">Blocage des pubs et traqueurs basé sur un fichier hosts sans modification système</string>
+    <string name="adblock_command_failed">Échec de la commande</string>
+    <string name="adblock_cd_back">Retour</string>
+    <string name="adblock_cd_remove">Retirer</string>
+    <string name="adblock_cd_remove_source">Retirer la source</string>
+    <string name="adblock_reset_dialog_title">Réinitialiser aux valeurs par défaut ?</string>
+    <string name="adblock_reset_dialog_desc">Supprime toutes les sources, les domaines ajoutés/retirés/en liste blanche, et rétablit la liste noire par défaut fournie. Ceci ne peut pas être annulé.</string>
+    <string name="adblock_reset_confirm">Réinitialiser</string>
+    <string name="adblock_reset_done">Réinitialisé aux valeurs par défaut.</string>
+    <string name="adblock_reset_button">Réinitialiser aux valeurs par défaut</string>
+    <string name="adblock_not_installed_desc">AdBlock n\'est pas encore installé. Ceci déploie un module systemless-hosts qui superpose /system/etc/hosts avec une liste noire compilée.</string>
+    <string name="adblock_install">Installer</string>
+    <string name="adblock_installed_message">Installé. Redémarrez pour activer le filtrage.</string>
+    <string name="adblock_reboot_required">Redémarrage requis pour activer la superposition du fichier hosts. Les modifications de contenu ci-dessous s\'appliqueront automatiquement une fois le redémarrage effectué.</string>
+    <string name="adblock_filtering_title">Filtrage</string>
+    <string name="adblock_blocked_entries">%1$d entrées bloquées</string>
+    <string name="adblock_section_manage_entries">Gérer les entrées</string>
+    <string name="adblock_search_label">Rechercher des domaines bloqués</string>
+    <string name="adblock_add_domain_label">Ajouter un domaine ou *.glob</string>
+    <string name="adblock_add">Ajouter</string>
+    <string name="adblock_section_whitelist">Liste blanche</string>
+    <string name="adblock_whitelist_desc">Les domaines ici ne sont jamais bloqués, même si une source ou une entrée manuelle les inclut.</string>
+    <string name="adblock_whitelist_input_label">Domaine ou *.glob en liste blanche</string>
+    <string name="adblock_section_sources">Sources</string>
+    <string name="adblock_source_url_label">URL de source (hosts ou liste de domaines)</string>
+    <string name="adblock_update_sources_now">Mettre à jour les sources maintenant</string>
+    <string name="adblock_section_danger_zone">Zone dangereuse</string>
+    <string name="adblock_update_status_updating">Mise à jour…</string>
+    <string name="adblock_update_status_done">À jour</string>
+    <string name="adblock_update_status_error">Erreur : %1$s</string>
+
 </resources>

@@ -166,6 +166,7 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.BatteryUsage -> BatteryUsageScreen(onBack)
         Screen.TickerNotifications -> TickerNotificationsScreen(onBack)
         Screen.RecentsTweaks -> RecentsTweaksScreen(onBack)
+        Screen.AdBlock -> AdBlockScreen(onBack)
     }
 }
 

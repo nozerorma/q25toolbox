@@ -1,0 +1,6 @@
+id=q25_adblock
+name=Q25TB AdBlock
+version=18.1
+versionCode=18100
+author=kgr-online
+description=Systemless-hosts ad blocking, managed via Q25 Toolbox (based on gloeyisk/systemless-hosts)

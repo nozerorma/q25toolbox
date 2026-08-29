@@ -382,4 +382,36 @@
     <string name="settings_import_script_modules_restored"> Ebenfalls wiederhergestellt und live angewendet: %1$s.</string>
     <string name="settings_import_failed">Wiederherstellung fehlgeschlagen: %1$s: %2$s</string>
     <string name="settings_select_module">Wähle mindestens ein Modul.</string>
+    <string name="title_adblock">AdBlock</string>
+    <string name="subtitle_adblock">Systemloses hosts-basiertes Blockieren von Werbung &amp; Trackern</string>
+    <string name="adblock_command_failed">Befehl fehlgeschlagen</string>
+    <string name="adblock_cd_back">Zurück</string>
+    <string name="adblock_cd_remove">Entfernen</string>
+    <string name="adblock_cd_remove_source">Quelle entfernen</string>
+    <string name="adblock_reset_dialog_title">Auf Standardwerte zurücksetzen?</string>
+    <string name="adblock_reset_dialog_desc">Entfernt alle Quellen, hinzugefügte/entfernte/auf die Whitelist gesetzte Domains und stellt die mitgelieferte Standard-Blacklist wieder her. Dies kann nicht rückgängig gemacht werden.</string>
+    <string name="adblock_reset_confirm">Zurücksetzen</string>
+    <string name="adblock_reset_done">Auf Standardwerte zurückgesetzt.</string>
+    <string name="adblock_reset_button">Auf Standardwerte zurücksetzen</string>
+    <string name="adblock_not_installed_desc">AdBlock ist noch nicht installiert. Dies stellt ein systemloses hosts-Modul bereit, das /system/etc/hosts mit einer kompilierten Blacklist überlagert.</string>
+    <string name="adblock_install">Installieren</string>
+    <string name="adblock_installed_message">Installiert. Zum Aktivieren der Filterung neu starten.</string>
+    <string name="adblock_reboot_required">Neustart erforderlich, um das hosts-Overlay zu aktivieren. Untenstehende Inhaltsänderungen werden nach dem Neustart automatisch angewendet.</string>
+    <string name="adblock_filtering_title">Filterung</string>
+    <string name="adblock_blocked_entries">%1$d blockierte Einträge</string>
+    <string name="adblock_section_manage_entries">Einträge verwalten</string>
+    <string name="adblock_search_label">Blockierte Domains durchsuchen</string>
+    <string name="adblock_add_domain_label">Domain oder *.glob hinzufügen</string>
+    <string name="adblock_add">Hinzufügen</string>
+    <string name="adblock_section_whitelist">Whitelist</string>
+    <string name="adblock_whitelist_desc">Domains hier werden nie blockiert, selbst wenn eine Quelle oder ein manueller Eintrag sie enthält.</string>
+    <string name="adblock_whitelist_input_label">Whitelist-Domain oder *.glob</string>
+    <string name="adblock_section_sources">Quellen</string>
+    <string name="adblock_source_url_label">Quell-URL (hosts- oder Domainliste)</string>
+    <string name="adblock_update_sources_now">Quellen jetzt aktualisieren</string>
+    <string name="adblock_section_danger_zone">Gefahrenzone</string>
+    <string name="adblock_update_status_updating">Wird aktualisiert…</string>
+    <string name="adblock_update_status_done">Aktuell</string>
+    <string name="adblock_update_status_error">Fehler: %1$s</string>
+
 </resources>

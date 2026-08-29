@@ -382,4 +382,36 @@
     <string name="settings_import_script_modules_restored"> També restaurats i aplicats en directe: %1$s.</string>
     <string name="settings_import_failed">La restauració ha fallat: %1$s: %2$s</string>
     <string name="settings_select_module">Selecciona almenys un mòdul.</string>
+    <string name="title_adblock">AdBlock</string>
+    <string name="subtitle_adblock">Bloqueig d\'anuncis i rastrejadors basat en hosts sense modificar el sistema</string>
+    <string name="adblock_command_failed">L\'ordre ha fallat</string>
+    <string name="adblock_cd_back">Enrere</string>
+    <string name="adblock_cd_remove">Elimina</string>
+    <string name="adblock_cd_remove_source">Elimina la font</string>
+    <string name="adblock_reset_dialog_title">Vols restablir els valors per defecte?</string>
+    <string name="adblock_reset_dialog_desc">Elimina totes les fonts, els dominis afegits/eliminats/a la llista blanca, i torna a la llista negra per defecte inclosa. Això no es pot desfer.</string>
+    <string name="adblock_reset_confirm">Restableix</string>
+    <string name="adblock_reset_done">Restablert als valors per defecte.</string>
+    <string name="adblock_reset_button">Restableix els valors per defecte</string>
+    <string name="adblock_not_installed_desc">AdBlock encara no està instal·lat. Això desplega un mòdul systemless-hosts que superposa /system/etc/hosts amb una llista negra compilada.</string>
+    <string name="adblock_install">Instal·la</string>
+    <string name="adblock_installed_message">Instal·lat. Reinicia per activar el filtratge.</string>
+    <string name="adblock_reboot_required">Cal reiniciar per activar la superposició de hosts. Les edicions de contingut de sota s\'aplicaran automàticament un cop hagis reiniciat.</string>
+    <string name="adblock_filtering_title">Filtratge</string>
+    <string name="adblock_blocked_entries">%1$d entrades bloquejades</string>
+    <string name="adblock_section_manage_entries">Gestiona les entrades</string>
+    <string name="adblock_search_label">Cerca dominis bloquejats</string>
+    <string name="adblock_add_domain_label">Afegeix un domini o *.glob</string>
+    <string name="adblock_add">Afegeix</string>
+    <string name="adblock_section_whitelist">Llista blanca</string>
+    <string name="adblock_whitelist_desc">Els dominis d\'aquí no es bloquegen mai, encara que una font o una entrada manual els inclogui.</string>
+    <string name="adblock_whitelist_input_label">Domini o *.glob per a la llista blanca</string>
+    <string name="adblock_section_sources">Fonts</string>
+    <string name="adblock_source_url_label">URL de la font (hosts o llista de dominis)</string>
+    <string name="adblock_update_sources_now">Actualitza les fonts ara</string>
+    <string name="adblock_section_danger_zone">Zona de perill</string>
+    <string name="adblock_update_status_updating">Actualitzant…</string>
+    <string name="adblock_update_status_done">Al dia</string>
+    <string name="adblock_update_status_error">Error: %1$s</string>
+
 </resources>

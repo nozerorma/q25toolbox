@@ -388,4 +388,36 @@
     <string name="settings_import_script_modules_restored"> Also restored and applied live: %1$s.</string>
     <string name="settings_import_failed">Restore failed: %1$s: %2$s</string>
     <string name="settings_select_module">Select at least one module.</string>
+    <string name="title_adblock">AdBlock</string>
+    <string name="subtitle_adblock">Systemless hosts-based ad &amp; tracker blocking</string>
+    <string name="adblock_command_failed">Command failed</string>
+    <string name="adblock_cd_back">Back</string>
+    <string name="adblock_cd_remove">Remove</string>
+    <string name="adblock_cd_remove_source">Remove source</string>
+    <string name="adblock_reset_dialog_title">Reset to defaults?</string>
+    <string name="adblock_reset_dialog_desc">Removes all sources, added/removed/whitelisted domains, and reverts to the bundled default blacklist. This can\'t be undone.</string>
+    <string name="adblock_reset_confirm">Reset</string>
+    <string name="adblock_reset_done">Reset to defaults.</string>
+    <string name="adblock_reset_button">Reset to defaults</string>
+    <string name="adblock_not_installed_desc">AdBlock isn\'t installed yet. This deploys a systemless-hosts module that overlays /system/etc/hosts with a compiled blacklist.</string>
+    <string name="adblock_install">Install</string>
+    <string name="adblock_installed_message">Installed. Reboot to activate filtering.</string>
+    <string name="adblock_reboot_required">Reboot required to activate the hosts overlay. Content edits below will apply automatically once you\'ve rebooted.</string>
+    <string name="adblock_filtering_title">Filtering</string>
+    <string name="adblock_blocked_entries">%1$d blocked entries</string>
+    <string name="adblock_section_manage_entries">Manage Entries</string>
+    <string name="adblock_search_label">Search blocked domains</string>
+    <string name="adblock_add_domain_label">Add domain or *.glob</string>
+    <string name="adblock_add">Add</string>
+    <string name="adblock_section_whitelist">Whitelist</string>
+    <string name="adblock_whitelist_desc">Domains here are never blocked, even if a source or manual entry includes them.</string>
+    <string name="adblock_whitelist_input_label">Whitelist domain or *.glob</string>
+    <string name="adblock_section_sources">Sources</string>
+    <string name="adblock_source_url_label">Source URL (hosts or domain list)</string>
+    <string name="adblock_update_sources_now">Update sources now</string>
+    <string name="adblock_section_danger_zone">Danger Zone</string>
+    <string name="adblock_update_status_updating">Updating…</string>
+    <string name="adblock_update_status_done">Up to date</string>
+    <string name="adblock_update_status_error">Error: %1$s</string>
+
 </resources>

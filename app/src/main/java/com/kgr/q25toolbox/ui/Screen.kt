@@ -26,6 +26,7 @@ sealed class Screen(val route: String, @StringRes val titleRes: Int, @StringRes 
     data object BatteryUsage : Screen("battery_usage", R.string.title_battery_usage)
     data object TickerNotifications : Screen("ticker_notifications", R.string.title_ticker_notifications, R.string.subtitle_ticker_notifications)
     data object RecentsTweaks : Screen("recents_tweaks", R.string.title_recents_tweaks, R.string.subtitle_recents_tweaks)
+    data object AdBlock : Screen("adblock", R.string.title_adblock, R.string.subtitle_adblock)
 
     val title: String @Composable get() = stringResource(titleRes)
     val subtitle: String @Composable get() = if (subtitleRes != 0) stringResource(subtitleRes) else ""
@@ -81,6 +82,7 @@ val systemScreens = listOf(
 
 /** Screens listed under the Network tab. */
 val networkScreens = listOf(
+    Screen.AdBlock,
     Screen.Telemetry,
     Screen.WirelessAdb,
     Screen.BtIdle,

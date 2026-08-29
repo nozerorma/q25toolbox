@@ -384,4 +384,36 @@
     <string name="settings_import_script_modules_restored"> Ook hersteld en live toegepast: %1$s.</string>
     <string name="settings_import_failed">Herstellen mislukt: %1$s: %2$s</string>
     <string name="settings_select_module">Selecteer minstens één module.</string>
+    <string name="title_adblock">AdBlock</string>
+    <string name="subtitle_adblock">Systemless hosts-gebaseerde advertentie- &amp; trackerblokkering</string>
+    <string name="adblock_command_failed">Opdracht mislukt</string>
+    <string name="adblock_cd_back">Terug</string>
+    <string name="adblock_cd_remove">Verwijderen</string>
+    <string name="adblock_cd_remove_source">Bron verwijderen</string>
+    <string name="adblock_reset_dialog_title">Terugzetten naar standaardinstellingen?</string>
+    <string name="adblock_reset_dialog_desc">Verwijdert alle bronnen, toegevoegde/verwijderde/toegestane domeinen, en zet terug naar de meegeleverde standaardblacklist. Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="adblock_reset_confirm">Terugzetten</string>
+    <string name="adblock_reset_done">Teruggezet naar standaardinstellingen.</string>
+    <string name="adblock_reset_button">Terugzetten naar standaardinstellingen</string>
+    <string name="adblock_not_installed_desc">AdBlock is nog niet geïnstalleerd. Dit implementeert een systemless-hosts-module die /system/etc/hosts overlayt met een gecompileerde blacklist.</string>
+    <string name="adblock_install">Installeren</string>
+    <string name="adblock_installed_message">Geïnstalleerd. Herstart om filtering te activeren.</string>
+    <string name="adblock_reboot_required">Herstart vereist om de hosts-overlay te activeren. Inhoudsbewerkingen hieronder worden automatisch toegepast zodra je opnieuw hebt opgestart.</string>
+    <string name="adblock_filtering_title">Filtering</string>
+    <string name="adblock_blocked_entries">%1$d geblokkeerde vermeldingen</string>
+    <string name="adblock_section_manage_entries">Vermeldingen beheren</string>
+    <string name="adblock_search_label">Geblokkeerde domeinen zoeken</string>
+    <string name="adblock_add_domain_label">Domein of *.glob toevoegen</string>
+    <string name="adblock_add">Toevoegen</string>
+    <string name="adblock_section_whitelist">Witte lijst</string>
+    <string name="adblock_whitelist_desc">Domeinen hier worden nooit geblokkeerd, zelfs niet als een bron of handmatige vermelding ze bevat.</string>
+    <string name="adblock_whitelist_input_label">Domein of *.glob voor witte lijst</string>
+    <string name="adblock_section_sources">Bronnen</string>
+    <string name="adblock_source_url_label">Bron-URL (hosts- of domeinlijst)</string>
+    <string name="adblock_update_sources_now">Bronnen nu bijwerken</string>
+    <string name="adblock_section_danger_zone">Gevarenzone</string>
+    <string name="adblock_update_status_updating">Bijwerken…</string>
+    <string name="adblock_update_status_done">Up-to-date</string>
+    <string name="adblock_update_status_error">Fout: %1$s</string>
+
 </resources>
