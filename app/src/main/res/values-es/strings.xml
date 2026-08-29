@@ -363,10 +363,10 @@
     <string name="settings_quick_access_restart_systemui_subtitle">Fuerza el reinicio de la SystemUI para aplicar un cambio pendiente</string>
     <string name="settings_quick_access_notifications_title">Acceso a notificaciones</string>
     <string name="settings_quick_access_notifications_subtitle">Alternativa manual para las Notificaciones tipo ticker si la concesión con root no se aplicó</string>
-    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_title">Q25 Toolbox v3.1</string>
     <string name="whats_new_ok">Entendido</string>
-    <string name="whats_new_headline">La vista general de Recientes en cuadrícula ahora REQUIERE un framework Xposed (LSPosed / Vector).</string>
-    <string name="whats_new_body">La v3.0 sustituye el antiguo parche de cuadrícula con launcher incluido por un módulo de LSPosed. Sobrevive a las actualizaciones del sistema y ya no puede romper Recientes, pero solo funciona con LSPosed o Vector instalados (sobre KernelSU / APatch / Magisk). Activa y da ámbito al módulo desde la pantalla de Disposición de Recientes.\n\nTodo lo demás no cambia y no necesita ningún framework. Sin uno, Recientes es simplemente de serie.\n\nSi usabas la cuadrícula en 2.x, esta versión elimina ese parche antiguo en el primer inicio. También hay un nuevo modo Mosaico (celdas escalonadas).</string>
+    <string name="whats_new_headline">Tres novedades portadas de Key2 Toolbox: un bloqueador de anuncios, copia de seguridad/restauración y un bloqueo de telemetría más amplio.</string>
+    <string name="whats_new_body">AdBlock (pestaña Red) es un bloqueador de hosts sin modificar el sistema — instala un módulo del gestor de root y necesita un reinicio para activarse; después los cambios son en directo.\n\nCopia de seguridad y restauración (pestaña Ajustes) exporta los ajustes de los módulos seleccionados a un archivo JSON y restaura por fusión.\n\nEl bloqueo de telemetría ahora también cubre Firebase / Google Analytics y Performance Monitoring, vuelve a escanear cada 10 minutos en vez de 30 y reacciona a las instalaciones de apps.\n\nLa cuadrícula de Recientes sigue necesitando un framework Xposed (LSPosed / Vector), sin cambios desde la v3.0.</string>
     <string name="whats_new_matrix_title">¿Qué versión quiero?</string>
     <string name="whats_new_matrix">v3.0+  :  cualquier ROM de Q25 basada en stock, con LSPosed / Vector\n2.1.1  :  BenOS beta3, sin framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock más antiguo</string>
     <string name="generic_cancel">Cancelar</string>

@@ -4,6 +4,40 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](../Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [3.1] - 2026-08-29
+
+Ported from Key2 Toolbox: a hosts-based ad blocker, backup/restore, and a
+broader telemetry block. versionCode 31 → 32.
+
+### Added
+
+- **AdBlock** (Network tab): systemless hosts-based ad & tracker blocking.
+  Installs a KernelSU/Magisk/APatch module that overlays `/system/etc/hosts`
+  with a compiled blacklist (~273k entries bundled). Add/remove individual
+  domains or `*.glob` patterns, keep a whitelist, subscribe to remote hosts
+  lists and refresh them, pause/resume live. Needs one reboot after install to
+  activate the overlay; edits after that are live.
+- **Backup & Restore** (Settings tab): export the selected modules' settings to
+  a JSON file, or restore from one. Restore merges into current settings and
+  never wipes what isn't in the file. Covers the keyboard/accessibility
+  modules, Ticker, and the root script/schedule state (BtIdle, LocationIdle,
+  Extra Dim, BesLoudness, Dt2w, Telemetry).
+
+### Changed
+
+- **Global Telemetry Block — broader and faster.** No longer just Crashlytics:
+  also neutralises Firebase / Google Analytics (`measurement_enabled`,
+  `measurement_enabled_from_api`, `firebase_analytics_collection_enabled`),
+  Performance Monitoring, and the Firebase master data-collection flag. Re-scan
+  interval 30 → 10 minutes, with a burst of passes after boot and immediately
+  after any app install/removal. The screen gets a "Show per-app status" list
+  of which surface is blocked or still leaking in each app.
+
+### Fixed
+
+- Translated the remaining English-only strings (Recents UI Layout, the
+  quick-access rows, the What's New dialog) into all seven languages.
+
 ## [3.0] - 2026-08-28
 
 First build whose Recents feature is an **LSPosed module**. This opens the

@@ -406,17 +406,49 @@ shows whether the module is active and how to scope it.
   regardless of whether anything's actually asking for a fix, so they're not
   a usable "in use" signal here.
 
+### AdBlock (`AdBlockController` + `assets/adblock_*`)
+- Systemless hosts-based ad & tracker blocking (based on
+  gloeyisk/systemless-hosts). Deploys a root-manager module
+  (`/data/adb/modules/q25_adblock`: `module.prop` + `hosts_ctl.sh` +
+  `post-fs-data.sh` + a staged `system/etc/hosts` the module bind-mounts at
+  boot) plus a persistent data dir (`/data/adb/q25_adblock`) that survives
+  module updates.
+- ~273k entries bundled as the default blacklist. Add/remove exact domains or
+  `*.glob` patterns, keep a whitelist, subscribe to remote hosts lists and
+  refresh them, pause/resume filtering live.
+- Kotlin drives everything through `hosts_ctl.sh` (which owns the
+  compile/dedupe logic). One reboot is needed after install to activate the
+  overlay; the UI shows a banner until then. Content edits afterward are live —
+  `rebuild` mirrors straight onto the mounted `/system/etc/hosts`.
+
 ### Global Telemetry Block (`TelemetryController`)
-- Scans `/data/data/*/com.google.firebase.crashlytics.xml` across all
-  installed apps and sets `firebase_crashlytics_collection_enabled` to
-  `false`.
-- Apps rewrite that XML at runtime (Crashlytics re-enables collection on app
-  start), so a one-shot pass gets undone. `service.d/block_telemetry.sh` is
-  therefore a **watchdog daemon**: an initial pass ~15s after boot, then a
-  re-scan every 30 minutes. It runs the scan inside the init (pid 1) mount
-  namespace via `nsenter` so it sees the real `/data/data` both at boot and
-  when launched live from the app. A PID+cmdline lock keeps a single
-  instance.
+- Forces off, across all installed apps, the persisted "collection enabled"
+  flags for Firebase Crashlytics
+  (`firebase_crashlytics_collection_enabled`), Analytics / Google Analytics
+  (`measurement_enabled`, `measurement_enabled_from_api`,
+  `firebase_analytics_collection_enabled`), Performance Monitoring
+  (`firebase_performance_collection_enabled`) and the Firebase master flag
+  (`firebase_data_collection_default_enabled`) — flipping every occurrence and
+  injecting the opt-out into the Crashlytics / GMS-measurement prefs of apps
+  that lack one.
+- Firebase SDKs re-derive these from the manifest on every cold start, so a
+  one-shot pass gets undone. `service.d/block_telemetry.sh` is a **watchdog
+  daemon**: a burst of passes after boot, then a re-scan every 10 minutes,
+  plus an immediate burst whenever `packages.list` changes (app
+  installed/removed). Runs the scan inside the init (pid 1) mount namespace via
+  `nsenter`. A PID+cmdline lock keeps a single instance.
+- The screen has a "Show per-app status" list of which surface is blocked or
+  still leaking in each app.
+
+### Backup & Restore (`settings/SettingsBackup`)
+- Exports the selected modules' settings to a JSON document (via SAF), or
+  restores from one. Restore merges — it never wipes what isn't in the file.
+- Covers the `q25tweaks` shared-prefs modules (PIN Keyboard, Keyboard Block,
+  IME Suggestions, Chat Enter-to-Send, Calculator Keys, In-Call Shortcuts,
+  Call Screen Recovery, App Scaling, Auto-Focus, Battery Usage), Ticker
+  Notifications, and the root script/schedule state (BtIdle, LocationIdle,
+  Extra Dim, BesLoudness, Dt2w, Telemetry). KeyRemap / ProximitySensor /
+  RecentsTweaks are not covered yet.
 
 ### Lockscreen PIN on Keyboard (`Q25AccessibilityService`)
 No root needed. While the keyguard is locked, maps physical key presses to

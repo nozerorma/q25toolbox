@@ -363,10 +363,10 @@
     <string name="settings_quick_access_restart_systemui_subtitle">SystemUI zwangsweise neu starten, um eine ausstehende Änderung anzuwenden</string>
     <string name="settings_quick_access_notifications_title">Benachrichtigungszugriff</string>
     <string name="settings_quick_access_notifications_subtitle">Manuelle Alternative für Ticker-Benachrichtigungen, falls die Root-Freigabe nicht griff</string>
-    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_title">Q25 Toolbox v3.1</string>
     <string name="whats_new_ok">Verstanden</string>
-    <string name="whats_new_headline">Die Raster-Übersicht der letzten Apps BENÖTIGT jetzt ein Xposed-Framework (LSPosed / Vector).</string>
-    <string name="whats_new_body">v3.0 ersetzt den alten Raster-Patch mit gebündeltem Launcher durch ein LSPosed-Modul. Es übersteht Systemupdates und kann die Übersicht nicht mehr beschädigen, funktioniert aber nur mit installiertem LSPosed oder Vector (auf KernelSU / APatch / Magisk). Aktiviere das Modul und lege seinen Geltungsbereich über den Bildschirm „Übersicht-Layout“ fest.\n\nAlles andere bleibt unverändert und braucht kein Framework. Ohne eines ist die Übersicht einfach Standard.\n\nWenn du auf 2.x das Raster genutzt hast, entfernt dieser Build den alten Patch beim ersten Start. Es gibt außerdem einen neuen Mosaik-Modus (gestaffelte Kacheln).</string>
+    <string name="whats_new_headline">Drei Neuerungen aus Key2 Toolbox übernommen: ein Werbeblocker, Sichern/Wiederherstellen und ein breiterer Telemetrie-Block.</string>
+    <string name="whats_new_body">AdBlock (Tab „Netzwerk“) ist ein systemloser Hosts-Blocker — er installiert ein Root-Manager-Modul und braucht einen Neustart zum Aktivieren, danach sind Änderungen sofort wirksam.\n\nSichern &amp; Wiederherstellen (Tab „Einstellungen“) exportiert die Einstellungen der gewählten Module in eine JSON-Datei und stellt sie zusammenführend wieder her.\n\nDer Telemetrie-Block erfasst jetzt auch Firebase / Google Analytics und Performance Monitoring, scannt alle 10 statt 30 Minuten neu und reagiert auf App-Installationen.\n\nDas Raster der Übersicht braucht weiterhin ein Xposed-Framework (LSPosed / Vector), unverändert seit v3.0.</string>
     <string name="whats_new_matrix_title">Welche Version brauche ich?</string>
     <string name="whats_new_matrix">v3.0+  :  jedes stock-basierte Q25-ROM, mit LSPosed / Vector\n2.1.1  :  BenOS beta3, ohne Xposed-Framework\n2.0.5  :  BenOS pre-beta3a / älteres Stock</string>
     <string name="generic_cancel">Abbrechen</string>

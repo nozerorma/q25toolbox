@@ -363,10 +363,10 @@
     <string name="settings_quick_access_restart_systemui_subtitle">Força o reinício da SystemUI para aplicar uma alteração pendente</string>
     <string name="settings_quick_access_notifications_title">Acesso a notificações</string>
     <string name="settings_quick_access_notifications_subtitle">Alternativa manual para as Notificações tipo ticker se a concessão com root não pegou</string>
-    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_title">Q25 Toolbox v3.1</string>
     <string name="whats_new_ok">Entendido</string>
-    <string name="whats_new_headline">A vista geral de Recentes em grelha agora REQUER uma framework Xposed (LSPosed / Vector).</string>
-    <string name="whats_new_body">A v3.0 substitui o antigo patch de grelha com launcher incluído por um módulo LSPosed. Sobrevive a atualizações do sistema e já não pode partir os Recentes, mas só funciona com LSPosed ou Vector instalado (sobre KernelSU / APatch / Magisk). Ativa e define o âmbito do módulo a partir do ecrã Disposição dos Recentes.\n\nTudo o resto não muda e não precisa de framework. Sem um, os Recentes são simplesmente padrão.\n\nSe usavas a grelha na 2.x, esta build remove esse patch antigo no primeiro arranque. Há também um novo modo Mosaico (mosaicos escalonados).</string>
+    <string name="whats_new_headline">Três adições portadas do Key2 Toolbox: um bloqueador de anúncios, cópia de segurança/restauro e um bloqueio de telemetria mais amplo.</string>
+    <string name="whats_new_body">AdBlock (separador Rede) é um bloqueador de hosts sem modificar o sistema — instala um módulo do gestor de root e precisa de um reinício para ativar; depois as edições são em direto.\n\nCópia de segurança e restauro (separador Definições) exporta as definições dos módulos selecionados para um ficheiro JSON e restaura por fusão.\n\nO bloqueio de telemetria agora também cobre Firebase / Google Analytics e Performance Monitoring, verifica novamente a cada 10 minutos em vez de 30 e reage a instalações de apps.\n\nA grelha dos Recentes ainda precisa de uma framework Xposed (LSPosed / Vector), sem alterações desde a v3.0.</string>
     <string name="whats_new_matrix_title">Que versão quero?</string>
     <string name="whats_new_matrix">v3.0+  :  qualquer ROM de Q25 baseada em stock, com LSPosed / Vector\n2.1.1  :  BenOS beta3, sem framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock mais antigo</string>
     <string name="generic_cancel">Cancelar</string>

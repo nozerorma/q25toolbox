@@ -365,10 +365,10 @@
     <string name="settings_quick_access_restart_systemui_subtitle">SystemUI geforceerd herstarten om een openstaande wijziging toe te passen</string>
     <string name="settings_quick_access_notifications_title">Meldingstoegang</string>
     <string name="settings_quick_access_notifications_subtitle">Handmatige terugval voor tickermeldingen als de root-toekenning niet doorkwam</string>
-    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_title">Q25 Toolbox v3.1</string>
     <string name="whats_new_ok">Begrepen</string>
-    <string name="whats_new_headline">Het rasteroverzicht van Recent gebruikte apps VEREIST nu een Xposed-framework (LSPosed / Vector).</string>
-    <string name="whats_new_body">v3.0 vervangt de oude rasterpatch met meegeleverde launcher door een LSPosed-module. Die overleeft systeemupdates en kan Recent gebruikte apps niet meer breken, maar werkt alleen met LSPosed of Vector geïnstalleerd (op KernelSU / APatch / Magisk). Schakel de module in en stel het bereik in via het scherm Recentsindeling.\n\nAl het andere is ongewijzigd en heeft geen framework nodig. Zonder is Recent gewoon standaard.\n\nAls je het raster op 2.x gebruikte, verwijdert deze build die oude patch bij de eerste start. Er is ook een nieuwe Mozaïek-modus (versprongen tegels).</string>
+    <string name="whats_new_headline">Drie toevoegingen overgezet uit Key2 Toolbox: een advertentieblokker, back-up/herstel en een bredere telemetrieblokkering.</string>
+    <string name="whats_new_body">AdBlock (tabblad Netwerk) is een systeemloze hosts-blokker — het installeert een root-manager-module en heeft één herstart nodig om te activeren; daarna zijn bewerkingen live.\n\nBack-up en herstel (tabblad Instellingen) exporteert de instellingen van de geselecteerde modules naar een JSON-bestand en herstelt via samenvoegen.\n\nDe telemetrieblokkering dekt nu ook Firebase / Google Analytics en Performance Monitoring, scant elke 10 minuten in plaats van 30 en reageert op app-installaties.\n\nHet Overzicht-raster heeft nog steeds een Xposed-framework nodig (LSPosed / Vector), ongewijzigd sinds v3.0.</string>
     <string name="whats_new_matrix_title">Welke versie wil ik?</string>
     <string name="whats_new_matrix">v3.0+  :  elke stock-gebaseerde Q25-ROM, met LSPosed / Vector\n2.1.1  :  BenOS beta3, geen Xposed-framework\n2.0.5  :  BenOS pre-beta3a / ouder stock</string>
     <string name="generic_cancel">Annuleren</string>

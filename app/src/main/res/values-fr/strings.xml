@@ -363,10 +363,10 @@
     <string name="settings_quick_access_restart_systemui_subtitle">Force le redémarrage de SystemUI pour appliquer un réglage en attente</string>
     <string name="settings_quick_access_notifications_title">Accès aux notifications</string>
     <string name="settings_quick_access_notifications_subtitle">Solution de repli manuelle pour les notifications ticker si l\'autorisation root n\'a pas pris</string>
-    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_title">Q25 Toolbox v3.1</string>
     <string name="whats_new_ok">Compris</string>
-    <string name="whats_new_headline">L\'aperçu des Récents en grille NÉCESSITE désormais un framework Xposed (LSPosed / Vector).</string>
-    <string name="whats_new_body">La v3.0 remplace l\'ancien correctif de grille avec launcher intégré par un module LSPosed. Il survit aux mises à jour du système et ne peut plus casser les Récents, mais il ne fonctionne qu\'avec LSPosed ou Vector installé (sur KernelSU / APatch / Magisk). Active le module et définis sa portée depuis l\'écran Disposition des Récents.\n\nTout le reste est inchangé et ne nécessite aucun framework. Sans, les Récents sont simplement d\'origine.\n\nSi tu utilisais la grille en 2.x, cette build retire cet ancien correctif au premier lancement. Il y a aussi un nouveau mode Mosaïque (tuiles décalées).</string>
+    <string name="whats_new_headline">Trois ajouts portés depuis Key2 Toolbox : un bloqueur de pub, la sauvegarde/restauration et un blocage de télémétrie plus large.</string>
+    <string name="whats_new_body">AdBlock (onglet Réseau) est un bloqueur de hosts sans modification du système — il installe un module du gestionnaire root et nécessite un redémarrage pour s\'activer ; ensuite les modifications sont en direct.\n\nSauvegarde et restauration (onglet Réglages) exporte les réglages des modules sélectionnés dans un fichier JSON et restaure par fusion.\n\nLe blocage de télémétrie couvre désormais aussi Firebase / Google Analytics et Performance Monitoring, rescanne toutes les 10 minutes au lieu de 30 et réagit aux installations d\'apps.\n\nLa grille des Récents nécessite toujours un framework Xposed (LSPosed / Vector), inchangé depuis la v3.0.</string>
     <string name="whats_new_matrix_title">Quelle version me faut-il ?</string>
     <string name="whats_new_matrix">v3.0+  :  toute ROM Q25 basée sur le stock, avec LSPosed / Vector\n2.1.1  :  BenOS beta3, sans framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock plus ancien</string>
     <string name="generic_cancel">Annuler</string>

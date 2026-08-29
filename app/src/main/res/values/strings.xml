@@ -349,10 +349,10 @@
     <string name="prox_factory_test_button">Launch Factory Test Mode</string>
 
     <!-- Recents UI Tweaks Screen -->
-    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_title">Q25 Toolbox v3.1</string>
     <string name="whats_new_ok">Got it</string>
-    <string name="whats_new_headline">The Grid Recents overview now REQUIRES an Xposed framework (LSPosed / Vector).</string>
-    <string name="whats_new_body">v3.0 replaces the old bundled-launcher grid patch with an LSPosed module. It survives system updates and can no longer break Recents, but it only works with LSPosed or Vector installed (on KernelSU / APatch / Magisk). Enable and scope the module from the Recents UI Layout screen.\n\nEverything else is unchanged and needs no framework. Without one, Recents is simply stock.\n\nIf you were using the grid on 2.x, this build removes that old patch on first launch. There is also a new Masonry mode (staggered tiles).</string>
+    <string name="whats_new_headline">Three additions ported from Key2 Toolbox: an ad blocker, backup/restore, and a wider telemetry block.</string>
+    <string name="whats_new_body">AdBlock (Network tab) is a systemless hosts blocker — it installs a root-manager module and needs one reboot to activate, then edits are live.\n\nBackup and Restore (Settings tab) exports the selected modules\' settings to a JSON file and restores by merge.\n\nThe Telemetry block now also covers Firebase / Google Analytics and Performance Monitoring, re-scans every 10 minutes instead of 30, and reacts to app installs.\n\nThe Recents grid still needs an Xposed framework (LSPosed / Vector), unchanged since v3.0.</string>
     <string name="whats_new_matrix_title">Which version do I want?</string>
     <string name="whats_new_matrix">v3.0+  :  any stock-based Q25 ROM, with LSPosed / Vector\n2.1.1  :  BenOS beta3, no Xposed framework\n2.0.5  :  BenOS pre-beta3a / older stock</string>
     <string name="recents_intro">Makes Recents/Overview show two rows of smaller task cards, tablet-style, instead of the stock single row. It runs entirely through an LSPosed hook inside the launcher; this screen only stores the setting and restarts the launcher.</string>

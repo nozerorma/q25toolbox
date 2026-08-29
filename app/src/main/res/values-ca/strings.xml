@@ -363,10 +363,10 @@
     <string name="settings_quick_access_restart_systemui_subtitle">Força el reinici de la SystemUI per aplicar un canvi pendent</string>
     <string name="settings_quick_access_notifications_title">Accés a les notificacions</string>
     <string name="settings_quick_access_notifications_subtitle">Alternativa manual per a les Notificacions tipus ticker si la concessió amb root no s\'ha aplicat</string>
-    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_title">Q25 Toolbox v3.1</string>
     <string name="whats_new_ok">Entesos</string>
-    <string name="whats_new_headline">La vista general de Recents en graella ara REQUEREIX un entorn Xposed (LSPosed / Vector).</string>
-    <string name="whats_new_body">La v3.0 substitueix l\'antic pedaç de graella amb launcher inclòs per un mòdul d\'LSPosed. Sobreviu a les actualitzacions del sistema i ja no pot trencar Recents, però només funciona amb LSPosed o Vector instal·lats (sobre KernelSU / APatch / Magisk). Activa i posa el mòdul a l\'àmbit des de la pantalla de Disposició de Recents.\n\nLa resta no canvia i no necessita cap entorn. Sense un, Recents és simplement de sèrie.\n\nSi feies servir la graella a la 2.x, aquesta versió elimina aquell pedaç antic al primer inici. També hi ha un mode Mosaic nou (tessel·les esglaonades).</string>
+    <string name="whats_new_headline">Tres novetats portades de Key2 Toolbox: un bloquejador d\'anuncis, còpia de seguretat/restauració i un bloqueig de telemetria més ampli.</string>
+    <string name="whats_new_body">AdBlock (pestanya Xarxa) és un bloquejador de hosts sense modificar el sistema — instal·la un mòdul del gestor de root i necessita un reinici per activar-se; després els canvis són en directe.\n\nCòpia de seguretat i restauració (pestanya Ajustos) exporta els ajustos dels mòduls seleccionats a un fitxer JSON i restaura per fusió.\n\nEl bloqueig de telemetria ara també cobreix Firebase / Google Analytics i Performance Monitoring, torna a escanejar cada 10 minuts en lloc de 30 i reacciona a les instal·lacions d\'apps.\n\nLa graella de Recents encara necessita un entorn Xposed (LSPosed / Vector), sense canvis des de la v3.0.</string>
     <string name="whats_new_matrix_title">Quina versió vull?</string>
     <string name="whats_new_matrix">v3.0+  :  qualsevol ROM de Q25 basada en stock, amb LSPosed / Vector\n2.1.1  :  BenOS beta3, sense entorn Xposed\n2.0.5  :  BenOS pre-beta3a / stock més antic</string>
     <string name="generic_cancel">Cancel·la</string>
