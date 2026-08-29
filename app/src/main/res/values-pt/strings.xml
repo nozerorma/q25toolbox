@@ -369,4 +369,17 @@
     <string name="whats_new_body">A v3.0 substitui o antigo patch de grelha com launcher incluído por um módulo LSPosed. Sobrevive a atualizações do sistema e já não pode partir os Recentes, mas só funciona com LSPosed ou Vector instalado (sobre KernelSU / APatch / Magisk). Ativa e define o âmbito do módulo a partir do ecrã Disposição dos Recentes.\n\nTudo o resto não muda e não precisa de framework. Sem um, os Recentes são simplesmente padrão.\n\nSe usavas a grelha na 2.x, esta build remove esse patch antigo no primeiro arranque. Há também um novo modo Mosaico (mosaicos escalonados).</string>
     <string name="whats_new_matrix_title">Que versão quero?</string>
     <string name="whats_new_matrix">v3.0+  :  qualquer ROM de Q25 baseada em stock, com LSPosed / Vector\n2.1.1  :  BenOS beta3, sem framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock mais antigo</string>
+    <string name="generic_cancel">Cancelar</string>
+    <string name="settings_backup_restore">Cópia de segurança e restauro</string>
+    <string name="settings_backup_desc">Exporta as definições dos módulos selecionados para um ficheiro JSON, ou restaura-as a partir de um. O restauro funde-se com as tuas definições atuais — nunca apaga o que não está no ficheiro.</string>
+    <string name="settings_export">Exportar</string>
+    <string name="settings_import">Restaurar</string>
+    <string name="settings_export_success">Cópia de segurança guardada.</string>
+    <string name="settings_export_failed">A exportação falhou: %1$s: %2$s</string>
+    <string name="settings_import_dialog_title">Restaurar as definições?</string>
+    <string name="settings_import_dialog_desc">Isto substitui as definições atuais dos módulos selecionados pelas do ficheiro. Os módulos que não estão no ficheiro ficam como estão.</string>
+    <string name="settings_import_restored">Restauradas %1$d definições.</string>
+    <string name="settings_import_script_modules_restored"> Também restaurados e aplicados em direto: %1$s.</string>
+    <string name="settings_import_failed">O restauro falhou: %1$s: %2$s</string>
+    <string name="settings_select_module">Seleciona pelo menos um módulo.</string>
 </resources>

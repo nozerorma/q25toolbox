@@ -371,4 +371,17 @@
     <string name="whats_new_body">v3.0 vervangt de oude rasterpatch met meegeleverde launcher door een LSPosed-module. Die overleeft systeemupdates en kan Recent gebruikte apps niet meer breken, maar werkt alleen met LSPosed of Vector geïnstalleerd (op KernelSU / APatch / Magisk). Schakel de module in en stel het bereik in via het scherm Recentsindeling.\n\nAl het andere is ongewijzigd en heeft geen framework nodig. Zonder is Recent gewoon standaard.\n\nAls je het raster op 2.x gebruikte, verwijdert deze build die oude patch bij de eerste start. Er is ook een nieuwe Mozaïek-modus (versprongen tegels).</string>
     <string name="whats_new_matrix_title">Welke versie wil ik?</string>
     <string name="whats_new_matrix">v3.0+  :  elke stock-gebaseerde Q25-ROM, met LSPosed / Vector\n2.1.1  :  BenOS beta3, geen Xposed-framework\n2.0.5  :  BenOS pre-beta3a / ouder stock</string>
+    <string name="generic_cancel">Annuleren</string>
+    <string name="settings_backup_restore">Back-up en herstel</string>
+    <string name="settings_backup_desc">Exporteert de instellingen van de geselecteerde modules naar een JSON-bestand, of herstelt ze daaruit. Herstellen wordt samengevoegd met je huidige instellingen — het wist nooit wat niet in het bestand staat.</string>
+    <string name="settings_export">Exporteren</string>
+    <string name="settings_import">Herstellen</string>
+    <string name="settings_export_success">Back-up opgeslagen.</string>
+    <string name="settings_export_failed">Exporteren mislukt: %1$s: %2$s</string>
+    <string name="settings_import_dialog_title">Instellingen herstellen?</string>
+    <string name="settings_import_dialog_desc">Dit overschrijft de huidige instellingen van de geselecteerde modules met die uit het bestand. Modules die niet in het bestand staan, blijven zoals ze zijn.</string>
+    <string name="settings_import_restored">%1$d instelling(en) hersteld.</string>
+    <string name="settings_import_script_modules_restored"> Ook hersteld en live toegepast: %1$s.</string>
+    <string name="settings_import_failed">Herstellen mislukt: %1$s: %2$s</string>
+    <string name="settings_select_module">Selecteer minstens één module.</string>
 </resources>

@@ -369,4 +369,17 @@
     <string name="whats_new_body">La v3.0 sustituye el antiguo parche de cuadrícula con launcher incluido por un módulo de LSPosed. Sobrevive a las actualizaciones del sistema y ya no puede romper Recientes, pero solo funciona con LSPosed o Vector instalados (sobre KernelSU / APatch / Magisk). Activa y da ámbito al módulo desde la pantalla de Disposición de Recientes.\n\nTodo lo demás no cambia y no necesita ningún framework. Sin uno, Recientes es simplemente de serie.\n\nSi usabas la cuadrícula en 2.x, esta versión elimina ese parche antiguo en el primer inicio. También hay un nuevo modo Mosaico (celdas escalonadas).</string>
     <string name="whats_new_matrix_title">¿Qué versión quiero?</string>
     <string name="whats_new_matrix">v3.0+  :  cualquier ROM de Q25 basada en stock, con LSPosed / Vector\n2.1.1  :  BenOS beta3, sin framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock más antiguo</string>
+    <string name="generic_cancel">Cancelar</string>
+    <string name="settings_backup_restore">Copia de seguridad y restauración</string>
+    <string name="settings_backup_desc">Exporta los ajustes de los módulos seleccionados a un archivo JSON, o restáuralos desde uno. La restauración se fusiona con tus ajustes actuales — nunca borra lo que no está en el archivo.</string>
+    <string name="settings_export">Exportar</string>
+    <string name="settings_import">Restaurar</string>
+    <string name="settings_export_success">Copia de seguridad guardada.</string>
+    <string name="settings_export_failed">La exportación falló: %1$s: %2$s</string>
+    <string name="settings_import_dialog_title">¿Restaurar los ajustes?</string>
+    <string name="settings_import_dialog_desc">Esto sobrescribe los ajustes actuales de los módulos seleccionados con los del archivo. Los módulos que no están en el archivo se dejan como están.</string>
+    <string name="settings_import_restored">%1$d ajuste(s) restaurado(s).</string>
+    <string name="settings_import_script_modules_restored"> También restaurados y aplicados en directo: %1$s.</string>
+    <string name="settings_import_failed">La restauración falló: %1$s: %2$s</string>
+    <string name="settings_select_module">Selecciona al menos un módulo.</string>
 </resources>

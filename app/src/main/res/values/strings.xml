@@ -375,4 +375,17 @@
     <string name="recents_repair_success">Recents provider repaired.</string>
     <string name="recents_repair_needs_reboot">Repair applied — reboot your device to finish restoring Recents.</string>
     <string name="recents_repair_failed">Repair failed. Try again after a reboot.</string>
+    <string name="generic_cancel">Cancel</string>
+    <string name="settings_backup_restore">Backup &amp; Restore</string>
+    <string name="settings_backup_desc">Export the selected modules\' settings to a JSON file, or restore them from one. Restore merges into your current settings — it never wipes what isn\'t in the file.</string>
+    <string name="settings_export">Export</string>
+    <string name="settings_import">Restore</string>
+    <string name="settings_export_success">Backup saved.</string>
+    <string name="settings_export_failed">Export failed: %1$s: %2$s</string>
+    <string name="settings_import_dialog_title">Restore settings?</string>
+    <string name="settings_import_dialog_desc">This overwrites the selected modules\' current settings with the ones in the file. Modules not in the file are left as they are.</string>
+    <string name="settings_import_restored">%1$d setting(s) restored.</string>
+    <string name="settings_import_script_modules_restored"> Also restored and applied live: %1$s.</string>
+    <string name="settings_import_failed">Restore failed: %1$s: %2$s</string>
+    <string name="settings_select_module">Select at least one module.</string>
 </resources>

@@ -369,4 +369,17 @@
     <string name="whats_new_body">La v3.0 sostituisce il vecchio patch a griglia con launcher incluso con un modulo LSPosed. Sopravvive agli aggiornamenti di sistema e non può più rompere i Recenti, ma funziona solo con LSPosed o Vector installato (su KernelSU / APatch / Magisk). Attiva e assegna l\'ambito al modulo dalla schermata Layout dei Recenti.\n\nTutto il resto è invariato e non richiede alcun framework. Senza, i Recenti sono semplicemente predefiniti.\n\nSe usavi la griglia sulla 2.x, questa build rimuove quel vecchio patch al primo avvio. C\'è anche una nuova modalità Mosaico (tessere sfalsate).</string>
     <string name="whats_new_matrix_title">Quale versione mi serve?</string>
     <string name="whats_new_matrix">v3.0+  :  qualsiasi ROM Q25 basata su stock, con LSPosed / Vector\n2.1.1  :  BenOS beta3, senza framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock più vecchio</string>
+    <string name="generic_cancel">Annulla</string>
+    <string name="settings_backup_restore">Backup e ripristino</string>
+    <string name="settings_backup_desc">Esporta le impostazioni dei moduli selezionati in un file JSON, o le ripristina da uno. Il ripristino si fonde con le tue impostazioni attuali — non cancella mai ciò che non è nel file.</string>
+    <string name="settings_export">Esporta</string>
+    <string name="settings_import">Ripristina</string>
+    <string name="settings_export_success">Backup salvato.</string>
+    <string name="settings_export_failed">Esportazione non riuscita: %1$s: %2$s</string>
+    <string name="settings_import_dialog_title">Ripristinare le impostazioni?</string>
+    <string name="settings_import_dialog_desc">Questo sovrascrive le impostazioni attuali dei moduli selezionati con quelle del file. I moduli non presenti nel file restano come sono.</string>
+    <string name="settings_import_restored">Ripristinate %1$d impostazioni.</string>
+    <string name="settings_import_script_modules_restored"> Ripristinati e applicati in tempo reale anche: %1$s.</string>
+    <string name="settings_import_failed">Ripristino non riuscito: %1$s: %2$s</string>
+    <string name="settings_select_module">Seleziona almeno un modulo.</string>
 </resources>

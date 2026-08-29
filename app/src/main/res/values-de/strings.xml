@@ -369,4 +369,17 @@
     <string name="whats_new_body">v3.0 ersetzt den alten Raster-Patch mit gebündeltem Launcher durch ein LSPosed-Modul. Es übersteht Systemupdates und kann die Übersicht nicht mehr beschädigen, funktioniert aber nur mit installiertem LSPosed oder Vector (auf KernelSU / APatch / Magisk). Aktiviere das Modul und lege seinen Geltungsbereich über den Bildschirm „Übersicht-Layout“ fest.\n\nAlles andere bleibt unverändert und braucht kein Framework. Ohne eines ist die Übersicht einfach Standard.\n\nWenn du auf 2.x das Raster genutzt hast, entfernt dieser Build den alten Patch beim ersten Start. Es gibt außerdem einen neuen Mosaik-Modus (gestaffelte Kacheln).</string>
     <string name="whats_new_matrix_title">Welche Version brauche ich?</string>
     <string name="whats_new_matrix">v3.0+  :  jedes stock-basierte Q25-ROM, mit LSPosed / Vector\n2.1.1  :  BenOS beta3, ohne Xposed-Framework\n2.0.5  :  BenOS pre-beta3a / älteres Stock</string>
+    <string name="generic_cancel">Abbrechen</string>
+    <string name="settings_backup_restore">Sichern &amp; Wiederherstellen</string>
+    <string name="settings_backup_desc">Exportiert die Einstellungen der ausgewählten Module in eine JSON-Datei oder stellt sie daraus wieder her. Die Wiederherstellung führt mit deinen aktuellen Einstellungen zusammen — sie löscht nie, was nicht in der Datei steht.</string>
+    <string name="settings_export">Exportieren</string>
+    <string name="settings_import">Wiederherstellen</string>
+    <string name="settings_export_success">Sicherung gespeichert.</string>
+    <string name="settings_export_failed">Export fehlgeschlagen: %1$s: %2$s</string>
+    <string name="settings_import_dialog_title">Einstellungen wiederherstellen?</string>
+    <string name="settings_import_dialog_desc">Dies überschreibt die aktuellen Einstellungen der ausgewählten Module mit denen aus der Datei. Module, die nicht in der Datei sind, bleiben unverändert.</string>
+    <string name="settings_import_restored">%1$d Einstellung(en) wiederhergestellt.</string>
+    <string name="settings_import_script_modules_restored"> Ebenfalls wiederhergestellt und live angewendet: %1$s.</string>
+    <string name="settings_import_failed">Wiederherstellung fehlgeschlagen: %1$s: %2$s</string>
+    <string name="settings_select_module">Wähle mindestens ein Modul.</string>
 </resources>

@@ -3,6 +3,8 @@ package com.kgr.q25toolbox.settings
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,13 +29,17 @@ import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,6 +63,9 @@ import com.kgr.q25toolbox.modules.DebugLogExporter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun SettingsScreen(currentVersionName: String) {
@@ -67,6 +77,86 @@ fun SettingsScreen(currentVersionName: String) {
     var contributorsError by remember { mutableStateOf<String?>(null) }
     var exportingLogs by remember { mutableStateOf(false) }
     var exportResult by remember { mutableStateOf<DebugLogExporter.Result?>(null) }
+
+    var backupMessage by remember { mutableStateOf<String?>(null) }
+    var backupError by remember { mutableStateOf<String?>(null) }
+    var pendingImportUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedModules by remember { mutableStateOf(SettingsBackup.BackupModule.entries.toSet()) }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    val json = SettingsBackup.exportToJson(context, currentVersionName, selectedModules)
+                    SettingsBackup.writeToUri(context, uri, json)
+                }
+                backupError = null
+                backupMessage = context.getString(R.string.settings_export_success)
+            } catch (e: Exception) {
+                backupMessage = null
+                backupError = context.getString(
+                    R.string.settings_export_failed, e.javaClass.simpleName, e.message ?: ""
+                )
+            }
+        }
+    }
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri -> if (uri != null) pendingImportUri = uri }
+
+    pendingImportUri?.let { uri ->
+        AlertDialog(
+            onDismissRequest = { pendingImportUri = null },
+            title = { Text(stringResource(R.string.settings_import_dialog_title)) },
+            text = { Text(stringResource(R.string.settings_import_dialog_desc)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    pendingImportUri = null
+                    scope.launch {
+                        try {
+                            val result = withContext(Dispatchers.IO) {
+                                SettingsBackup.importFromJson(
+                                    context,
+                                    SettingsBackup.readFromUri(context, uri),
+                                    selectedModules
+                                )
+                            }
+                            when (result) {
+                                is SettingsBackup.ImportResult.Success -> {
+                                    backupError = null
+                                    val names = result.scriptModulesRestored.joinToString(", ") {
+                                        context.getString(it.labelRes)
+                                    }
+                                    backupMessage = context.getString(
+                                        R.string.settings_import_restored, result.restoredKeys
+                                    ) + if (names.isNotEmpty()) {
+                                        context.getString(R.string.settings_import_script_modules_restored, names)
+                                    } else ""
+                                }
+                                is SettingsBackup.ImportResult.Failure -> {
+                                    backupMessage = null
+                                    backupError = result.message
+                                }
+                            }
+                        } catch (e: Exception) {
+                            backupMessage = null
+                            backupError = context.getString(
+                                R.string.settings_import_failed, e.javaClass.simpleName, e.message ?: ""
+                            )
+                        }
+                    }
+                }) { Text(stringResource(R.string.settings_import)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingImportUri = null }) {
+                    Text(stringResource(R.string.generic_cancel))
+                }
+            }
+        )
+    }
 
     // Load contributors once when the screen is first shown
     LaunchedEffect(Unit) {
@@ -153,6 +243,69 @@ fun SettingsScreen(currentVersionName: String) {
             icon = Icons.Default.Notifications
         ) {
             context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        SectionHeader(stringResource(R.string.settings_backup_restore))
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    stringResource(R.string.settings_backup_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(12.dp))
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 220.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    SettingsBackup.BackupModule.entries.forEach { module ->
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = module in selectedModules,
+                                onCheckedChange = { checked ->
+                                    selectedModules = if (checked) selectedModules + module
+                                    else selectedModules - module
+                                }
+                            )
+                            Text(stringResource(module.labelRes), style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        enabled = selectedModules.isNotEmpty(),
+                        onClick = {
+                            val ts = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+                            exportLauncher.launch("q25toolbox_backup_$ts.json")
+                        }
+                    ) { Text(stringResource(R.string.settings_export)) }
+                    OutlinedButton(
+                        enabled = selectedModules.isNotEmpty(),
+                        onClick = { importLauncher.launch(arrayOf("application/json")) }
+                    ) { Text(stringResource(R.string.settings_import)) }
+                }
+                if (selectedModules.isEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        stringResource(R.string.settings_select_module),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                backupMessage?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                }
+                backupError?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                }
+            }
         }
 
         Spacer(Modifier.height(24.dp))

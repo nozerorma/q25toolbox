@@ -369,4 +369,17 @@
     <string name="whats_new_body">La v3.0 remplace l\'ancien correctif de grille avec launcher intégré par un module LSPosed. Il survit aux mises à jour du système et ne peut plus casser les Récents, mais il ne fonctionne qu\'avec LSPosed ou Vector installé (sur KernelSU / APatch / Magisk). Active le module et définis sa portée depuis l\'écran Disposition des Récents.\n\nTout le reste est inchangé et ne nécessite aucun framework. Sans, les Récents sont simplement d\'origine.\n\nSi tu utilisais la grille en 2.x, cette build retire cet ancien correctif au premier lancement. Il y a aussi un nouveau mode Mosaïque (tuiles décalées).</string>
     <string name="whats_new_matrix_title">Quelle version me faut-il ?</string>
     <string name="whats_new_matrix">v3.0+  :  toute ROM Q25 basée sur le stock, avec LSPosed / Vector\n2.1.1  :  BenOS beta3, sans framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock plus ancien</string>
+    <string name="generic_cancel">Annuler</string>
+    <string name="settings_backup_restore">Sauvegarde et restauration</string>
+    <string name="settings_backup_desc">Exporte les réglages des modules sélectionnés dans un fichier JSON, ou les restaure depuis un. La restauration fusionne avec tes réglages actuels — elle n\'efface jamais ce qui n\'est pas dans le fichier.</string>
+    <string name="settings_export">Exporter</string>
+    <string name="settings_import">Restaurer</string>
+    <string name="settings_export_success">Sauvegarde enregistrée.</string>
+    <string name="settings_export_failed">Échec de l\'export : %1$s : %2$s</string>
+    <string name="settings_import_dialog_title">Restaurer les réglages ?</string>
+    <string name="settings_import_dialog_desc">Cela écrase les réglages actuels des modules sélectionnés par ceux du fichier. Les modules absents du fichier restent tels quels.</string>
+    <string name="settings_import_restored">%1$d réglage(s) restauré(s).</string>
+    <string name="settings_import_script_modules_restored"> Également restaurés et appliqués en direct : %1$s.</string>
+    <string name="settings_import_failed">Échec de la restauration : %1$s : %2$s</string>
+    <string name="settings_select_module">Sélectionne au moins un module.</string>
 </resources>
