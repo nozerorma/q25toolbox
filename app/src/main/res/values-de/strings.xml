@@ -36,7 +36,7 @@
     <string name="subtitle_ime_suggestions">Strg+W/E/R wählt Tastaturvorschlag 1/2/3</string>
     <string name="subtitle_bt_idle">Schaltet Bluetooth bei Inaktivität aus</string>
     <string name="subtitle_location_idle">Schaltet den Standort bei Inaktivität aus</string>
-    <string name="subtitle_telemetry">Deaktiviert Firebase Crashlytics systemweit</string>
+    <string name="subtitle_telemetry">Firebase Crashlytics, Analytics und Performance systemweit deaktivieren</string>
     <string name="subtitle_extra_dim">Reduziert die Helligkeit unter das Systemminimum</string>
     <string name="subtitle_besloudness">Lautsprecher-Lautheitsverstärkung, zeitgesteuert</string>
     <string name="subtitle_app_scaling">Erzwingt Telefon-Layout bei inkompatiblen Apps</string>
@@ -227,7 +227,7 @@
     <string name="telemetry_autoblock_off">Automatische Blockierung deaktiviert.</string>
     <string name="telemetry_block_now_button">Jetzt alle Telemetrie blockieren</string>
     <string name="telemetry_block_now_status">Telemetrie für alle erkannten Apps deaktiviert.</string>
-    <string name="telemetry_desc">Deaktiviert die Firebase-Crashlytics-Erfassung systemweit. Dies stoppt das Verpacken und Hochladen von Absturzprotokollen im Hintergrund und spart mobile Daten, RAM und Aufwachzyklen.</string>
+    <string name="telemetry_desc">Erzwingt systemweit das Abschalten der Firebase-Datenerfassung — Crashlytics, Analytics / Google Analytics und Performance Monitoring — indem ihre persistierten Opt-out-Flags gehalten werden. Ein Watchdog wendet es alle paar Minuten und nach jeder App-Installation erneut an, da die SDKs die Flags bei jedem Kaltstart zurücksetzen. Stoppt das Zusammenstellen und Hochladen von Absturzberichten und Analysedaten im Hintergrund und spart mobile Daten, RAM und Aufweckvorgänge.</string>
 
     <!-- BesLoudness Screen -->
     <string name="besloudness_enabled_switch_label">BesLoudness aktiviert</string>
@@ -345,4 +345,28 @@
     <string name="prox_factory_test_title">Werksseitiger Hardware-Testmodus</string>
     <string name="prox_factory_test_desc">Öffnet den rohen Sensor-Ausleseschirm des Herstellers zur Diagnose. Die Nah/Fern-Schwelle ist in der Firmware des Sensors fixiert - es gibt keine zugängliche Kalibrierung.</string>
     <string name="prox_factory_test_button">Werkstestmodus starten</string>
+    <string name="telemetry_show_details">Status pro App anzeigen (%1$d)</string>
+    <string name="telemetry_hide_details">Status pro App ausblenden</string>
+    <string name="telemetry_surface_blocked">blockiert</string>
+    <string name="telemetry_surface_leaking">aktiv</string>
+    <string name="recents_intro">Lässt die Übersicht zwei Reihen kleinerer App-Karten anzeigen, im Tablet-Stil, statt der einzelnen Standardreihe. Läuft vollständig über einen LSPosed-Hook im Launcher; dieser Bildschirm speichert nur die Einstellung und startet den Launcher neu.</string>
+    <string name="recents_section_lsposed">LSPosed erforderlich</string>
+    <string name="recents_xposed_ok">LSPosed-Modul aktiv.</string>
+    <string name="recents_xposed_missing">LSPosed-Modul nicht aktiv.</string>
+    <string name="recents_xposed_hint">Öffne deinen Xposed-Manager (LSPosed / Vector), aktiviere \"Q25 Toolbox\", hake den Launcher (com.android.launcher3) und diese App im Geltungsbereich an und erzwinge dann das Stoppen des Launchers. Erfordert ein Xposed-Framework auf KernelSU / APatch / Magisk.</string>
+    <string name="recents_layout_title">Übersicht-Layout</string>
+    <string name="recents_layout_desc">Raster erzwingt das zweizeilige Tablet-Layout für die Übersicht (Startbildschirm und Hotseat können sich leicht verschieben, da sie dasselbe Layoutprofil nutzen). Mosaik ist Raster mit gestaffelten Kachelhöhen und eckigen Ecken.</string>
+    <string name="recents_mode_stock">Standard (eine Reihe)</string>
+    <string name="recents_mode_grid">Raster (zwei Reihen)</string>
+    <string name="recents_mode_masonry">Mosaik (zwei Reihen, gestaffelt)</string>
+    <string name="settings_quick_access_restart_systemui_title">SystemUI neu starten</string>
+    <string name="settings_quick_access_restart_systemui_subtitle">SystemUI zwangsweise neu starten, um eine ausstehende Änderung anzuwenden</string>
+    <string name="settings_quick_access_notifications_title">Benachrichtigungszugriff</string>
+    <string name="settings_quick_access_notifications_subtitle">Manuelle Alternative für Ticker-Benachrichtigungen, falls die Root-Freigabe nicht griff</string>
+    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_ok">Verstanden</string>
+    <string name="whats_new_headline">Die Raster-Übersicht der letzten Apps BENÖTIGT jetzt ein Xposed-Framework (LSPosed / Vector).</string>
+    <string name="whats_new_body">v3.0 ersetzt den alten Raster-Patch mit gebündeltem Launcher durch ein LSPosed-Modul. Es übersteht Systemupdates und kann die Übersicht nicht mehr beschädigen, funktioniert aber nur mit installiertem LSPosed oder Vector (auf KernelSU / APatch / Magisk). Aktiviere das Modul und lege seinen Geltungsbereich über den Bildschirm „Übersicht-Layout“ fest.\n\nAlles andere bleibt unverändert und braucht kein Framework. Ohne eines ist die Übersicht einfach Standard.\n\nWenn du auf 2.x das Raster genutzt hast, entfernt dieser Build den alten Patch beim ersten Start. Es gibt außerdem einen neuen Mosaik-Modus (gestaffelte Kacheln).</string>
+    <string name="whats_new_matrix_title">Welche Version brauche ich?</string>
+    <string name="whats_new_matrix">v3.0+  :  jedes stock-basierte Q25-ROM, mit LSPosed / Vector\n2.1.1  :  BenOS beta3, ohne Xposed-Framework\n2.0.5  :  BenOS pre-beta3a / älteres Stock</string>
 </resources>

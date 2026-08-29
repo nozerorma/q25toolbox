@@ -36,7 +36,7 @@
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R choisit la suggestion 1/2/3 du clavier</string>
     <string name="subtitle_bt_idle">Éteint le Bluetooth lorsqu\'il est inactif</string>
     <string name="subtitle_location_idle">Éteint la localisation lorsqu\'elle est inactive</string>
-    <string name="subtitle_telemetry">Désactive Firebase Crashlytics sur tout le système</string>
+    <string name="subtitle_telemetry">Désactive Firebase Crashlytics, Analytics et Performance sur tout le système</string>
     <string name="subtitle_extra_dim">Réduit la luminosité sous le minimum système</string>
     <string name="subtitle_besloudness">Amélioration de la sonie du haut-parleur, programmable</string>
     <string name="subtitle_app_scaling">Force la disposition téléphone sur les apps incompatibles</string>
@@ -227,7 +227,7 @@
     <string name="telemetry_autoblock_off">Blocage automatique désactivé.</string>
     <string name="telemetry_block_now_button">Bloquer toute la télémétrie maintenant</string>
     <string name="telemetry_block_now_status">Télémétrie désactivée pour toutes les applications détectées.</string>
-    <string name="telemetry_desc">Désactive globalement la collecte Firebase Crashlytics sur tout le système. Cela arrête l\'empaquetage et l\'envoi en arrière-plan des rapports de plantage, économisant les données mobiles, la RAM et les cycles de réveil.</string>
+    <string name="telemetry_desc">Force globalement la désactivation de la collecte de données Firebase sur tout le système — Crashlytics, Analytics / Google Analytics et Performance Monitoring — en maintenant leurs indicateurs de refus persistés. Un watchdog le réapplique toutes les quelques minutes et après chaque installation d\'app, car les SDK réinitialisent les indicateurs à chaque démarrage à froid. Arrête l\'empaquetage et l\'envoi en arrière-plan des rapports de plantage et des analyses, et économise données mobiles, RAM et réveils.</string>
 
     <!-- BesLoudness Screen -->
     <string name="besloudness_enabled_switch_label">BesLoudness activé</string>
@@ -345,4 +345,28 @@
     <string name="prox_factory_test_title">Mode de test usine</string>
     <string name="prox_factory_test_desc">Ouvre l\'écran de lecture brute du capteur du fabricant à des fins de diagnostic. Le seuil proche/loin est fixé dans le firmware du capteur - aucun contrôle d\'étalonnage n\'est exposé.</string>
     <string name="prox_factory_test_button">Lancer le mode de test usine</string>
+    <string name="telemetry_show_details">Afficher l\'état par app (%1$d)</string>
+    <string name="telemetry_hide_details">Masquer l\'état par app</string>
+    <string name="telemetry_surface_blocked">bloqué</string>
+    <string name="telemetry_surface_leaking">actif</string>
+    <string name="recents_intro">Fait afficher aux Récents/Aperçu deux rangées de vignettes de tâches plus petites, façon tablette, au lieu de la rangée unique par défaut. Fonctionne entièrement via un hook LSPosed dans le launcher ; cet écran ne fait qu\'enregistrer le réglage et redémarrer le launcher.</string>
+    <string name="recents_section_lsposed">LSPosed requis</string>
+    <string name="recents_xposed_ok">Module LSPosed actif.</string>
+    <string name="recents_xposed_missing">Module LSPosed inactif.</string>
+    <string name="recents_xposed_hint">Ouvre ton gestionnaire Xposed (LSPosed / Vector), active \"Q25 Toolbox\", coche le launcher (com.android.launcher3) et cette app dans sa portée, puis force l\'arrêt du launcher. Nécessite un framework Xposed sur KernelSU / APatch / Magisk.</string>
+    <string name="recents_layout_title">Disposition de l\'Aperçu</string>
+    <string name="recents_layout_desc">Grille force la disposition tablette à deux rangées pour les Récents (l\'écran d\'accueil et le dock peuvent bouger légèrement, car ils partagent le profil de disposition). Mosaïque, c\'est Grille avec des hauteurs de tuiles décalées et des coins carrés.</string>
+    <string name="recents_mode_stock">Par défaut (une rangée)</string>
+    <string name="recents_mode_grid">Grille (deux rangées)</string>
+    <string name="recents_mode_masonry">Mosaïque (deux rangées, décalé)</string>
+    <string name="settings_quick_access_restart_systemui_title">Redémarrer SystemUI</string>
+    <string name="settings_quick_access_restart_systemui_subtitle">Force le redémarrage de SystemUI pour appliquer un réglage en attente</string>
+    <string name="settings_quick_access_notifications_title">Accès aux notifications</string>
+    <string name="settings_quick_access_notifications_subtitle">Solution de repli manuelle pour les notifications ticker si l\'autorisation root n\'a pas pris</string>
+    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_ok">Compris</string>
+    <string name="whats_new_headline">L\'aperçu des Récents en grille NÉCESSITE désormais un framework Xposed (LSPosed / Vector).</string>
+    <string name="whats_new_body">La v3.0 remplace l\'ancien correctif de grille avec launcher intégré par un module LSPosed. Il survit aux mises à jour du système et ne peut plus casser les Récents, mais il ne fonctionne qu\'avec LSPosed ou Vector installé (sur KernelSU / APatch / Magisk). Active le module et définis sa portée depuis l\'écran Disposition des Récents.\n\nTout le reste est inchangé et ne nécessite aucun framework. Sans, les Récents sont simplement d\'origine.\n\nSi tu utilisais la grille en 2.x, cette build retire cet ancien correctif au premier lancement. Il y a aussi un nouveau mode Mosaïque (tuiles décalées).</string>
+    <string name="whats_new_matrix_title">Quelle version me faut-il ?</string>
+    <string name="whats_new_matrix">v3.0+  :  toute ROM Q25 basée sur le stock, avec LSPosed / Vector\n2.1.1  :  BenOS beta3, sans framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock plus ancien</string>
 </resources>

@@ -36,7 +36,7 @@
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R tria el suggeriment 1/2/3 del teclat</string>
     <string name="subtitle_bt_idle">Apaga el Bluetooth quan estigui inactiu</string>
     <string name="subtitle_location_idle">Apaga la Ubicació quan estigui inactiva</string>
-    <string name="subtitle_telemetry">Desactiva Firebase Crashlytics a tot el sistema</string>
+    <string name="subtitle_telemetry">Desactiva Firebase Crashlytics, Analytics i Performance a tot el sistema</string>
     <string name="subtitle_extra_dim">Redueix la brillantor per sota del mínim del sistema</string>
     <string name="subtitle_besloudness">Millora de sonoritat de l\'altaveu, programable</string>
     <string name="subtitle_app_scaling">Força el disseny de telèfon en apps incompatibles</string>
@@ -227,7 +227,7 @@
     <string name="telemetry_autoblock_off">Bloqueig automàtic desactivat.</string>
     <string name="telemetry_block_now_button">Bloqueja ara tota la telemetria</string>
     <string name="telemetry_block_now_status">Telemetria desactivada per a totes les aplicacions detectades.</string>
-    <string name="telemetry_desc">Desactiva globalment la recollida de Firebase Crashlytics a tot el sistema. Això atura l’empaquetatge i l’enviament en segon pla dels registres de fallades, estalviant dades mòbils, RAM i cicles de despertar.</string>
+    <string name="telemetry_desc">Força globalment la desactivació de la recollida de dades de Firebase a tot el sistema — Crashlytics, Analytics / Google Analytics i Performance Monitoring — mantenint els seus indicadors d\'exclusió persistits. Un vigilant ho torna a aplicar cada pocs minuts i després de cada instal·lació d\'app, ja que els SDK reinicien els indicadors a cada arrencada en fred. Atura l\'empaquetament i la pujada en segon pla de registres de fallada i analítiques, i estalvia dades mòbils, RAM i desperts.</string>
 
     <!-- BesLoudness Screen -->
     <string name="besloudness_enabled_switch_label">BesLoudness habilitat</string>
@@ -345,4 +345,28 @@
     <string name="prox_factory_test_title">Mode de prova de fàbrica</string>
     <string name="prox_factory_test_desc">Obre la pantalla de lectura bruta del sensor del fabricant per a diagnòstic. El llindar a prop/lluny està fixat al firmware del sensor - no hi ha cap control de calibratge exposat.</string>
     <string name="prox_factory_test_button">Inicia el mode de prova de fàbrica</string>
+    <string name="telemetry_show_details">Mostra l\'estat per app (%1$d)</string>
+    <string name="telemetry_hide_details">Amaga l\'estat per app</string>
+    <string name="telemetry_surface_blocked">blocat</string>
+    <string name="telemetry_surface_leaking">actiu</string>
+    <string name="recents_intro">Fa que Recents/Vista general mostri dues files de targetes de tasca més petites, a l\'estil tauleta, en lloc de la fila única de sèrie. Funciona íntegrament amb un hook d\'LSPosed dins del launcher; aquesta pantalla només desa l\'ajust i reinicia el launcher.</string>
+    <string name="recents_section_lsposed">Cal LSPosed</string>
+    <string name="recents_xposed_ok">Mòdul d\'LSPosed actiu.</string>
+    <string name="recents_xposed_missing">Mòdul d\'LSPosed no actiu.</string>
+    <string name="recents_xposed_hint">Obre el teu gestor d\'Xposed (LSPosed / Vector), activa \"Q25 Toolbox\", marca el launcher (com.android.launcher3) i aquesta app al seu àmbit i després força l\'aturada del launcher. Necessita un entorn Xposed sobre KernelSU / APatch / Magisk.</string>
+    <string name="recents_layout_title">Disposició de la Vista general</string>
+    <string name="recents_layout_desc">Graella força la disposició de tauleta a dues files per a Recents (la pantalla d\'inici i el dock es poden desplaçar una mica, ja que comparteixen el perfil de disposició). Mosaic és Graella amb alçades de tessel·la esglaonades i cantonades quadrades.</string>
+    <string name="recents_mode_stock">De sèrie (una fila)</string>
+    <string name="recents_mode_grid">Graella (dues files)</string>
+    <string name="recents_mode_masonry">Mosaic (dues files, esglaonat)</string>
+    <string name="settings_quick_access_restart_systemui_title">Reinicia la SystemUI</string>
+    <string name="settings_quick_access_restart_systemui_subtitle">Força el reinici de la SystemUI per aplicar un canvi pendent</string>
+    <string name="settings_quick_access_notifications_title">Accés a les notificacions</string>
+    <string name="settings_quick_access_notifications_subtitle">Alternativa manual per a les Notificacions tipus ticker si la concessió amb root no s\'ha aplicat</string>
+    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_ok">Entesos</string>
+    <string name="whats_new_headline">La vista general de Recents en graella ara REQUEREIX un entorn Xposed (LSPosed / Vector).</string>
+    <string name="whats_new_body">La v3.0 substitueix l\'antic pedaç de graella amb launcher inclòs per un mòdul d\'LSPosed. Sobreviu a les actualitzacions del sistema i ja no pot trencar Recents, però només funciona amb LSPosed o Vector instal·lats (sobre KernelSU / APatch / Magisk). Activa i posa el mòdul a l\'àmbit des de la pantalla de Disposició de Recents.\n\nLa resta no canvia i no necessita cap entorn. Sense un, Recents és simplement de sèrie.\n\nSi feies servir la graella a la 2.x, aquesta versió elimina aquell pedaç antic al primer inici. També hi ha un mode Mosaic nou (tessel·les esglaonades).</string>
+    <string name="whats_new_matrix_title">Quina versió vull?</string>
+    <string name="whats_new_matrix">v3.0+  :  qualsevol ROM de Q25 basada en stock, amb LSPosed / Vector\n2.1.1  :  BenOS beta3, sense entorn Xposed\n2.0.5  :  BenOS pre-beta3a / stock més antic</string>
 </resources>

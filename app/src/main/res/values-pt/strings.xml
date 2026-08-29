@@ -36,7 +36,7 @@
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R escolhe a sugestão 1/2/3 do teclado</string>
     <string name="subtitle_bt_idle">Desliga o Bluetooth quando estiver ocioso</string>
     <string name="subtitle_location_idle">Desliga a Localização quando estiver ociosa</string>
-    <string name="subtitle_telemetry">Desativa o Firebase Crashlytics em todo o sistema</string>
+    <string name="subtitle_telemetry">Desativa o Firebase Crashlytics, Analytics e Performance em todo o sistema</string>
     <string name="subtitle_extra_dim">Reduz o brilho abaixo do mínimo do sistema</string>
     <string name="subtitle_besloudness">Melhoria de sonoridade do alto-falante, com agendamento</string>
     <string name="subtitle_app_scaling">Força o layout de celular em apps incompatíveis</string>
@@ -227,7 +227,7 @@
     <string name="telemetry_autoblock_off">Bloqueio automático desativado.</string>
     <string name="telemetry_block_now_button">Bloquear toda a telemetria agora</string>
     <string name="telemetry_block_now_status">Telemetria desativada para todos os aplicativos detectados.</string>
-    <string name="telemetry_desc">Desativa globalmente a coleta do Firebase Crashlytics em todo o sistema. Isso interrompe o empacotamento e envio em segundo plano dos registros de falhas, economizando dados móveis, RAM e ciclos de despertar.</string>
+    <string name="telemetry_desc">Força globalmente a desativação da recolha de dados do Firebase em todo o sistema — Crashlytics, Analytics / Google Analytics e Performance Monitoring — mantendo os seus indicadores de exclusão persistidos. Um vigia volta a aplicá-lo a cada poucos minutos e após cada instalação de app, já que os SDK repõem os indicadores em cada arranque a frio. Para o empacotamento e envio em segundo plano de registos de falhas e analíticas, e poupa dados móveis, RAM e despertares.</string>
 
     <!-- BesLoudness Screen -->
     <string name="besloudness_enabled_switch_label">BesLoudness ativado</string>
@@ -345,4 +345,28 @@
     <string name="prox_factory_test_title">Modo de teste de fábrica</string>
     <string name="prox_factory_test_desc">Abre a tela de leitura bruta do sensor do fabricante para diagnóstico. O limiar perto/longe é fixo no firmware do sensor - não há controle de calibração exposto.</string>
     <string name="prox_factory_test_button">Iniciar modo de teste de fábrica</string>
+    <string name="telemetry_show_details">Mostrar estado por app (%1$d)</string>
+    <string name="telemetry_hide_details">Ocultar estado por app</string>
+    <string name="telemetry_surface_blocked">bloqueado</string>
+    <string name="telemetry_surface_leaking">ativo</string>
+    <string name="recents_intro">Faz com que Recentes/Vista geral mostre duas linhas de cartões de tarefa mais pequenos, ao estilo tablet, em vez da linha única padrão. Funciona inteiramente através de um hook LSPosed dentro do launcher; este ecrã apenas guarda a definição e reinicia o launcher.</string>
+    <string name="recents_section_lsposed">LSPosed necessário</string>
+    <string name="recents_xposed_ok">Módulo LSPosed ativo.</string>
+    <string name="recents_xposed_missing">Módulo LSPosed inativo.</string>
+    <string name="recents_xposed_hint">Abre o teu gestor Xposed (LSPosed / Vector), ativa \"Q25 Toolbox\", marca o launcher (com.android.launcher3) e esta app no seu âmbito e depois força a paragem do launcher. Requer uma framework Xposed sobre KernelSU / APatch / Magisk.</string>
+    <string name="recents_layout_title">Disposição da Vista geral</string>
+    <string name="recents_layout_desc">Grelha força a disposição de tablet em duas linhas para os Recentes (o ecrã inicial e a dock podem deslocar-se ligeiramente, pois partilham o perfil de disposição). Mosaico é Grelha com alturas de mosaico escalonadas e cantos retos.</string>
+    <string name="recents_mode_stock">Padrão (uma linha)</string>
+    <string name="recents_mode_grid">Grelha (duas linhas)</string>
+    <string name="recents_mode_masonry">Mosaico (duas linhas, escalonado)</string>
+    <string name="settings_quick_access_restart_systemui_title">Reiniciar a SystemUI</string>
+    <string name="settings_quick_access_restart_systemui_subtitle">Força o reinício da SystemUI para aplicar uma alteração pendente</string>
+    <string name="settings_quick_access_notifications_title">Acesso a notificações</string>
+    <string name="settings_quick_access_notifications_subtitle">Alternativa manual para as Notificações tipo ticker se a concessão com root não pegou</string>
+    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_ok">Entendido</string>
+    <string name="whats_new_headline">A vista geral de Recentes em grelha agora REQUER uma framework Xposed (LSPosed / Vector).</string>
+    <string name="whats_new_body">A v3.0 substitui o antigo patch de grelha com launcher incluído por um módulo LSPosed. Sobrevive a atualizações do sistema e já não pode partir os Recentes, mas só funciona com LSPosed ou Vector instalado (sobre KernelSU / APatch / Magisk). Ativa e define o âmbito do módulo a partir do ecrã Disposição dos Recentes.\n\nTudo o resto não muda e não precisa de framework. Sem um, os Recentes são simplesmente padrão.\n\nSe usavas a grelha na 2.x, esta build remove esse patch antigo no primeiro arranque. Há também um novo modo Mosaico (mosaicos escalonados).</string>
+    <string name="whats_new_matrix_title">Que versão quero?</string>
+    <string name="whats_new_matrix">v3.0+  :  qualquer ROM de Q25 baseada em stock, com LSPosed / Vector\n2.1.1  :  BenOS beta3, sem framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock mais antigo</string>
 </resources>

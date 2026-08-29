@@ -37,7 +37,7 @@
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R kiest toetsenbordsuggestie 1/2/3</string>
     <string name="subtitle_bt_idle">Schakel Bluetooth uit bij inactiviteit</string>
     <string name="subtitle_location_idle">Schakel Locatie uit bij inactiviteit</string>
-    <string name="subtitle_telemetry">Firebase Crashlytics systeembreed uitschakelen</string>
+    <string name="subtitle_telemetry">Firebase Crashlytics, Analytics en Performance systeembreed uitschakelen</string>
     <string name="subtitle_extra_dim">Helderheid verlagen onder het systeemminimum</string>
     <string name="subtitle_besloudness">Luidsprekerluidheid-verbetering, met tijdschema</string>
     <string name="subtitle_app_scaling">Telefoonlay-out afdwingen voor slecht werkende apps</string>
@@ -229,7 +229,7 @@
     <string name="telemetry_autoblock_off">Automatisch blokkeren uitgeschakeld.</string>
     <string name="telemetry_block_now_button">Nu alle telemetrie blokkeren</string>
     <string name="telemetry_block_now_status">Telemetrie uitgeschakeld voor alle gedetecteerde apps.</string>
-    <string name="telemetry_desc">Schakelt de verzameling van Firebase Crashlytics systeembreed uit. Dit stopt het achtergrond-verpakken en uploaden van crashlogs, wat mobiele data, RAM en wake-cycli bespaart.</string>
+    <string name="telemetry_desc">Forceert systeembreed het uitschakelen van Firebase-gegevensverzameling — Crashlytics, Analytics / Google Analytics en Performance Monitoring — door hun opgeslagen opt-out-vlaggen vast te houden. Een watchdog past het elke paar minuten en na elke app-installatie opnieuw toe, omdat de SDK\'s de vlaggen bij elke koude start terugzetten. Stopt het samenstellen en uploaden van crashlogs en analytische gegevens op de achtergrond en bespaart mobiele data, RAM en wekmomenten.</string>
 
     <!-- BesLoudness Screen -->
     <string name="besloudness_enabled_switch_label">BesLoudness ingeschakeld</string>
@@ -347,4 +347,28 @@
     <string name="prox_factory_test_title">Fabriekstestmodus (hardware)</string>
     <string name="prox_factory_test_desc">Opent het ruwe sensoruitleesscherm van de fabrikant voor diagnose. De dichtbij/ver-drempel ligt vast in de firmware van de sensor - er is geen kalibratie beschikbaar.</string>
     <string name="prox_factory_test_button">Start fabriekstestmodus</string>
+    <string name="telemetry_show_details">Status per app tonen (%1$d)</string>
+    <string name="telemetry_hide_details">Status per app verbergen</string>
+    <string name="telemetry_surface_blocked">geblokkeerd</string>
+    <string name="telemetry_surface_leaking">actief</string>
+    <string name="recents_intro">Laat het Overzicht twee rijen kleinere app-kaarten tonen, in tabletstijl, in plaats van de standaard enkele rij. Werkt volledig via een LSPosed-hook in de launcher; dit scherm slaat alleen de instelling op en herstart de launcher.</string>
+    <string name="recents_section_lsposed">LSPosed vereist</string>
+    <string name="recents_xposed_ok">LSPosed-module actief.</string>
+    <string name="recents_xposed_missing">LSPosed-module niet actief.</string>
+    <string name="recents_xposed_hint">Open je Xposed-manager (LSPosed / Vector), schakel \"Q25 Toolbox\" in, vink de launcher (com.android.launcher3) en deze app aan in het bereik en forceer daarna het stoppen van de launcher. Vereist een Xposed-framework op KernelSU / APatch / Magisk.</string>
+    <string name="recents_layout_title">Indeling van het Overzicht</string>
+    <string name="recents_layout_desc">Raster forceert de tablet-indeling met twee rijen voor het Overzicht (het startscherm en de hotseat kunnen iets verschuiven, omdat ze het indelingsprofiel delen). Mozaïek is Raster met versprongen tegelhoogtes en rechte hoeken.</string>
+    <string name="recents_mode_stock">Standaard (één rij)</string>
+    <string name="recents_mode_grid">Raster (twee rijen)</string>
+    <string name="recents_mode_masonry">Mozaïek (twee rijen, versprongen)</string>
+    <string name="settings_quick_access_restart_systemui_title">SystemUI herstarten</string>
+    <string name="settings_quick_access_restart_systemui_subtitle">SystemUI geforceerd herstarten om een openstaande wijziging toe te passen</string>
+    <string name="settings_quick_access_notifications_title">Meldingstoegang</string>
+    <string name="settings_quick_access_notifications_subtitle">Handmatige terugval voor tickermeldingen als de root-toekenning niet doorkwam</string>
+    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_ok">Begrepen</string>
+    <string name="whats_new_headline">Het rasteroverzicht van Recent gebruikte apps VEREIST nu een Xposed-framework (LSPosed / Vector).</string>
+    <string name="whats_new_body">v3.0 vervangt de oude rasterpatch met meegeleverde launcher door een LSPosed-module. Die overleeft systeemupdates en kan Recent gebruikte apps niet meer breken, maar werkt alleen met LSPosed of Vector geïnstalleerd (op KernelSU / APatch / Magisk). Schakel de module in en stel het bereik in via het scherm Recentsindeling.\n\nAl het andere is ongewijzigd en heeft geen framework nodig. Zonder is Recent gewoon standaard.\n\nAls je het raster op 2.x gebruikte, verwijdert deze build die oude patch bij de eerste start. Er is ook een nieuwe Mozaïek-modus (versprongen tegels).</string>
+    <string name="whats_new_matrix_title">Welke versie wil ik?</string>
+    <string name="whats_new_matrix">v3.0+  :  elke stock-gebaseerde Q25-ROM, met LSPosed / Vector\n2.1.1  :  BenOS beta3, geen Xposed-framework\n2.0.5  :  BenOS pre-beta3a / ouder stock</string>
 </resources>

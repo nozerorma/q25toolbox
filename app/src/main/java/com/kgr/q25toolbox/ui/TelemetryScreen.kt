@@ -4,12 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.modules.TelemetryController
 import kotlinx.coroutines.Dispatchers
@@ -39,11 +45,14 @@ fun TelemetryScreen(onBack: () -> Unit) {
     var blockedApps by remember { mutableIntStateOf(0) }
     var busy by remember { mutableStateOf(false) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
+    var report by remember { mutableStateOf<List<TelemetryController.AppReport>>(emptyList()) }
+    var showDetails by remember { mutableStateOf(false) }
 
     fun refreshCounts() {
         scope.launch(Dispatchers.IO) {
             totalApps = TelemetryController.totalAffectedApps()
             blockedApps = TelemetryController.totalBlockedApps()
+            report = TelemetryController.blockReport()
         }
     }
 
@@ -52,6 +61,7 @@ fun TelemetryScreen(onBack: () -> Unit) {
             enabled = TelemetryController.isPersisted()
             totalApps = TelemetryController.totalAffectedApps()
             blockedApps = TelemetryController.totalBlockedApps()
+            report = TelemetryController.blockReport()
             // Same class of bug as Extra Dim's schedule daemon: the watchdog can die
             // mid-session (e.g. the root shell that launched it got recycled), or be
             // alive but running a stale script from an older app build (which a bare
@@ -134,6 +144,52 @@ fun TelemetryScreen(onBack: () -> Unit) {
 
         statusMessage?.let {
             Text(it, style = MaterialTheme.typography.bodySmall)
+        }
+
+        if (report.isNotEmpty()) {
+            TextButton(onClick = { showDetails = !showDetails }) {
+                Text(
+                    stringResource(
+                        if (showDetails) R.string.telemetry_hide_details
+                        else R.string.telemetry_show_details,
+                        report.size
+                    )
+                )
+            }
+        }
+        if (showDetails) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .heightIn(max = 360.dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    report.forEach { app ->
+                        Text(
+                            app.pkg,
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        app.surfaces.forEach { s ->
+                            Text(
+                                "  ${s.name.padEnd(12)} " + stringResource(
+                                    if (s.blocked) R.string.telemetry_surface_blocked
+                                    else R.string.telemetry_surface_leaking
+                                ),
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 11.sp,
+                                color = if (s.blocked)
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                else
+                                    MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         DescriptionDivider()

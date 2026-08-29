@@ -36,7 +36,7 @@
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R elige la sugerencia 1/2/3 del teclado</string>
     <string name="subtitle_bt_idle">Apaga el Bluetooth cuando esté inactivo</string>
     <string name="subtitle_location_idle">Apaga la Ubicación cuando esté inactiva</string>
-    <string name="subtitle_telemetry">Desactiva Firebase Crashlytics en todo el sistema</string>
+    <string name="subtitle_telemetry">Desactiva Firebase Crashlytics, Analytics y Performance en todo el sistema</string>
     <string name="subtitle_extra_dim">Reduce el brillo por debajo del mínimo del sistema</string>
     <string name="subtitle_besloudness">Mejora de sonoridad del altavoz, programable</string>
     <string name="subtitle_app_scaling">Fuerza el diseño de teléfono en apps incompatibles</string>
@@ -227,7 +227,7 @@
     <string name="telemetry_autoblock_off">Bloqueo automático deshabilitado.</string>
     <string name="telemetry_block_now_button">Bloquear toda la telemetría ahora</string>
     <string name="telemetry_block_now_status">Telemetría desactivada para todas las aplicaciones detectadas.</string>
-    <string name="telemetry_desc">Desactiva globalmente la recopilación de Firebase Crashlytics en todo el sistema. Esto detiene el empaquetado y envío en segundo plano de los registros de fallos, ahorrando datos móviles, RAM y ciclos de activación.</string>
+    <string name="telemetry_desc">Fuerza globalmente la desactivación de la recopilación de datos de Firebase en todo el sistema — Crashlytics, Analytics / Google Analytics y Performance Monitoring — manteniendo sus indicadores de exclusión persistidos. Un vigilante lo vuelve a aplicar cada pocos minutos y tras cada instalación de app, ya que los SDK reinician los indicadores en cada arranque en frío. Detiene el empaquetado y la subida en segundo plano de registros de fallos y analíticas, y ahorra datos móviles, RAM y despertares.</string>
 
     <!-- BesLoudness Screen -->
     <string name="besloudness_enabled_switch_label">BesLoudness habilitado</string>
@@ -345,4 +345,28 @@
     <string name="prox_factory_test_title">Modo de prueba de fábrica</string>
     <string name="prox_factory_test_desc">Abre la pantalla de lectura bruta del sensor del fabricante para diagnóstico. El umbral cerca/lejos está fijado en el firmware del sensor - no hay ningún control de calibración expuesto.</string>
     <string name="prox_factory_test_button">Iniciar modo de prueba de fábrica</string>
+    <string name="telemetry_show_details">Mostrar estado por app (%1$d)</string>
+    <string name="telemetry_hide_details">Ocultar estado por app</string>
+    <string name="telemetry_surface_blocked">bloqueado</string>
+    <string name="telemetry_surface_leaking">activo</string>
+    <string name="recents_intro">Hace que Recientes/Vista general muestre dos filas de tarjetas de tarea más pequeñas, al estilo tableta, en lugar de la fila única de serie. Funciona íntegramente mediante un hook de LSPosed dentro del launcher; esta pantalla solo guarda el ajuste y reinicia el launcher.</string>
+    <string name="recents_section_lsposed">Se necesita LSPosed</string>
+    <string name="recents_xposed_ok">Módulo de LSPosed activo.</string>
+    <string name="recents_xposed_missing">Módulo de LSPosed no activo.</string>
+    <string name="recents_xposed_hint">Abre tu gestor de Xposed (LSPosed / Vector), activa \"Q25 Toolbox\", marca el launcher (com.android.launcher3) y esta app en su ámbito y luego fuerza la detención del launcher. Necesita un framework Xposed sobre KernelSU / APatch / Magisk.</string>
+    <string name="recents_layout_title">Disposición de la Vista general</string>
+    <string name="recents_layout_desc">Cuadrícula fuerza la disposición de tableta a dos filas para Recientes (la pantalla de inicio y el dock pueden desplazarse un poco, ya que comparten el perfil de disposición). Mosaico es Cuadrícula con alturas de celda escalonadas y esquinas cuadradas.</string>
+    <string name="recents_mode_stock">De serie (una fila)</string>
+    <string name="recents_mode_grid">Cuadrícula (dos filas)</string>
+    <string name="recents_mode_masonry">Mosaico (dos filas, escalonado)</string>
+    <string name="settings_quick_access_restart_systemui_title">Reiniciar la SystemUI</string>
+    <string name="settings_quick_access_restart_systemui_subtitle">Fuerza el reinicio de la SystemUI para aplicar un cambio pendiente</string>
+    <string name="settings_quick_access_notifications_title">Acceso a notificaciones</string>
+    <string name="settings_quick_access_notifications_subtitle">Alternativa manual para las Notificaciones tipo ticker si la concesión con root no se aplicó</string>
+    <string name="whats_new_title">Q25 Toolbox v3.0</string>
+    <string name="whats_new_ok">Entendido</string>
+    <string name="whats_new_headline">La vista general de Recientes en cuadrícula ahora REQUIERE un framework Xposed (LSPosed / Vector).</string>
+    <string name="whats_new_body">La v3.0 sustituye el antiguo parche de cuadrícula con launcher incluido por un módulo de LSPosed. Sobrevive a las actualizaciones del sistema y ya no puede romper Recientes, pero solo funciona con LSPosed o Vector instalados (sobre KernelSU / APatch / Magisk). Activa y da ámbito al módulo desde la pantalla de Disposición de Recientes.\n\nTodo lo demás no cambia y no necesita ningún framework. Sin uno, Recientes es simplemente de serie.\n\nSi usabas la cuadrícula en 2.x, esta versión elimina ese parche antiguo en el primer inicio. También hay un nuevo modo Mosaico (celdas escalonadas).</string>
+    <string name="whats_new_matrix_title">¿Qué versión quiero?</string>
+    <string name="whats_new_matrix">v3.0+  :  cualquier ROM de Q25 basada en stock, con LSPosed / Vector\n2.1.1  :  BenOS beta3, sin framework Xposed\n2.0.5  :  BenOS pre-beta3a / stock más antiguo</string>
 </resources>

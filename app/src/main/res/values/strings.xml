@@ -39,7 +39,7 @@
     <string name="subtitle_ime_suggestions">Ctrl+W/E/R picks keyboard suggestion 1/2/3</string>
     <string name="subtitle_bt_idle">Turn off Bluetooth when idle</string>
     <string name="subtitle_location_idle">Turn off Location when idle</string>
-    <string name="subtitle_telemetry">Disable Firebase Crashlytics system-wide</string>
+    <string name="subtitle_telemetry">Disable Firebase Crashlytics, Analytics and Performance system-wide</string>
     <string name="subtitle_extra_dim">Reduce brightness below system minimum</string>
     <string name="subtitle_besloudness">Speaker loudness enhancement, on a schedule</string>
     <string name="subtitle_app_scaling">Force phone layout on misbehaving apps</string>
@@ -234,8 +234,12 @@
     <string name="telemetry_autoblock_on">Auto-block enabled. Will run on every boot.</string>
     <string name="telemetry_autoblock_off">Auto-block disabled.</string>
     <string name="telemetry_block_now_button">Block all telemetry now</string>
+    <string name="telemetry_show_details">Show per-app status (%1$d)</string>
+    <string name="telemetry_hide_details">Hide per-app status</string>
+    <string name="telemetry_surface_blocked">blocked</string>
+    <string name="telemetry_surface_leaking">leaking</string>
     <string name="telemetry_block_now_status">Toggled telemetry off for all detected apps.</string>
-    <string name="telemetry_desc">Globally deactivates Firebase Crashlytics collection system-wide. This halts background crash logs packaging and upload triggers, saving mobile data, RAM, and wakeup cycles.</string>
+    <string name="telemetry_desc">Globally forces off Firebase data collection system-wide — Crashlytics, Analytics / Google Analytics, and Performance Monitoring — by holding their persisted opt-out flags. A watchdog re-applies it every few minutes and after every app install, since the SDKs reset the flags on each cold start. Halts background crash-log and analytics packaging and upload, saving mobile data, RAM, and wakeups.</string>
 
     <!-- BesLoudness Screen -->
     <string name="besloudness_enabled_switch_label">BesLoudness Enabled</string>
