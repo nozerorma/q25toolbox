@@ -52,6 +52,8 @@ object DaemonMaintenance {
             }
         }
         AdBlockController.ensureMounted(context)
+        // Lockscreen keys daemon: installed/removed/healed from the same prefs the accessibility path reads.
+        PinKeysRoot.reconcile(context, context.getSharedPreferences("q25tweaks", Context.MODE_PRIVATE))
         // Must run before the health check below: that one refreshes the watchdog to the per-app script.
         TelemetryController.migrateToPerApp(context)
         if (TelemetryController.isPersisted() && !TelemetryController.isHealthy(context)) {

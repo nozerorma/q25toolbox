@@ -17,8 +17,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kgr.q25toolbox.R
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
+import com.kgr.q25toolbox.modules.PinKeysRoot
 import com.kgr.q25toolbox.core.RomProfile
 import com.kgr.q25toolbox.service.Q25AccessibilityService
 import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
@@ -29,6 +32,10 @@ fun PinKeyboardScreen(onBack: () -> Unit) {
     val prefs = remember {
         context.getSharedPreferences(Q25AccessibilityService.PREFS, Context.MODE_PRIVATE)
     }
+
+    val scope = rememberCoroutineScope()
+    // The root daemon follows these two switches; the service's own listener does too, but it may not be running.
+    fun syncDaemon() { scope.launch(Dispatchers.IO) { PinKeysRoot.reconcile(context, prefs) } }
 
     var serviceEnabled by remember { mutableStateOf(false) }
     var enabled by remember { mutableStateOf(prefs.getBoolean(Q25AccessibilityService.KEY_PIN_INPUT, true)) }
@@ -54,6 +61,7 @@ fun PinKeyboardScreen(onBack: () -> Unit) {
                 onCheckedChange = { checked ->
                     enabled = checked
                     prefs.edit().putBoolean(Q25AccessibilityService.KEY_PIN_INPUT, checked).apply()
+                    syncDaemon()
                 }
             )
         }
@@ -72,6 +80,7 @@ fun PinKeyboardScreen(onBack: () -> Unit) {
                 onCheckedChange = { checked ->
                     enterOpens = checked
                     prefs.edit().putBoolean(Q25AccessibilityService.KEY_LOCKSCREEN_ENTER_OPENS_PIN, checked).apply()
+                    syncDaemon()
                 }
             )
         }

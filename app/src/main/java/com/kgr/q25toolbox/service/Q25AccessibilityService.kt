@@ -136,6 +136,10 @@ class Q25AccessibilityService : AccessibilityService() {
     // Resets resolution to native when the screen turns off (lock button).
     private val screenOffReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            // Lock state changes with these three: the keyguard-only key features follow it.
+            // The keyguard can lag the screen change by a moment, so look again shortly after.
+            mainHandler.post { refreshKeyFilter() }
+            mainHandler.postDelayed({ refreshKeyFilter() }, 1000)
             if (intent?.action == Intent.ACTION_SCREEN_ON || intent?.action == Intent.ACTION_USER_PRESENT) {
                 // Edge strips: rebuilt once the screen is on and the keyguard is gone (a no-op while locked).
                 GestureStripsController.reconcile(this@Q25AccessibilityService)
@@ -247,6 +251,8 @@ class Q25AccessibilityService : AccessibilityService() {
             reconcileScaling()
         }
         if (key == KEY_CALL_PROXIMITY_SLEEP) reconcileCallProximity()
+        refreshKeyFilter()
+        if (key == KEY_PIN_INPUT || key == KEY_LOCKSCREEN_ENTER_OPENS_PIN) reconcilePinKeysRoot()
         if (key.startsWith(GestureSettings.KEY_PREFIX)) {
             GestureStripsController.reconcile(this)
             syncNativeBottomGesture()
@@ -256,6 +262,45 @@ class Q25AccessibilityService : AccessibilityService() {
     /** Mirrors "custom bottom strip on" into the Settings.Global flag the launcher hook reads (root, off the main thread). */
     private fun syncNativeBottomGesture() {
         worker.execute { try { NativeBottomGesture.sync(this) } catch (_: Throwable) { } }
+    }
+
+    // Whether the key filter is currently requested from the system (the manifest config asks for it by default).
+    private var keyFilterOn = true
+
+    /**
+     * Asks the system to route key events through [onKeyEvent] only while something here can use them.
+     * With the filter on, EVERY key press in EVERY app waits for a binder round trip into this process (up to
+     * ~500 ms when it is slow), and under CPU pressure in a heavy app that delay is what makes keys stick or
+     * repeat. So it is on only for: features that act anywhere (resolution hotkey, Recents overlay key, IME
+     * suggestion shortcuts), features tied to the keyguard (while locked), and package-scoped fixes (while their
+     * app is in front). Re-evaluated whenever one of those inputs changes.
+     */
+    private fun refreshKeyFilter(force: Boolean = false) {
+        val p = prefs ?: return
+        val pkg = foregroundPkg
+        val anywhere = com.kgr.q25toolbox.modules.ResolutionHotkey.isEnabled(this) ||
+            imeSuggestionsEnabled() ||
+            (!recentsKeyExternal() && com.kgr.q25toolbox.modules.RecentsTweaksController.getOverlayMode(this).isOverlay)
+        val lockFeatures = lockscreenNavBlockEnabled() || lockscreenEnterOpensPinEnabled() ||
+            (pinInputEnabled() && !com.kgr.q25toolbox.modules.PinKeysRoot.isActive(p))
+        val scoped = pkg != null && (
+            (calculatorEnabled() && CalculatorInputFix.isCalculatorPackage(pkg)) ||
+            (chatComposerEnabled() && composerHandler.supportsPackage(pkg)) ||
+            (inCallShortcutsEnabled() && pkg in DIALER_PKGS) ||
+            isAutoFocusEnabledForForeground())
+        val want = anywhere || scoped || (lockFeatures && isDeviceLocked())
+        if (!force && want == keyFilterOn) return
+        val info = serviceInfo ?: return
+        info.flags = if (want) info.flags or AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
+        else info.flags and AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS.inv()
+        serviceInfo = info
+        keyFilterOn = want
+    }
+
+    /** Root daemon for the lockscreen keys (see PinKeysRoot); root shell, so off the main thread. */
+    private fun reconcilePinKeysRoot() {
+        val p = prefs ?: return
+        worker.execute { try { com.kgr.q25toolbox.modules.PinKeysRoot.reconcile(this, p) } catch (_: Throwable) { } }
     }
 
     // Created only on Android 12+ (needs AudioManager.OnModeChangedListener); null elsewhere.
@@ -287,11 +332,10 @@ class Q25AccessibilityService : AccessibilityService() {
         p.registerOnSharedPreferenceChangeListener(prefListener)
 
         serviceInfo?.let { info ->
-            info.flags = info.flags or
-                AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS or
-                AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
+            info.flags = info.flags or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
             serviceInfo = info
         }
+        refreshKeyFilter(force = true)
 
         imeWorker.execute {
             val curIme = RootShell.run("settings get secure default_input_method")
@@ -307,6 +351,7 @@ class Q25AccessibilityService : AccessibilityService() {
         worker.execute { TickerController.syncSystemState(this) }
 
         reconcileCallProximity()
+        reconcilePinKeysRoot()
 
         registerReceiver(screenOffReceiver, IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_OFF)
@@ -364,6 +409,7 @@ class Q25AccessibilityService : AccessibilityService() {
                     noEditableWindowId = -1
                     reconcileImeBlock()
                     reconcileScaling()
+                    refreshKeyFilter()
                 }
             }
         }
@@ -966,12 +1012,15 @@ class Q25AccessibilityService : AccessibilityService() {
         // Enter/D-pad-center stay live while PIN-on-keyboard is on, since the PIN pad needs them.
         if (lockscreenNavBlockEnabled() && isLockscreenNavKey(kc, pinInputEnabled()) && isDeviceLocked()) return true
 
-        // PIN Input: map physical keys to the lockscreen PIN pad.
+        // PIN Input: map physical keys to the lockscreen PIN pad. With root available the daemon types the letter
+        // digits (it also works before the first unlock), so those keys are left to it here: doing both would type
+        // twice. Raw digits, Enter and Delete stay on this path, which the daemon does not cover.
         if (!pinInputEnabled()) return false
+        if (com.kgr.q25toolbox.modules.PinKeysRoot.isActive(prefs) && com.kgr.q25toolbox.modules.PinKeysRoot.isLetterDigit(kc)) return false
         if (event.action != KeyEvent.ACTION_DOWN) return false
-        if (!isDeviceLocked()) return false
-
+        // Map first: isDeviceLocked() is a binder call, and this runs for every key pressed in every app.
         val input = toPinInput(kc) ?: return false
+        if (!isDeviceLocked()) return false
 
         // Straight from root to the button by resource id - a single native,
         // index-backed lookup (same approach as the original q25pininput,
