@@ -162,6 +162,7 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.ExtraDim -> ExtraDimScreen(onBack)
         Screen.BesLoudness -> BesLoudnessScreen(onBack)
         Screen.AppScaling -> AppScalingScreen(onBack)
+        Screen.Rotation -> RotationScreen(onBack)
         Screen.AutoFocus -> AutoFocusScreen(onBack)
         Screen.InCallShortcuts -> InCallShortcutsScreen(onBack)
         Screen.CallScreenRecovery -> CallScreenRecoveryScreen(onBack)

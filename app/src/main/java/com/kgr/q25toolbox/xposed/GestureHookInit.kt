@@ -29,7 +29,13 @@ class GestureHookInit : IXposedHookLoadPackage {
         private const val TAG = "Q25Toolbox-Xposed"
         const val PREF_OFF = "q25_native_bottom_gesture_off"
         const val STATE_FILE = "q25toolbox_gesture_hook.state"
-        private const val TOUCH_INTERACTION = "com.android.quickstep.TouchInteractionService"
+        // Where the launcher's swipe-up monitor lives. Launcher3 up to Android 16 has it in TouchInteractionService;
+        // the Android 17 build (versionCode 37) moved onInputEvent to TouchInteractionHandler and left the service
+        // without the method. Try both: a hook on a class that lacks the method installs nothing and raises nothing.
+        private val INPUT_CLASSES = listOf(
+            "com.android.quickstep.TouchInteractionHandler",
+            "com.android.quickstep.TouchInteractionService",
+        )
         private val LAUNCHER_PKGS = setOf("com.android.launcher3", "org.lineageos.trebuchet")
 
         @Volatile private var proofWritten = false
@@ -37,22 +43,26 @@ class GestureHookInit : IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName !in LAUNCHER_PKGS) return
-        var attached = false
-        runCatching {
-            val tis = XposedHelpers.findClass(TOUCH_INTERACTION, lpparam.classLoader)
-            XposedBridge.hookAllMethods(tis, "onInputEvent", object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    val ctx = currentApplication() ?: return
-                    writeProof(ctx)
-                    val off = try {
-                        Settings.Global.getInt(ctx.contentResolver, PREF_OFF, 0) == 1
-                    } catch (_: Throwable) { false }
-                    if (off) param.result = null // skip: no swipe-up home / recents / quick switch
-                }
-            })
-            attached = true
+        val gate = object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                val ctx = currentApplication() ?: return
+                writeProof(ctx)
+                val off = try {
+                    Settings.Global.getInt(ctx.contentResolver, PREF_OFF, 0) == 1
+                } catch (_: Throwable) { false }
+                if (off) param.result = null // skip: no swipe-up home / recents / quick switch
+            }
         }
-        XposedBridge.log("[$TAG] TouchInteractionService.onInputEvent hook attached=$attached")
+        // Count hooks actually installed (hookAllMethods returns an empty set when the method does not exist), so a
+        // launcher refactor shows up in the log instead of reading "attached".
+        var hooked = 0
+        for (name in INPUT_CLASSES) {
+            hooked += runCatching {
+                XposedBridge.hookAllMethods(XposedHelpers.findClass(name, lpparam.classLoader), "onInputEvent", gate).size
+            }.getOrDefault(0)
+        }
+        val attached = hooked > 0
+        XposedBridge.log("[$TAG] launcher onInputEvent hooks installed=$hooked (attached=$attached)")
     }
 
     /** Once per launcher process: "the hook ran", with the launcher versionCode so a launcher update invalidates it. */

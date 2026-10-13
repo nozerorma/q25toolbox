@@ -24,6 +24,7 @@
     <string name="title_extra_dim">Atenuació extra</string>
     <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Escalat de pantalla per app</string>
+    <string name="title_rotation">Rotació forçada</string>
     <string name="title_key_remap">Reassignar tecla</string>
 
     <!-- Screen Subtitles -->
@@ -40,6 +41,21 @@
     <string name="subtitle_extra_dim">Redueix la brillantor per sota del mínim del sistema</string>
     <string name="subtitle_besloudness">Millora de sonoritat de l\'altaveu, programable</string>
     <string name="subtitle_app_scaling">Força el disseny de telèfon en apps incompatibles</string>
+    <string name="subtitle_rotation">Fixa la rotació de pantalla, global o per app</string>
+    <string name="rot_mode_system">Sistema (no tocar)</string>
+    <string name="rot_mode_auto">Rotació automàtica</string>
+    <string name="rot_mode_0">Vertical (0°)</string>
+    <string name="rot_mode_90">Horitzontal (90°)</string>
+    <string name="rot_mode_180">Vertical invertit (180°)</string>
+    <string name="rot_mode_270">Horitzontal invertit (270°)</string>
+    <string name="rot_follow_general">Seguir el general</string>
+    <string name="rot_search">Cerca apps</string>
+    <string name="rot_all_apps">Totes les apps</string>
+    <string name="rot_all_apps_sub">S\'usa tret que una app de sota tingui el seu propi estat</string>
+    <string name="rot_override">Ignorar l\'orientació pròpia de les apps</string>
+    <string name="rot_override_sub">Sense això, les apps que exigeixen vertical o horitzontal ignoren el bloqueig.</string>
+    <string name="rot_count">%1$d amb estat propi, de %2$d apps</string>
+    <string name="rot_desc">Fixa la pantalla en una rotació, per a totes les apps o per a les triades. En sortir d\'una app torna l\'estat general; «Sistema» retorna el teu propi ajust de rotació automàtica, que es restaura encara que el servei es reiniciï. La rotació canvia quan l\'app passa a primer pla, així que pot trigar un moment. Requereix root.</string>
     <string name="subtitle_key_remap">Assigna una tecla lliure a Ctrl Dret</string>
     <string name="title_ticker_notifications">Notificacions en cinta</string>
     <string name="subtitle_ticker_notifications">Bàner desplaçable a la barra d’estat en lloc d’emergents</string>

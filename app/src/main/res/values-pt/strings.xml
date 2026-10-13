@@ -24,6 +24,7 @@
     <string name="title_extra_dim">Atenuação extra</string>
     <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Escalonamento de tela por app</string>
+    <string name="title_rotation">Rotação forçada</string>
     <string name="title_key_remap">Mapear tecla</string>
 
     <!-- Screen Subtitles -->
@@ -40,6 +41,21 @@
     <string name="subtitle_extra_dim">Reduz o brilho abaixo do mínimo do sistema</string>
     <string name="subtitle_besloudness">Melhoria de sonoridade do alto-falante, com agendamento</string>
     <string name="subtitle_app_scaling">Força o layout de celular em apps incompatíveis</string>
+    <string name="subtitle_rotation">Fixa a rotação da tela, global ou por app</string>
+    <string name="rot_mode_system">Sistema (não alterar)</string>
+    <string name="rot_mode_auto">Rotação automática</string>
+    <string name="rot_mode_0">Retrato (0°)</string>
+    <string name="rot_mode_90">Paisagem (90°)</string>
+    <string name="rot_mode_180">Retrato invertido (180°)</string>
+    <string name="rot_mode_270">Paisagem invertida (270°)</string>
+    <string name="rot_follow_general">Seguir o geral</string>
+    <string name="rot_search">Pesquisar apps</string>
+    <string name="rot_all_apps">Todos os apps</string>
+    <string name="rot_all_apps_sub">Usado a menos que um app abaixo tenha o seu próprio estado</string>
+    <string name="rot_override">Substituir a orientação própria dos apps</string>
+    <string name="rot_override_sub">Sem isto, apps que exigem retrato ou paisagem ignoram o bloqueio.</string>
+    <string name="rot_count">%1$d com estado próprio, de %2$d apps</string>
+    <string name="rot_desc">Fixa a tela em uma rotação, para todos os apps ou para os escolhidos. Ao sair de um app volta o estado geral; "Sistema" restaura a sua própria configuração de rotação automática, mesmo que o serviço reinicie. A rotação muda quando o app vem para o primeiro plano, então pode demorar um instante. Requer root.</string>
     <string name="subtitle_key_remap">Atribui uma tecla livre ao Ctrl Direito</string>
     <string name="title_ticker_notifications">Notificações em ticker</string>
     <string name="subtitle_ticker_notifications">Faixa rolante na barra de status em vez de pop-ups</string>

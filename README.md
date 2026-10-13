@@ -71,7 +71,7 @@ Six bottom-bar sections. "ROM" says where the entry is shown.
 | | Chat Enter-to-send, calculator keys | accessibility | all |
 | | IME suggestion shortcuts, in-call shortcuts | accessibility | all |
 | | BlackBerry keyboard strip | root | LineageOS |
-| Screen | Extra dimming, per-app display scaling | root | all |
+| Screen | Extra dimming, per-app display scaling, forced rotation | root | all |
 | | Recents UI Layout | root, accessibility | all (LSPosed part: BenOS/ZinwaOS) |
 | | **Edge Gestures** | accessibility; LSPosed for the native bottom gesture | all |
 | System | BesLoudness | root | BenOS, ZinwaOS |
@@ -360,6 +360,14 @@ virtual devices so it never reacts to itself). It wins over the per-app targets 
 tearing the service down restores the default. It gives the Edge Gestures vibration pulse and a short toast.
 A display-size change is exactly what used to bring back the BlackBerry keyboard's full keyboard on LineageOS; keep
 the BlackBerry keyboard strip switch on if you use this there.
+
+**Forced rotation.** Locks the screen to one rotation (portrait, landscape, reverse portrait, reverse landscape) or to
+auto-rotate, for all apps or per app. The service writes `user_rotation` plus `accelerometer_rotation` through root for
+the foreground app (its own entry, else the general state). An app that declares its own `screenOrientation` beats that
+lock, so an optional switch (on by default) also sets `wm set-ignore-orientation-request true`, where the command exists.
+The values the user had are saved in the prefs before the first change and put back when the state returns to "System",
+on teardown and after a service restart. Not verified on a device yet: how each app reacts to the override, and the
+`wm` command on the BenOS build.
 
 **BesLoudness** (BenOS/ZinwaOS). Toggles the vendor speaker DSP stage with
 `AudioManager.setParameters("SetBesLoudnessStatus=0/1")`, as the stock Sound

@@ -24,6 +24,7 @@
     <string name="title_extra_dim">Atenuación extra</string>
     <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Escalado de pantalla por app</string>
+    <string name="title_rotation">Rotación forzada</string>
     <string name="title_key_remap">Reasignar tecla</string>
 
     <!-- Screen Subtitles -->
@@ -40,6 +41,21 @@
     <string name="subtitle_extra_dim">Reduce el brillo por debajo del mínimo del sistema</string>
     <string name="subtitle_besloudness">Mejora de sonoridad del altavoz, programable</string>
     <string name="subtitle_app_scaling">Fuerza el diseño de teléfono en apps incompatibles</string>
+    <string name="subtitle_rotation">Fija la rotación de pantalla, global o por app</string>
+    <string name="rot_mode_system">Sistema (no tocar)</string>
+    <string name="rot_mode_auto">Rotación automática</string>
+    <string name="rot_mode_0">Vertical (0°)</string>
+    <string name="rot_mode_90">Horizontal (90°)</string>
+    <string name="rot_mode_180">Vertical invertido (180°)</string>
+    <string name="rot_mode_270">Horizontal invertido (270°)</string>
+    <string name="rot_follow_general">Seguir el general</string>
+    <string name="rot_search">Buscar apps</string>
+    <string name="rot_all_apps">Todas las apps</string>
+    <string name="rot_all_apps_sub">Se usa salvo que una app de abajo tenga su propio estado</string>
+    <string name="rot_override">Ignorar la orientación propia de las apps</string>
+    <string name="rot_override_sub">Sin esto, las apps que exigen vertical u horizontal ignoran el bloqueo.</string>
+    <string name="rot_count">%1$d con estado propio, de %2$d apps</string>
+    <string name="rot_desc">Fija la pantalla en una rotación, para todas las apps o para las elegidas. Al salir de una app vuelve el estado general; «Sistema» devuelve tu propio ajuste de rotación automática, que se restaura aunque el servicio se reinicie. La rotación cambia cuando la app pasa a primer plano, así que puede tardar un momento. Requiere root.</string>
     <string name="subtitle_key_remap">Asigna una tecla libre a Ctrl Derecho</string>
     <string name="title_ticker_notifications">Notificaciones tipo ticker</string>
     <string name="subtitle_ticker_notifications">Banner deslizante en la barra de estado en vez de emergentes</string>

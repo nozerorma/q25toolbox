@@ -31,6 +31,7 @@ import com.kgr.q25toolbox.modules.SlimRecentsController
 import com.kgr.q25toolbox.inputfix.CalculatorInputFix
 import com.kgr.q25toolbox.inputfix.ComposerEnterKeyHandler
 import com.kgr.q25toolbox.modules.AppScalingController
+import com.kgr.q25toolbox.modules.RotationController
 import com.kgr.q25toolbox.modules.AutoFocusController
 import com.kgr.q25toolbox.modules.BatteryUsageController
 import com.kgr.q25toolbox.modules.TickerController
@@ -54,6 +55,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  *   do-nothing passthrough keyboard so physical keys reach the app raw.
  * - **Per-App Display Scaling**: switch the global `wm size` to a per-app target
  *   resolution while that app is foreground, resetting on exit.
+ *
+ * - **Forced Rotation**: lock the screen rotation to a fixed state, globally or per app.
  *
  * Each feature has independent settings in SharedPreferences ("q25tweaks").
  * Root commands go through RootShell (libsu) to share one root path with the
@@ -154,6 +157,7 @@ class Q25AccessibilityService : AccessibilityService() {
                 GestureStripsController.hide()
                 foregroundPkg = null
                 reconcileScaling()
+                reconcileRotation()
                 worker.execute { try { Dt2wController.onScreenOff(this@Q25AccessibilityService) } catch (_: Throwable) { } }
             }
         }
@@ -250,6 +254,7 @@ class Q25AccessibilityService : AccessibilityService() {
             hotkeyResolution = null // switched off while a hotkey resolution is active: go back
             reconcileScaling()
         }
+        if (RotationController.isRotationKey(key)) reconcileRotation()
         if (key == KEY_CALL_PROXIMITY_SLEEP) reconcileCallProximity()
         refreshKeyFilter()
         if (key == KEY_PIN_INPUT || key == KEY_LOCKSCREEN_ENTER_OPENS_PIN) reconcilePinKeysRoot()
@@ -336,6 +341,7 @@ class Q25AccessibilityService : AccessibilityService() {
             serviceInfo = info
         }
         refreshKeyFilter(force = true)
+        reconcileRotation() // the general state applies from the start, not only after the next app switch
 
         imeWorker.execute {
             val curIme = RootShell.run("settings get secure default_input_method")
@@ -409,6 +415,7 @@ class Q25AccessibilityService : AccessibilityService() {
                     noEditableWindowId = -1
                     reconcileImeBlock()
                     reconcileScaling()
+                    reconcileRotation()
                     refreshKeyFilter()
                 }
             }
@@ -578,6 +585,33 @@ class Q25AccessibilityService : AccessibilityService() {
         } finally {
             resolvingScale.set(false)
         }
+    }
+
+    // ---------------------------------------------------------- Forced rotation
+
+    // What we last queued (mode + override flag), so identical reconciles do not touch root.
+    // Null until the first one, so a killed-and-restarted service still restores saved values.
+    private var currentRotationKey: String? = null
+
+    /**
+     * Rotation target for the foreground app (its own entry, else the general state). Queued on
+     * the single-thread [worker], so changes run in order and the main looper never waits on root.
+     * While the screen is off no app is foreground, so the general state applies.
+     */
+    private fun reconcileRotation() {
+        val mode = RotationController.desired(this, foregroundPkg)
+        val key = "${mode.key}/${RotationController.overrideAppRequests(this)}"
+        if (key == currentRotationKey) return
+        currentRotationKey = key
+        worker.execute {
+            try { RotationController.apply(this, mode) } catch (t: Throwable) { Log.e("Q25Toolbox", "rotation apply failed", t) }
+        }
+    }
+
+    /** Give the rotation back to the user, run synchronously on teardown. */
+    private fun restoreRotation() {
+        currentRotationKey = null
+        try { RotationController.apply(this, RotationController.Mode.SYSTEM) } catch (_: Throwable) { }
     }
 
     // --------------------------------------------------------------- IME Block
@@ -1580,6 +1614,7 @@ class Q25AccessibilityService : AccessibilityService() {
         GestureStripsController.hide()
         restoreImeBlock()  // never leave the soft keyboard globally suppressed
         restoreScaling()   // never leave the screen stuck at a scaled resolution
+        restoreRotation()  // nor stuck in a forced rotation
         if (instance === this) instance = null
         return super.onUnbind(intent)
     }
@@ -1598,6 +1633,7 @@ class Q25AccessibilityService : AccessibilityService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) callProximity?.stop()
         restoreImeBlock()
         restoreScaling()
+        restoreRotation()
         prefs?.unregisterOnSharedPreferenceChangeListener(prefListener)
         try { unregisterReceiver(screenOffReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(batteryReceiver) } catch (_: Exception) {}

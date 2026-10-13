@@ -20,6 +20,7 @@ sealed class Screen(val route: String, @StringRes val titleRes: Int, @StringRes 
     data object ExtraDim : Screen("extra_dim", R.string.title_extra_dim, R.string.subtitle_extra_dim)
     data object BesLoudness : Screen("besloudness", R.string.title_besloudness, R.string.subtitle_besloudness)
     data object AppScaling : Screen("app_scaling", R.string.title_app_scaling, R.string.subtitle_app_scaling)
+    data object Rotation : Screen("rotation", R.string.title_rotation, R.string.subtitle_rotation)
     data object AutoFocus : Screen("auto_focus", R.string.title_auto_focus, R.string.subtitle_auto_focus)
     data object InCallShortcuts : Screen("in_call_shortcuts", R.string.title_in_call_shortcuts, R.string.subtitle_in_call_shortcuts)
     data object CallProximitySleep : Screen("call_proximity_sleep", R.string.title_call_proximity_sleep, R.string.subtitle_call_proximity_sleep)
@@ -70,6 +71,7 @@ val keyboardScreens = listOf(
 val screenScreens = listOf(
     Screen.ExtraDim,
     Screen.AppScaling,
+    Screen.Rotation,
     Screen.RecentsTweaks,
     Screen.Gestures,
 )

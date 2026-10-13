@@ -24,6 +24,7 @@
     <string name="title_extra_dim">Assombrissement supplémentaire</string>
     <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Mise à l\'échelle de l\'écran par app</string>
+    <string name="title_rotation">Rotation forcée</string>
     <string name="title_key_remap">Mappage de touche</string>
 
     <!-- Screen Subtitles -->
@@ -40,6 +41,21 @@
     <string name="subtitle_extra_dim">Réduit la luminosité sous le minimum système</string>
     <string name="subtitle_besloudness">Amélioration de la sonie du haut-parleur, programmable</string>
     <string name="subtitle_app_scaling">Force la disposition téléphone sur les apps incompatibles</string>
+    <string name="subtitle_rotation">Verrouille la rotation de l\'écran, globalement ou par app</string>
+    <string name="rot_mode_system">Système (ne pas toucher)</string>
+    <string name="rot_mode_auto">Rotation automatique</string>
+    <string name="rot_mode_0">Portrait (0°)</string>
+    <string name="rot_mode_90">Paysage (90°)</string>
+    <string name="rot_mode_180">Portrait inversé (180°)</string>
+    <string name="rot_mode_270">Paysage inversé (270°)</string>
+    <string name="rot_follow_general">Suivre le réglage général</string>
+    <string name="rot_search">Rechercher des apps</string>
+    <string name="rot_all_apps">Toutes les apps</string>
+    <string name="rot_all_apps_sub">Utilisé sauf si une app ci-dessous a son propre état</string>
+    <string name="rot_override">Ignorer l\'orientation propre des apps</string>
+    <string name="rot_override_sub">Sans cela, les apps qui imposent portrait ou paysage ignorent le verrouillage.</string>
+    <string name="rot_count">%1$d avec état propre, sur %2$d apps</string>
+    <string name="rot_desc">Verrouille l\'écran sur une rotation, pour toutes les apps ou celles choisies. En quittant une app, l\'état général revient ; « Système » rétablit votre propre réglage de rotation automatique, même si le service redémarre. La rotation change quand l\'app passe au premier plan, ce qui peut prendre un instant. Nécessite root.</string>
     <string name="subtitle_key_remap">Attribue une touche libre à Ctrl Droit</string>
     <string name="title_ticker_notifications">Notifications défilantes</string>
     <string name="subtitle_ticker_notifications">Bandeau défilant dans la barre d’état au lieu des popups</string>

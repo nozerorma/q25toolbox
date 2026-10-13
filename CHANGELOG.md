@@ -4,6 +4,29 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.2] - 2026-10-13
+
+Forced rotation. versionCode 41 → 42.
+
+### Added
+
+- **Forced Rotation (Screen).** Locks the screen to portrait, landscape, reverse portrait or reverse landscape, or to
+  auto-rotate, for all apps or per app. The accessibility service applies the state of the foreground app (its own entry,
+  else the general one) by writing `user_rotation` and `accelerometer_rotation` through root, on the worker thread. An
+  optional switch (on by default) also sets `wm set-ignore-orientation-request true`, so apps that declare their own
+  orientation obey the lock; the command is skipped where it does not exist. The user's own values are saved before the
+  first change and restored when the state returns to "System", on teardown and after a service restart. Translated into
+  all eight languages. Checked on a Q25 running Android 17 (Lineage 24).
+
+### Fixed
+
+- **The native bottom swipe-up could not be switched off on the Android 17 launcher (Launcher3 versionCode 37).** That
+  build moved `onInputEvent` from `TouchInteractionService` to the new `TouchInteractionHandler`, so the hook attached
+  to a class without the method: nothing was installed, nothing failed, the log still said `attached=true`, and the
+  hook never wrote its proof file, which the settings screen reads as "not seen yet". It now hooks the handler first
+  and the service as before, so older launchers behave as they did. The log counts the hooks really installed. Not yet
+  confirmed on the device.
+
 ## [4.1.5] - 2026-10-13
 
 Found while moving to Android 17 (Lineage 24) and from a user log. versionCode 40 → 41.

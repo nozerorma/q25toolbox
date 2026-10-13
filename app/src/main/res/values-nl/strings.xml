@@ -24,6 +24,7 @@
     <string name="title_extra_dim">Extra dimmen</string>
     <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Schermschaling per app</string>
+    <string name="title_rotation">Geforceerde rotatie</string>
     <string name="title_key_remap">Toetstoewijzing</string>
 
 
@@ -41,6 +42,21 @@
     <string name="subtitle_extra_dim">Helderheid verlagen onder het systeemminimum</string>
     <string name="subtitle_besloudness">Luidsprekerluidheid-verbetering, met tijdschema</string>
     <string name="subtitle_app_scaling">Telefoonlay-out afdwingen voor slecht werkende apps</string>
+    <string name="subtitle_rotation">Schermrotatie vastzetten, globaal of per app</string>
+    <string name="rot_mode_system">Systeem (niet wijzigen)</string>
+    <string name="rot_mode_auto">Automatisch draaien</string>
+    <string name="rot_mode_0">Staand (0°)</string>
+    <string name="rot_mode_90">Liggend (90°)</string>
+    <string name="rot_mode_180">Staand omgekeerd (180°)</string>
+    <string name="rot_mode_270">Liggend omgekeerd (270°)</string>
+    <string name="rot_follow_general">Algemeen volgen</string>
+    <string name="rot_search">Apps zoeken</string>
+    <string name="rot_all_apps">Alle apps</string>
+    <string name="rot_all_apps_sub">Wordt gebruikt tenzij een app hieronder een eigen stand heeft</string>
+    <string name="rot_override">Eigen oriëntatie van apps overschrijven</string>
+    <string name="rot_override_sub">Zonder dit negeren apps die staand of liggend eisen de vergrendeling.</string>
+    <string name="rot_count">%1$d met eigen stand, van %2$d apps</string>
+    <string name="rot_desc">Zet het scherm vast op één rotatie, voor alle of gekozen apps. Bij het verlaten van een app keert de algemene stand terug; "Systeem" herstelt je eigen instelling voor automatisch draaien, ook als de service herstart. De rotatie verandert wanneer de app op de voorgrond komt, dus het kan even duren. Vereist root.</string>
     <string name="subtitle_key_remap">Wijs een reserve-toets toe aan Rechter Ctrl</string>
     <string name="title_ticker_notifications">Ticker-meldingen</string>
     <string name="subtitle_ticker_notifications">Schuivende banner in de statusbalk in plaats van pop-ups</string>

@@ -24,6 +24,7 @@
     <string name="title_extra_dim">Attenuazione extra</string>
     <string name="title_besloudness">BesLoudness</string>
     <string name="title_app_scaling">Ridimensionamento schermo per app</string>
+    <string name="title_rotation">Rotazione forzata</string>
     <string name="title_key_remap">Rimappa tasto</string>
 
     <!-- Screen Subtitles -->
@@ -40,6 +41,21 @@
     <string name="subtitle_extra_dim">Riduce la luminosità sotto il minimo del sistema</string>
     <string name="subtitle_besloudness">Potenziamento della sonorità dell\'altoparlante, pianificabile</string>
     <string name="subtitle_app_scaling">Forza il layout del telefono su app incompatibili</string>
+    <string name="subtitle_rotation">Blocca la rotazione dello schermo, globale o per app</string>
+    <string name="rot_mode_system">Sistema (non toccare)</string>
+    <string name="rot_mode_auto">Rotazione automatica</string>
+    <string name="rot_mode_0">Verticale (0°)</string>
+    <string name="rot_mode_90">Orizzontale (90°)</string>
+    <string name="rot_mode_180">Verticale capovolto (180°)</string>
+    <string name="rot_mode_270">Orizzontale capovolto (270°)</string>
+    <string name="rot_follow_general">Segui l\'impostazione generale</string>
+    <string name="rot_search">Cerca app</string>
+    <string name="rot_all_apps">Tutte le app</string>
+    <string name="rot_all_apps_sub">Usato a meno che un\'app sotto abbia un proprio stato</string>
+    <string name="rot_override">Ignora l\'orientamento proprio delle app</string>
+    <string name="rot_override_sub">Senza questo, le app che impongono verticale o orizzontale ignorano il blocco.</string>
+    <string name="rot_count">%1$d con stato proprio, su %2$d app</string>
+    <string name="rot_desc">Blocca lo schermo su una rotazione, per tutte le app o per quelle scelte. Uscendo da un\'app torna lo stato generale; «Sistema» ripristina la tua impostazione di rotazione automatica, anche se il servizio si riavvia. La rotazione cambia quando l\'app passa in primo piano, quindi può volerci un momento. Richiede root.</string>
     <string name="subtitle_key_remap">Assegna un tasto libero a Ctrl Destro</string>
     <string name="title_ticker_notifications">Notifiche a ticker</string>
     <string name="subtitle_ticker_notifications">Banner scorrevole nella barra di stato invece degli avvisi a comparsa</string>
