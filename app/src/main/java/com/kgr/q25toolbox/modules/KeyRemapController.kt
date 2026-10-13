@@ -143,13 +143,31 @@ object KeyRemapController {
      * recreate /dev/input/eventN, which EventHub sees via inotify. Same idea as Key2Toolbox's
      * `reloadInputDevice`. Used where unbinding the driver can panic the kernel
      * ([RomProfile.keyboardRebindUnsafe]); verified live on LineageOS 23.
+     *
+     * The loop runs in a subshell that ignores TERM/HUP: a new [applySettings] kills the previous daemon
+     * (`pgrep -f key_remap.sh`), and without this a kill landing between `remove` and `add` left the
+     * keyboard unregistered (seen in a user log: gone for 4.4 s).
      */
     private const val UEVENT_RELOAD =
-        "for d in /sys/class/input/event*; do " +
+        "( trap \"\" TERM HUP; for d in /sys/class/input/event*; do " +
             "if [ \"\$(cat \"\$d/device/name\" 2>/dev/null)\" = \"Q25_keyboard\" ]; then " +
-            "echo remove > \"\$d/uevent\"; sleep 1; echo add > \"\$d/uevent\"; fi; done"
+            "echo remove > \"\$d/uevent\"; sleep 1; echo add > \"\$d/uevent\"; fi; done )"
 
-    /** Apply the remapping settings live and update the boot script. */
+    /**
+     * Unmounts every bind stacked on the layout paths inside the mount namespace of [pidExpr] (a shell expression).
+     * Each apply used to stack one more bind, and one umount only peels the top one. `--` is required: toybox's
+     * nsenter otherwise parses `umount -l` as its own options and fails ("Unknown option 'l'"), which made the
+     * old cleanup a silent no-op. Capped, so it cannot spin.
+     */
+    private fun unmountAllIn(pidExpr: String) =
+        "for f in $SYSTEM_FILE $VENDOR_FILE; do i=0; " +
+            "while [ \$i -lt 8 ] && nsenter -t $pidExpr -m -- umount -l \$f 2>/dev/null; do i=\$((i+1)); done; done"
+
+    /**
+     * Apply the remapping settings live and update the boot script. Serialized: two applies in flight used to
+     * race (the second killed the first mid-reload), which a quick succession of toggles triggers.
+     */
+    @Synchronized
     fun applySettings(prefs: SharedPreferences) {
         val ctrlEnabled = isEnabled(prefs)
         val source = getSourceKey(prefs)
@@ -169,6 +187,7 @@ object KeyRemapController {
             // Execute the script live in the background
             RootShell.run("sh $BOOT_SCRIPT &")
             Log.d("KeyRemapController", "Applied remap for ${source.name} and saved boot script (rebind=$rebind)")
+            logVerification()
         } else {
             // Stop daemon and delete boot script
             RootShell.run("kill \$(pgrep -f key_remap.sh) 2>/dev/null; rm -f $BOOT_SCRIPT")
@@ -184,12 +203,29 @@ object KeyRemapController {
                 "umount -l $SYSTEM_FILE 2>/dev/null" +
                 " ; umount -l $VENDOR_FILE 2>/dev/null" +
                 " ; SS_PID=\$(pidof system_server)" +
-                " ; if [ -n \"\$SS_PID\" ]; then nsenter -t \$SS_PID -m umount -l $SYSTEM_FILE 2>/dev/null; nsenter -t \$SS_PID -m umount -l $VENDOR_FILE 2>/dev/null; fi" +
+                " ; if [ -n \"\$SS_PID\" ]; then ${unmountAllIn("\$SS_PID")}; fi" +
                 "$reattach" +
                 " ; rm -f $TMP_FILE'"
             )
             Log.d("KeyRemapController", "Cleared remaps and restored defaults (rebind=$rebind)")
+            logVerification()
         }
+    }
+
+    /**
+     * Logs what system_server (hence EventHub) actually sees: how many binds sit on the layout and the
+     * remappable lines. Waits for the background script's reload to finish (~3 s), which also keeps a
+     * following apply from killing it. This is the evidence a debug log needs to tell "not applied"
+     * from "applied but ineffective".
+     */
+    private fun logVerification() {
+        val r = RootShell.run(
+            "sleep 3; SS=\$(pidof system_server); " +
+                "echo \"binds=\$(grep -c keylayout /proc/\$SS/mountinfo)\"; " +
+                "for f in $SYSTEM_FILE $VENDOR_FILE; do nsenter -t \$SS -m -- grep -E '^key (41|54|580)[[:space:]]' \$f 2>/dev/null; done; " +
+                "grep -c Q25_keyboard /proc/bus/input/devices"
+        )
+        Log.d("KeyRemapController", "verify (system_server view): ${r.out.joinToString(" | ")}")
     }
 
     /**
@@ -291,8 +327,10 @@ chmod 644 $TMP_FILE
 # but untrusted apps, root detectors, and banking apps have a completely clean /proc/self/mountinfo.
 apply_to_system_server() {
   target_pid=$1
-  nsenter -t $targetPidVar -m mount --make-slave /vendor 2>/dev/null || nsenter -t $targetPidVar -m mount --make-slave /system 2>/dev/null
-  nsenter -t $targetPidVar -m mount --bind $TMP_FILE $sysFileVar
+  # Drop binds left by earlier applies first (they stack), then bind the fresh copy.
+  ${unmountAllIn(targetPidVar)}
+  nsenter -t $targetPidVar -m -- mount --make-slave /vendor 2>/dev/null || nsenter -t $targetPidVar -m -- mount --make-slave /system 2>/dev/null
+  nsenter -t $targetPidVar -m -- mount --bind $TMP_FILE $sysFileVar
 }
 
 # Wait for system_server
