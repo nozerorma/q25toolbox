@@ -66,7 +66,7 @@ Six bottom-bar sections. "ROM" says where the entry is shown.
 | --- | --- | --- | --- |
 | Info | Device status, battery usage breakdown | root (battery usage) | all |
 | Keyboard | Key Remapper (on LineageOS also: leave the Recents key to Key Mapper) | root | all |
-| | PIN on keyboard (lockscreen) | accessibility | all |
+| | PIN on keyboard (lockscreen) | root (also before first unlock), accessibility | all |
 | | Per-app keyboard block | root, accessibility | all |
 | | Chat Enter-to-send, calculator keys | accessibility | all |
 | | IME suggestion shortcuts, in-call shortcuts | accessibility | all |

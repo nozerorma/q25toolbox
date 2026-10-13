@@ -4,6 +4,42 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.1.5] - 2026-10-13
+
+Found while moving to Android 17 (Lineage 24) and from a user log. versionCode 40 → 41.
+
+### Fixed
+
+- **Key remapping did not switch off, and could leave the keyboard unregistered.** The cleanup in `system_server`'s
+  namespace called `nsenter ... umount -l`, which toybox parses as its own options ("Unknown option 'l'"), so since 4.1.4
+  turning the remap off never unmounted anything and the key stayed remapped until a reboot. Every `nsenter` now uses
+  `--`. Each apply also stacked one more bind, which one unmount cannot peel; all of them are removed before binding.
+  Two applies in quick succession raced: the second killed the first between the uevent `remove` and `add`, leaving the
+  keyboard gone (4.4 s in a user log). Applies are serialized and the reload ignores TERM/HUP. After each apply the debug
+  log now records what `system_server` actually sees (`verify (system_server view)`).
+- **Call Proximity Sleep did not wake a screen the system had blanked.** On the Q25 the framework turns the screen off
+  for proximity but is slow to bring it back (the dialer releases its proximity lock 1.6 to 1.8 s after "far") or fails
+  to. The module only woke what it had put to sleep itself. It now wakes on "far" after a "near" seen in the call,
+  whoever blanked the screen, using the real display state (`isInteractive` stays true while the system blanks for
+  proximity, and a plain wake on an awake device does nothing). Two steps: wake, then sleep and wake if still dark. A
+  screen that is already dark is not put to sleep a second time. After hang-up the sensor stays on for 30 s when a
+  "near" is pending: wake at once if already far, otherwise wait for the first "far" (the dialer keeps the screen dark
+  on purpose while the phone is at the ear).
+
+### Changed
+
+- **PIN on keyboard (lockscreen) has a root path.** A daemon in `/data/adb/service.d` (`pin_keys.sh`) types the letter
+  keys (W E R / S D F / Z X C = 1 to 9) into the PIN pad and, optionally, opens the pad on Enter. It also works before
+  the first unlock after a boot, when the accessibility service cannot run (it is not direct-boot aware). When root is
+  available the accessibility path stands down for the digits; without root nothing changes. The daemon only observes
+  the keyboard, so Enter and Delete on the pad stay with the system, and it never logs which digit was pressed.
+- **The accessibility service asks for key events only when something can use them.** With the key filter on, every
+  key press in every app waits for a binder round trip into this process (up to about 500 ms when it is slow), which
+  under load in a heavy app shows up as sticking or repeating keys. The filter is now on only for features that act
+  everywhere (resolution hotkey, Recents overlay key, IME suggestion shortcuts), for lockscreen features while the
+  device is locked, and for the per-app fixes while their app is in front. The PIN path also no longer makes a binder
+  call for every key typed in every app.
+
 ## [4.1.4] - 2026-10-05
 
 ### Fixed
