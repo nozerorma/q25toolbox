@@ -79,6 +79,7 @@ object DaemonMaintenance {
         // whatever the launcher can do right now (a launcher update or a newly enabled module changes the answer).
         RecentsTweaksController.migrateLegacyGrid(context)
         RecentsTweaksController.reconcileGrid(context)
+        com.kgr.q25toolbox.modules.hotfix.HotfixController.reconcileBootScript(context)
 
         for ((script, lock) in DEPRECATED_SCRIPTS) {
             RootShell.run("kill \$(pgrep -f $script) 2>/dev/null; rm -f /data/adb/service.d/$script /data/adb/$lock")

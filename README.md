@@ -78,6 +78,7 @@ Six bottom-bar sections. "ROM" says where the entry is shown.
 | | Auto-focus input, Ticker Notifications | accessibility | all |
 | | Proximity workarounds (call screen recovery) | root | BenOS, ZinwaOS |
 | | Call Proximity Sleep, Double-Tap to Wake | root, accessibility | LineageOS |
+| | **Advanced Settings (System Hotfixes)** | root (Hybrid Mount optional/recommended) | all |
 | Network | AdBlock, per-app Telemetry block | root | all |
 | | Zygisk Detach | root, Zygisk | all |
 | | Wireless ADB, Bluetooth and Location auto-disable | root | all |

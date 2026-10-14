@@ -4,6 +4,29 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.3] - 2026-10-14
+
+Advanced Settings (System Hotfixes & Patches). versionCode 42 → 43.
+
+### Added
+
+- **Advanced Settings & System Hotfixes (System).** A centralized patcher and diagnostics dashboard for ROM and hardware
+  quirks on the Q25, eliminating the need for scattered, standalone Magisk/KernelSU modules:
+  - **50 MP Rear Camera (S5KJN1):** Enables full 50.1 MP (6144×8160) JPEG capture on the rear camera by patching MediaTek
+    camera HAL libraries (`libmtkcam_metastore.so`, `libmtkcam_3rdparty.mtk.so`, `libmtkcam_featurepolicy.so`, `cameraserver`),
+    deploying `libremosaic_wrapper.so` and hot-swapping the `imgsensor_isp6s.ko` kernel driver. Includes clean daemon lifecycle
+    handling (`camerahalserver` & `cameraserver`), node wait loops, and permission synchronization with `ueventd` (`0660 system:camera`)
+    that persists seamlessly across cold reboots.
+  - **AlwaysStrong / KeyMint TEE Crypto Fix:** Patches TEESimulator (`tee_classes.dex`) to fix KeyMint hardware-backed
+    attestation failures (PKCS#8 RSA key import and RSA-OAEP with MGF1/SHA-224 digest). Features runtime crypto capability
+    probing, process liveness monitoring, and seamless revert to stock.
+  - **Bluetooth Audio HAL Fix:** Replaces legacy MTK audio HAL with 84-byte `source_metadata_v7` compatible library
+    (`audio.bluetooth.default.so`) via Hybrid Mount VFS to fix Bluetooth audio crashes on AOSP/LineageOS.
+  - **Vector dex2oat Bind Mount Stealth:** Eliminates Vector root detection traces from `/proc/*/mountinfo` across all
+    namespaces (including Android 17 `zygote_next`) using Hybrid Mount VFS redirection and KernelSU `kernel_umount`.
+  - **Unified Boot Service:** Reconciles persistent hotfix injection cleanly into `/data/adb/service.d/q25_hotfixes_boot.sh`
+    on toggle change and during daemon maintenance. Translated into all eight languages.
+
 ## [4.2] - 2026-10-13
 
 Forced rotation. versionCode 41 → 42.

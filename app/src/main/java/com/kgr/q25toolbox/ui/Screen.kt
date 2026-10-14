@@ -33,6 +33,7 @@ sealed class Screen(val route: String, @StringRes val titleRes: Int, @StringRes 
     data object Gestures : Screen("gestures", R.string.title_gestures, R.string.subtitle_gestures)
     data object ImeCompat : Screen("ime_compat", R.string.title_ime_compat, R.string.subtitle_ime_compat)
     data object ZygiskDetach : Screen("zygisk_detach", R.string.title_zygisk_detach, R.string.subtitle_zygisk_detach)
+    data object AdvancedSettings : Screen("advanced_settings", R.string.title_advanced_settings, R.string.subtitle_advanced_settings)
 
     val title: String @Composable get() = stringResource(titleRes)
     val subtitle: String @Composable get() = if (subtitleRes != 0) stringResource(subtitleRes) else ""
@@ -89,6 +90,7 @@ val systemScreens = listOf(
     Screen.CallProximitySleep,
     Screen.TickerNotifications,
     Screen.Dt2w,
+    Screen.AdvancedSettings,
 )
 
 /** Screens listed under the Network tab. */

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -175,6 +176,7 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.ZygiskDetach -> ZygiskDetachScreen(onBack)
         Screen.Gestures -> GesturesScreen(onBack)
         Screen.ImeCompat -> ImeCompatScreen(onBack)
+        Screen.AdvancedSettings -> AdvancedSettingsScreen(onBack)
     }
 }
 
@@ -189,6 +191,12 @@ private fun CategoryMenu(title: String, screens: List<Screen>, onNavigate: (Scre
     ) {
         Text(title, style = MaterialTheme.typography.headlineMedium)
         screens.forEach { screen ->
+            if (screen == Screen.AdvancedSettings) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                )
+            }
             MenuEntry(screen) { onNavigate(screen) }
         }
     }
