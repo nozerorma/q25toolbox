@@ -622,21 +622,25 @@ object HotfixController {
             )
         }
 
-        if (rom != Rom.LINEAGE && rom != Rom.ZINWAOS) {
+        if (rom != Rom.LINEAGE) {
+            val detail = if (rom == Rom.ZINWAOS) {
+                context.getString(R.string.hotfix_camera_zinwaos_coming_soon)
+            } else {
+                context.getString(R.string.hotfix_camera_incompatible_rom)
+            }
             return HotfixItem(
                 id = HotfixId.CAMERA_50MP,
                 titleRes = R.string.hotfix_camera_title,
                 descRes = R.string.hotfix_camera_desc,
                 requiresReboot = false,
                 status = HotfixStatus.INCOMPATIBLE,
-                statusDetail = context.getString(R.string.hotfix_camera_incompatible_rom),
+                statusDetail = detail,
                 isEnabled = false,
                 isLiveApplied = false
             )
         }
 
-        val isLive = VfsManager.isRedirectActive("/vendor/lib64/libmtkcam_3rdparty.mtk.so") ||
-                VfsManager.isRedirectActive("/vendor/lib64/mt6789/libmtkcam_3rdparty.mtk.so")
+        val isLive = VfsManager.isRedirectActive("/vendor/lib64/libmtkcam_3rdparty.mtk.so")
 
         return HotfixItem(
             id = HotfixId.CAMERA_50MP,
@@ -651,6 +655,7 @@ object HotfixController {
     }
 
     fun applyCamera50mp(context: Context): Boolean {
+        if (RomProfile.get(context).rom != Rom.LINEAGE) return false
         RootShell.run("mkdir -p '$CAM_DIR/lib'")
         AssetInstaller.installAsset(context, "hotfixes/camera_50mp/edits.txt", CAM_EDITS, "644")
         AssetInstaller.installAsset(context, "hotfixes/camera_50mp/imgsensor_isp6s.ko", CAM_KO_PATCHED, "644")
@@ -788,6 +793,10 @@ object HotfixController {
     }
 
     fun toggleHotfix(context: Context, id: HotfixId, enable: Boolean): Boolean {
+        if (id == HotfixId.CAMERA_50MP && enable && RomProfile.get(context).rom != Rom.LINEAGE) {
+            setHotfixEnabled(context, id, false)
+            return false
+        }
         setHotfixEnabled(context, id, enable)
         val success = if (enable) {
             when (id) {
@@ -819,8 +828,9 @@ object HotfixController {
             return
         }
 
-        val btAudio = isHotfixEnabled(context, HotfixId.BT_AUDIO)
-        val cam = isHotfixEnabled(context, HotfixId.CAMERA_50MP)
+        val rom = RomProfile.get(context).rom
+        val btAudio = isHotfixEnabled(context, HotfixId.BT_AUDIO) && rom == Rom.LINEAGE
+        val cam = isHotfixEnabled(context, HotfixId.CAMERA_50MP) && rom == Rom.LINEAGE
         val keymint = isHotfixEnabled(context, HotfixId.KEYMINT_TEE)
         val vector = isHotfixEnabled(context, HotfixId.VECTOR_DEX2OAT)
 

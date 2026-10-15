@@ -559,7 +559,7 @@
     <string name="hotfix_camera_desc">Schakelt volledige 50 MP JPEG-opname in op de achtercamera door de MediaTek-HAL te patchen en het stuurprogramma te vervangen</string>
     <string name="hotfix_camera_sensor_missing">Q25 S5KJN1 camerasensor niet gedetecteerd</string>
     <string name="hotfix_camera_zinwaos_coming_soon">In ontwikkeling voor ZinwaOS stock (momenteel alleen LineageOS)</string>
-    <string name="hotfix_camera_incompatible_rom">Alleen compatibel met LineageOS en ZinwaOS</string>
+    <string name="hotfix_camera_incompatible_rom">Alleen compatibel met LineageOS</string>
     <string name="hotfix_checking_bubble">Laat me controleren of je Q25 een oplossing nodig heeft…</string>
     <string name="hotfix_nothing_needed">Je Q25 loopt als een zonnetje. Er is hier niets voor jou.</string>
     <string name="hotfix_show_all">Alles tonen (%1$d verborgen)</string>

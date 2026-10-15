@@ -557,7 +557,7 @@
     <string name="hotfix_camera_desc">Active la capture JPEG complète à 50 MP sur la caméra arrière en patchant le HAL MediaTek et en remplaçant le pilote</string>
     <string name="hotfix_camera_sensor_missing">Capteur photo Q25 S5KJN1 non détecté</string>
     <string name="hotfix_camera_zinwaos_coming_soon">En développement pour ZinwaOS stock (actuellement pour LineageOS uniquement)</string>
-    <string name="hotfix_camera_incompatible_rom">Compatible uniquement avec LineageOS et ZinwaOS</string>
+    <string name="hotfix_camera_incompatible_rom">Compatible uniquement avec LineageOS</string>
     <string name="hotfix_checking_bubble">Laissez-moi vérifier si votre Q25 a besoin d\'un correctif…</string>
     <string name="hotfix_nothing_needed">Votre Q25 tourne comme sur des roulettes. Il n\'y a rien pour vous ici.</string>
     <string name="hotfix_show_all">Tout afficher (%1$d masqués)</string>

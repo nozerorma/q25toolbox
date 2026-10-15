@@ -4,6 +4,17 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.3.1] - 2026-10-15
+
+Camera 50 MP compatibility restriction. versionCode 43 → 44.
+
+### Changed
+
+- **50 MP Rear Camera restricted to LineageOS.** Disallowed applying the 50 MP camera hotfix on ZinwaOS stock
+  and any non-Lineage ROM. The MediaTek camera HAL layout and symbol offsets in ZinwaOS differ from LineageOS
+  and require a distinct patching sequence. On ZinwaOS, the toggle is marked as incompatible with a clear notice
+  that support is in development.
+
 ## [4.3] - 2026-10-14
 
 Advanced Settings (System Hotfixes & Patches). versionCode 42 → 43.

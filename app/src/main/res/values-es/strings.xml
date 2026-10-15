@@ -667,7 +667,7 @@ Ambas se fusionaron desde ramas separadas y tienen tests unitarios; la build fus
     <string name="hotfix_camera_desc">Habilita captura completa JPEG de 50 MP en la cámara trasera parcheando el HAL de MediaTek y cambiando el driver</string>
     <string name="hotfix_camera_sensor_missing">Sensor de cámara Q25 S5KJN1 no detectado</string>
     <string name="hotfix_camera_zinwaos_coming_soon">En desarrollo para ZinwaOS stock (actualmente solo LineageOS)</string>
-    <string name="hotfix_camera_incompatible_rom">Solo compatible con LineageOS y ZinwaOS</string>
+    <string name="hotfix_camera_incompatible_rom">Solo compatible con LineageOS</string>
     <string name="hotfix_checking_bubble">Déjame comprobar si tu Q25 necesita algún tipo de arreglo…</string>
     <string name="hotfix_nothing_needed">Tu Q25 va como la seda. Aquí no hay nada para ti.</string>
     <string name="hotfix_show_all">Mostrar todos (%1$d ocultos)</string>
