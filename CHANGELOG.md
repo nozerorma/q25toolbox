@@ -4,6 +4,27 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.4] - 2026-10-16
+
+Circle to Search, QR Enlarger, and Centralized Keyboard Shortcuts. versionCode 44 → 45.
+
+### Added
+
+- **Circle to Search (System).** Built-in autonomous Circle to Search activation on the Q25 without needing external LSPosed modules or companion APKs:
+  - Deploys a lightweight native Zygisk module and system permission declaration to `/data/adb/modules/q25_cts` to spoof Pixel 8 Pro system features for the Google App.
+  - Automatically orchestrates launcher `device_config` flags for contextual search.
+  - Native ContextualSearchManager IPC invocation (`service call contextual_search 3 i32 1`) ensuring screenshot tokenization and immediate availability without *"Circle to search is not available"* errors.
+- **QR / Barcode Enlarger (Screen).** Instant full-screen high-contrast inspection of boarding passes, tickets (e.g. Renfe, transit passes), and QR/barcodes on screen:
+  - Triggerable via physical key shortcut, Edge Gestures, or Key Mapper broadcast intent (`action: QR_ENLARGER`).
+  - Automatically cranks screen brightness to maximum and bypasses Extra Dim for effortless turnstile scanning.
+  - Safely restores prior brightness and Extra Dim state immediately upon dismissal.
+- **Centralized Keyboard Shortcuts (Keyboard).** A unified configuration hub under *Keyboard > Keyboard Shortcuts* for mapping hardware keys directly to system actions (Recents, Aspect Ratio, Rotation, Flashlight, Notifications, Extra Dim, Circle to Search, QR Enlarger) with ready-to-use Key Mapper broadcast helper cards.
+
+### Fixed
+
+- **Composer Enter Key Handling.** Preserves natural multiline formatting and newline insertion when pressing Enter in chat and message composer inputs.
+- **Lockscreen Key Pinning.** Hardened root key event interception scripts on the lockscreen.
+
 ## [4.3.1] - 2026-10-15
 
 Camera 50 MP compatibility restriction. versionCode 43 → 44.
