@@ -36,6 +36,8 @@ import android.view.WindowManager
 import android.os.Build
 import com.kgr.q25toolbox.service.Q25AccessibilityService
 import com.kgr.q25toolbox.service.isQ25AccessibilityServiceEnabled
+import com.kgr.q25toolbox.modules.GestureSettings
+import com.kgr.q25toolbox.modules.KeyboardShortcutsController
 import android.content.Context
 import com.kgr.q25toolbox.core.Rom
 import com.kgr.q25toolbox.modules.RecentsTweaksController
@@ -283,6 +285,40 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp)
             ) { Text(stringResource(R.string.recents_restart_systemui)) }
+        }
+
+        var recentsConfig by remember {
+            mutableStateOf(KeyboardShortcutsController.getShortcut(context, GestureSettings.Action.RECENTS))
+        }
+        var recordingRecentsKey by remember { mutableStateOf(false) }
+
+        ActionShortcutCard(
+            action = GestureSettings.Action.RECENTS,
+            config = recentsConfig,
+            onConfigChanged = {
+                recentsConfig = it
+                KeyboardShortcutsController.setShortcut(context, it)
+            },
+            onStartRecord = { recordingRecentsKey = true }
+        )
+
+        if (recordingRecentsKey) {
+            KeyRecordDialog(
+                actionName = stringResource(R.string.shortcut_action_recents),
+                onDismiss = { recordingRecentsKey = false },
+                onKeyRecorded = { kc, mods ->
+                    val updated = recentsConfig.copy(enabled = true, keyCode = kc, modifiers = mods)
+                    recentsConfig = updated
+                    KeyboardShortcutsController.setShortcut(context, updated)
+                    recordingRecentsKey = false
+                },
+                onClear = {
+                    val updated = recentsConfig.copy(enabled = false, keyCode = 0, modifiers = 0)
+                    recentsConfig = updated
+                    KeyboardShortcutsController.setShortcut(context, updated)
+                    recordingRecentsKey = false
+                }
+            )
         }
 
         DescriptionDivider()

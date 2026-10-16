@@ -565,6 +565,18 @@ Ambdues es van fusionar des de branques separades i tenen tests unitaris; la bui
     <string name="gesture_action_flashlight">Llanterna</string>
     <string name="gestures_arrow">Mostrar una fletxa en lliscar</string>
     <string name="gesture_action_previous_app">Última app</string>
+    <string name="gesture_action_qr_enlarger">Ampliar codi QR / Aztec</string>
+    <string name="qr_enlarger_none_found">No s\'ha detectat cap codi QR o Aztec a la pantalla</string>
+    <string name="qr_enlarger_capture_failed">Error en capturar la pantalla</string>
+    <string name="qr_enlarger_render_failed">Error en ampliar el codi</string>
+    <string name="title_qr_enlarger">Ampliador QR i Aztec</string>
+    <string name="subtitle_qr_enlarger">Detecta i mostra codis QR a pantalla completa a la màxima brillantor</string>
+    <string name="qr_enlarger_desc">Escaneja la pantalla actual cercant codis QR o Aztec (per exemple a bitllets de tren, targetes d\'embarcament, etc.), els amplia a pantalla completa sobre un fons blanc pur al 100% de brillantor i desactiva temporalment l\'Atenuació addicional. En tocar la pantalla o prémer qualsevol tecla física, es tanca i es restableixen els paràmetres anteriors.</string>
+    <string name="qr_enlarger_test_button">Provar ara</string>
+    <string name="qr_enlarger_trigger_title">Com activar-lo</string>
+    <string name="qr_enlarger_trigger_desc">Activa-ho amb un gest de vora a la pantalla, o assigna tecles físiques i Key Mapper a Dreceres de teclat.</string>
+
+
     <string name="gestures_arrow_style">Estil de la fletxa</string>
     <string name="gestures_arrow_preview_inactive">Inactiva</string>
     <string name="gestures_arrow_preview_active">Activa</string>
@@ -678,4 +690,100 @@ Ambdues es van fusionar des de branques separades i tenen tests unitaris; la bui
     <string name="hotfix_keymint_warn_text">Aquest pedaç modifica el fitxer tee_classes.dex d\'AlwaysStrong. Si actualitzes el mòdul AlwaysStrong a KernelSU o Magisk, l\'actualització sobreescriurà el pedaç i hauràs de tornar-lo a activar aquí.</string>
     <string name="hotfix_keymint_not_needed">La importació de claus asimètriques funciona de forma nativa al teu sistema (no cal aplicar-ho)</string>
     <string name="hotfix_keymint_warn_confirm">Entès, activa</string>
+    <string name="key_mapper_title">Integració amb Key Mapper</string>
+    <string name="key_mapper_desc">Configura qualsevol tecla física (per exemple, pulsació llarga d\'Espai, tecles de volum, tecla de conveniència) per activar aquesta acció mitjançant un Broadcast Intent:</string>
+    <string name="key_mapper_action_label">Acció</string>
+    <string name="key_mapper_extra_label">Extra de text</string>
+    <string name="key_mapper_copy_params">Copiar paràmetres de Key Mapper</string>
+    <string name="key_mapper_copy_cmd">Copiar comanda ADB / Shell</string>
+    <string name="key_mapper_copied_toast">Copiat al porta-retalls!</string>
+    <string name="key_mapper_no_root">No requereix root</string>
+    <string name="key_mapper_uses_broadcast">Usa Intent Broadcast</string>
+    <string name="key_mapper_step1_label">1. Tipus d\'acció a Key Mapper</string>
+    <string name="key_mapper_step1_value">Enviar intent</string>
+    <string name="key_mapper_step2_label">2. Destinació de l\'intent</string>
+    <string name="key_mapper_step2_value">Broadcast (Receptor de difusió)</string>
+    <string name="key_mapper_package_label">Paquet</string>
+    <string name="key_mapper_extra_type_label">Tipus d\'extra</string>
+    <string name="key_mapper_extra_type_value">String (Text)</string>
+    <string name="key_mapper_extra_name_label">Nom / Clau de l\'extra</string>
+    <string name="key_mapper_extra_value_label">Valor de l\'extra</string>
+    <string name="key_mapper_recents_extra_optional">Opcional per a Recents: si no afegeixes cap extra, obre Recents per defecte.</string>
+    <string name="key_mapper_copy">Copiar</string>
+    <string name="key_mapper_adb_cmd_title">Comanda equivalent per a ADB / Terminal</string>
+    <string name="key_mapper_adb_note">Només per a PC o depuració ADB. Dins de Key Mapper NO facis servir comandes de shell, fes servir sempre \"Enviar intent\".</string>
+
+    <!-- Dreceres de teclat i remapejos unificats -->
+    <string name="title_keyboard_shortcuts">Dreceres de teclat</string>
+    <string name="subtitle_keyboard_shortcuts">Mapeig in-app o mitjançant Key Mapper</string>
+    <string name="keyboard_shortcuts_header_desc">Assigna tecles físiques directament des de l\'app amb detecció de pulsació curta, llarga o doble, o configura-les mitjançant Key Mapper a través d\'intents broadcast.</string>
+    <string name="shortcut_tab_in_app">Mapeig in-app</string>
+    <string name="shortcut_tab_key_mapper">Mapejar amb Key Mapper</string>
+    <string name="shortcut_enable_in_app">Habilitar drecera in-app</string>
+    <string name="shortcut_trigger_label">Tecla o combinació disparadora:</string>
+    <string name="shortcut_unassigned">Sense assignar</string>
+    <string name="shortcut_record_button">Detectar tecla</string>
+    <string name="shortcut_press_type">Tipus de pulsació:</string>
+    <string name="shortcut_click_short">Pulsació curta</string>
+    <string name="shortcut_click_long">Pulsació llarga (500 ms)</string>
+    <string name="shortcut_click_double">Doble pulsació</string>
+    <string name="shortcut_tap_pass">Reinjectar pulsació simple</string>
+    <string name="shortcut_tap_pass_desc">Si no es manté la pulsació llarga o doble, escriu la tecla normal</string>
+    <string name="shortcut_vibrate">Vibració en activar</string>
+    <string name="shortcut_dialog_title">Detectar tecla o combo</string>
+    <string name="shortcut_dialog_desc">Prem qualsevol tecla o combinació al teclat físic</string>
+    <string name="shortcut_dialog_waiting">Prem una tecla...</string>
+    <string name="shortcut_dialog_cancel">Cancel·lar</string>
+    <string name="shortcut_dialog_clear">Esborrar</string>
+    <string name="shortcut_notice_title">Drecera de teclat i Key Mapper</string>
+    <string name="shortcut_notice_desc">Configura disparadors de tecles físiques (pulsació curta, llarga o doble) o la integració amb Key Mapper a Teclat &gt; Dreceres de teclat.</string>
+
+    <string name="shortcut_action_recents">Apps recents</string>
+    <string name="shortcut_action_recents_desc">Obre el menú d\'apps recents (Slim List / Quilt) o el commutador del sistema.</string>
+    <string name="shortcut_action_qr">Agrandir QR / Aztec</string>
+    <string name="shortcut_action_qr_desc">Captura la pantalla, agrandeix codis 2D en fons blanc pur al 100% de brillantor.</string>
+    <string name="shortcut_action_aspect_ratio">Relació d\'aspecte / Resolució</string>
+    <string name="shortcut_action_aspect_ratio_desc">Alterna seqüencialment entre les resolucions de pantalla configurades.</string>
+    <string name="shortcut_action_rotation">Rotació de pantalla</string>
+    <string name="shortcut_action_rotation_desc">Alterna la rotació forçada vertical (o restaura auto-rotació / sistema).</string>
+    <string name="shortcut_action_extra_dim">Atenuació extra</string>
+    <string name="shortcut_action_extra_dim_desc">Activa o desactiva l\'atenuació extra de brillantor d\'Android.</string>
+    <string name="shortcut_action_gestures">Gestos de vora</string>
+    <string name="shortcut_action_gestures_desc">Activa o desactiva les franges de navegació per gestos a les vores.</string>
+
+    <string name="key_label_prog_red">Recents (HW)</string>
+    <string name="key_label_app_switch">Recents</string>
+    <string name="key_label_back">Enrere</string>
+    <string name="key_label_home">Inici</string>
+    <string name="key_label_grave">Tecla Moneda (`)</string>
+    <string name="key_label_search">Cerca</string>
+    <string name="key_label_camera">Càmera</string>
+
+    <string name="toast_rotation_format">Rotació: %s</string>
+    <string name="toast_extra_dim_on">Atenuació extra: ACTIVADA</string>
+    <string name="toast_extra_dim_off">Atenuació extra: DESACTIVADA</string>
+    <string name="toast_gestures_on">Gestos de vora: ACTIVATS</string>
+    <string name="toast_gestures_off">Gestos de vora: DESACTIVATS</string>
+    <string name="toast_bluetooth_on">Bluetooth: ACTIVAT</string>
+    <string name="toast_bluetooth_off">Bluetooth: DESACTIVAT</string>
+    <string name="toast_location_on">Ubicació: ACTIVADA</string>
+    <string name="toast_location_off">Ubicació: DESACTIVADA</string>
+
+    <string name="gesture_action_aspect_ratio">Relació d\'aspecte</string>
+    <string name="gesture_action_rotation">Rotació de pantalla</string>
+    <string name="gesture_action_extra_dim">Atenuació extra</string>
+    <string name="gesture_action_gestures">Alternar gestos</string>
+    <string name="gesture_action_bluetooth">Alternar Bluetooth</string>
+    <string name="gesture_action_location">Alternar ubicació</string>
+    <string name="gesture_action_circle_to_search">Circle to Search</string>
+
+    <!-- Circle to Search -->
+    <string name="title_circle_to_search">Circle to Search</string>
+    <string name="subtitle_circle_to_search">Cerca visualment encerclant text o imatges en pantalla</string>
+    <string name="cts_master_switch_title">Activar Circle to Search</string>
+    <string name="cts_master_switch_desc">Configura les flags del launcher i l\'assistent de cerca contextual</string>
+    <string name="cts_status_active">Mòdul Zygisk actiu</string>
+    <string name="cts_status_inactive">Inactiu</string>
+    <string name="cts_status_desc">Opera mitjançant el mòdul Zygisk natiu (/data/adb/modules/q25_cts) simulant les funcions de Pixel 8 Pro per a l\'aplicació de Google.</string>
+    <string name="cts_test_trigger_button">Provar Circle to Search ara</string>
 </resources>

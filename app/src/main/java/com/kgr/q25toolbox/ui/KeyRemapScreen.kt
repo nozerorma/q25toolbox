@@ -159,7 +159,9 @@ fun KeyRemapScreen(onBack: () -> Unit) {
                     }
                     Text(stringResource(R.string.recents_key_external_desc), style = MaterialTheme.typography.bodySmall)
 
-
+                    if (external) {
+                        ShortcutMappingNotice()
+                    }
                 }
 
                 DescriptionDivider()

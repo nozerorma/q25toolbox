@@ -27,7 +27,9 @@ public final class ComposerEnterKeyHandler {
             "ai.perplexity",
             "chat.perplexity.android",
             "com.perplexity",
-            "ai.perplexity.app"
+            "ai.perplexity.app",
+            "com.discord",
+            "com.discord.canary"
     );
     private static final List<String> DEFAULT_SEND_BUTTON_MATCHERS = Arrays.asList(
             "send",
@@ -49,7 +51,9 @@ public final class ComposerEnterKeyHandler {
             "arrow_upward",
             "arrow_up",
             "paper_plane",
-            "paperplane"
+            "paperplane",
+            "enviar",
+            "envia"
     );
 
     private final List<String> supportedPackages;

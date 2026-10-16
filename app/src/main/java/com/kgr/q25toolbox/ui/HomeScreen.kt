@@ -129,7 +129,7 @@ fun HomeScreen() {
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             val current = detail
             if (current != null) {
-                DetailHost(current) { detailRoute = null }
+                DetailHost(current, onNavigate = { detailRoute = it.route }) { detailRoute = null }
             } else when (tab) {
                 AppTab.Info -> InfoScreen(
                     state = infoState,
@@ -148,8 +148,9 @@ fun HomeScreen() {
 
 /** Routes a [Screen] to its detail composable. */
 @Composable
-private fun DetailHost(screen: Screen, onBack: () -> Unit) {
+private fun DetailHost(screen: Screen, onNavigate: (Screen) -> Unit = {}, onBack: () -> Unit) {
     when (screen) {
+        Screen.KeyboardShortcuts -> KeyboardShortcutsScreen(onBack = onBack, onNavigate = onNavigate)
         Screen.KeyRemap -> KeyRemapScreen(onBack)
         Screen.WirelessAdb -> WirelessAdbScreen(onBack)
         Screen.Dt2w -> Dt2wScreen(onBack)
@@ -177,6 +178,8 @@ private fun DetailHost(screen: Screen, onBack: () -> Unit) {
         Screen.Gestures -> GesturesScreen(onBack)
         Screen.ImeCompat -> ImeCompatScreen(onBack)
         Screen.AdvancedSettings -> AdvancedSettingsScreen(onBack)
+        Screen.QrEnlarger -> QrEnlargerScreen(onBack = onBack, onOpenGestures = { onNavigate(Screen.Gestures) })
+        Screen.CircleToSearch -> CircleToSearchScreen(onBack = onBack)
     }
 }
 
@@ -191,7 +194,7 @@ private fun CategoryMenu(title: String, screens: List<Screen>, onNavigate: (Scre
     ) {
         Text(title, style = MaterialTheme.typography.headlineMedium)
         screens.forEach { screen ->
-            if (screen == Screen.AdvancedSettings) {
+            if (screen == Screen.AdvancedSettings || screen == Screen.KeyboardShortcuts) {
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 4.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)

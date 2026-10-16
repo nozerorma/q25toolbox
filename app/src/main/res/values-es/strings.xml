@@ -565,6 +565,18 @@ Ambas se fusionaron desde ramas separadas y tienen tests unitarios; la build fus
     <string name="gesture_action_flashlight">Linterna</string>
     <string name="gestures_arrow">Mostrar una flecha al deslizar</string>
     <string name="gesture_action_previous_app">Última app</string>
+    <string name="gesture_action_qr_enlarger">Agrandar código QR / Aztec</string>
+    <string name="qr_enlarger_none_found">No se detectó ningún código QR o Aztec en pantalla</string>
+    <string name="qr_enlarger_capture_failed">Error al capturar la pantalla</string>
+    <string name="qr_enlarger_render_failed">Error al agrandar el código</string>
+    <string name="title_qr_enlarger">Ampliador QR y Aztec</string>
+    <string name="subtitle_qr_enlarger">Detecta y muestra códigos QR a pantalla completa al brillo máximo</string>
+    <string name="qr_enlarger_desc">Escanea la pantalla actual buscando códigos QR o Aztec (por ejemplo en billetes de tren, tarjetas de embarque, etc.), los amplía a pantalla completa sobre un fondo blanco puro al 100% de brillo y desactiva temporalmente el Atenuado adicional. Al tocar la pantalla o pulsar cualquier tecla física, se cierra y se restablecen los ajustes anteriores.</string>
+    <string name="qr_enlarger_test_button">Probar ahora</string>
+    <string name="qr_enlarger_trigger_title">Cómo activarlo</string>
+    <string name="qr_enlarger_trigger_desc">Actívalo con un gesto de borde en la pantalla, o asigna teclas físicas y Key Mapper en Atajos de teclado.</string>
+
+
     <string name="gestures_arrow_style">Estilo de la flecha</string>
     <string name="gestures_arrow_preview_inactive">Inactiva</string>
     <string name="gestures_arrow_preview_active">Activa</string>
@@ -684,4 +696,100 @@ Ambas se fusionaron desde ramas separadas y tienen tests unitarios; la build fus
     <string name="hotfix_keymint_warn_text">Este parche modifica el archivo tee_classes.dex de AlwaysStrong. Si actualizas el módulo AlwaysStrong en KernelSU o Magisk, la actualización sobreescribirá el parche y tendrás que volver a activarlo aquí.</string>
     <string name="hotfix_keymint_not_needed">La importación de claves y RSA-OAEP funcionan correctamente (arreglo no necesario)</string>
     <string name="hotfix_keymint_warn_confirm">Entendido, activar</string>
+    <string name="key_mapper_title">Integración con Key Mapper</string>
+    <string name="key_mapper_desc">Configura cualquier tecla física (por ejemplo, pulsación larga de Espacio, teclas de volumen, tecla de conveniencia) para activar esta acción mediante un Broadcast Intent:</string>
+    <string name="key_mapper_action_label">Acción</string>
+    <string name="key_mapper_extra_label">Extra de texto</string>
+    <string name="key_mapper_copy_params">Copiar parámetros de Key Mapper</string>
+    <string name="key_mapper_copy_cmd">Copiar comando ADB / Shell</string>
+    <string name="key_mapper_copied_toast">¡Copiado al portapapeles!</string>
+    <string name="key_mapper_no_root">No requiere root</string>
+    <string name="key_mapper_uses_broadcast">Usa Intent Broadcast</string>
+    <string name="key_mapper_step1_label">1. Tipo de acción en Key Mapper</string>
+    <string name="key_mapper_step1_value">Enviar intent</string>
+    <string name="key_mapper_step2_label">2. Destino del intent</string>
+    <string name="key_mapper_step2_value">Broadcast (Receptor de difusión)</string>
+    <string name="key_mapper_package_label">Paquete</string>
+    <string name="key_mapper_extra_type_label">Tipo de extra</string>
+    <string name="key_mapper_extra_type_value">String (Texto)</string>
+    <string name="key_mapper_extra_name_label">Nombre / Clave del extra</string>
+    <string name="key_mapper_extra_value_label">Valor del extra</string>
+    <string name="key_mapper_recents_extra_optional">Opcional para Recientes: si no añades ningún extra, abre Recientes por defecto.</string>
+    <string name="key_mapper_copy">Copiar</string>
+    <string name="key_mapper_adb_cmd_title">Comando equivalente para ADB / Terminal</string>
+    <string name="key_mapper_adb_note">Solo para PC o depuración ADB. Dentro de Key Mapper NO uses comandos de shell, usa siempre \"Enviar intent\".</string>
+
+    <!-- Atajos de teclado y remapeos unificados -->
+    <string name="title_keyboard_shortcuts">Atajos de teclado</string>
+    <string name="subtitle_keyboard_shortcuts">Mapeo in-app o mediante Key Mapper</string>
+    <string name="keyboard_shortcuts_header_desc">Asigna teclas físicas directamente desde la app con detección de pulsación corta, larga o doble, o configúralas mediante Key Mapper mediante intents broadcast.</string>
+    <string name="shortcut_tab_in_app">Mapeo in-app</string>
+    <string name="shortcut_tab_key_mapper">Mapear con Key Mapper</string>
+    <string name="shortcut_enable_in_app">Habilitar atajo in-app</string>
+    <string name="shortcut_trigger_label">Tecla o combinación disparadora:</string>
+    <string name="shortcut_unassigned">Sin asignar</string>
+    <string name="shortcut_record_button">Detectar tecla</string>
+    <string name="shortcut_press_type">Tipo de pulsación:</string>
+    <string name="shortcut_click_short">Pulsación corta</string>
+    <string name="shortcut_click_long">Pulsación larga (500 ms)</string>
+    <string name="shortcut_click_double">Doble pulsación</string>
+    <string name="shortcut_tap_pass">Reinyectar pulsación simple</string>
+    <string name="shortcut_tap_pass_desc">Si no se mantiene la pulsación larga o doble, escribe la tecla normal</string>
+    <string name="shortcut_vibrate">Vibración al activar</string>
+    <string name="shortcut_dialog_title">Detectar tecla o combo</string>
+    <string name="shortcut_dialog_desc">Pulsa cualquier tecla o combinación en el teclado físico</string>
+    <string name="shortcut_dialog_waiting">Pulsa una tecla...</string>
+    <string name="shortcut_dialog_cancel">Cancelar</string>
+    <string name="shortcut_dialog_clear">Borrar</string>
+    <string name="shortcut_notice_title">Atajo de teclado y Key Mapper</string>
+    <string name="shortcut_notice_desc">Configura disparadores de teclas físicas (pulsación corta, larga o doble) o la integración con Key Mapper en Teclado &gt; Atajos de teclado.</string>
+
+    <string name="shortcut_action_recents">Apps recientes</string>
+    <string name="shortcut_action_recents_desc">Abre el menú de apps recientes (Slim List / Quilt) o el conmutador del sistema.</string>
+    <string name="shortcut_action_qr">Agrandar QR / Aztec</string>
+    <string name="shortcut_action_qr_desc">Captura la pantalla, agranda códigos 2D en fondo blanco puro al 100% de brillo.</string>
+    <string name="shortcut_action_aspect_ratio">Relación de aspecto / Resolución</string>
+    <string name="shortcut_action_aspect_ratio_desc">Alterna secuencialmente entre las resoluciones de pantalla configuradas.</string>
+    <string name="shortcut_action_rotation">Rotación de pantalla</string>
+    <string name="shortcut_action_rotation_desc">Alterna la rotación forzada vertical (o restaura auto-rotación / sistema).</string>
+    <string name="shortcut_action_extra_dim">Atenuación extra</string>
+    <string name="shortcut_action_extra_dim_desc">Activa o desactiva la atenuación extra de brillo de Android.</string>
+    <string name="shortcut_action_gestures">Gestos de borde</string>
+    <string name="shortcut_action_gestures_desc">Activa o desactiva las franjas de navegación por gestos en los bordes.</string>
+
+    <string name="key_label_prog_red">Recientes (HW)</string>
+    <string name="key_label_app_switch">Recientes</string>
+    <string name="key_label_back">Atrás</string>
+    <string name="key_label_home">Inicio</string>
+    <string name="key_label_grave">Tecla Moneda (`)</string>
+    <string name="key_label_search">Búsqueda</string>
+    <string name="key_label_camera">Cámara</string>
+
+    <string name="toast_rotation_format">Rotación: %s</string>
+    <string name="toast_extra_dim_on">Atenuación extra: ACTIVADA</string>
+    <string name="toast_extra_dim_off">Atenuación extra: DESACTIVADA</string>
+    <string name="toast_gestures_on">Gestos de borde: ACTIVADOS</string>
+    <string name="toast_gestures_off">Gestos de borde: DESACTIVADOS</string>
+    <string name="toast_bluetooth_on">Bluetooth: ACTIVADO</string>
+    <string name="toast_bluetooth_off">Bluetooth: DESACTIVADO</string>
+    <string name="toast_location_on">Ubicación: ACTIVADA</string>
+    <string name="toast_location_off">Ubicación: DESACTIVADA</string>
+
+    <string name="gesture_action_aspect_ratio">Relación de aspecto</string>
+    <string name="gesture_action_rotation">Rotación de pantalla</string>
+    <string name="gesture_action_extra_dim">Atenuación extra</string>
+    <string name="gesture_action_gestures">Alternar gestos</string>
+    <string name="gesture_action_bluetooth">Alternar Bluetooth</string>
+    <string name="gesture_action_location">Alternar ubicación</string>
+    <string name="gesture_action_circle_to_search">Circle to Search</string>
+
+    <!-- Circle to Search -->
+    <string name="title_circle_to_search">Circle to Search</string>
+    <string name="subtitle_circle_to_search">Busca visualmente rodeando texto o imágenes en pantalla</string>
+    <string name="cts_master_switch_title">Activar Circle to Search</string>
+    <string name="cts_master_switch_desc">Configura las flags del launcher y el asistente de búsqueda contextual</string>
+    <string name="cts_status_active">Módulo Zygisk activo</string>
+    <string name="cts_status_inactive">Inactivo</string>
+    <string name="cts_status_desc">Opera mediante el módulo Zygisk nativo (/data/adb/modules/q25_cts) simulando las funciones de Pixel 8 Pro para la aplicación de Google.</string>
+    <string name="cts_test_trigger_button">Probar Circle to Search ahora</string>
 </resources>

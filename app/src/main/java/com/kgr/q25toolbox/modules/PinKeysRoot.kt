@@ -28,6 +28,8 @@ object PinKeysRoot {
     private const val SCRIPT_NAME = "pin_keys.sh"
     private const val TARGET = "/data/adb/service.d/$SCRIPT_NAME"
     private const val TEMPLATE_ASSET = "pin_keys_template.sh"
+    /** Bracket trick: the pattern must not match the very shell that runs the kill command. */
+    private const val PATTERN = "[p]in_keys.sh"
     private const val LOCK = "/data/adb/.pin_keys.lock"
 
     /** Same defaults as the accessibility path: PIN on, Enter-opens on only where it was verified (Lineage). */
@@ -47,8 +49,22 @@ object PinKeysRoot {
     fun isActive(prefs: SharedPreferences?) = prefs?.getBoolean(KEY_ROOT_ACTIVE, false) ?: false
 
     /** Pure, for tests: the script as installed for these settings. */
-    internal fun render(raw: String, pin: Boolean, enterOpens: Boolean) =
-        raw.replace("__PIN__", if (pin) "1" else "0").replace("__ENTER_OPENS__", if (enterOpens) "1" else "0")
+    internal fun render(raw: String, pin: Boolean, enterOpens: Boolean, isLineage: Boolean = RomProfile.autoDetectedLineage()) =
+        raw.replace("__PIN__", if (pin) "1" else "0")
+            .replace("__ENTER_OPENS__", if (enterOpens) "1" else "0")
+            .replace("__IS_LINEAGE__", if (isLineage) "1" else "0")
+
+    /**
+     * Kills every daemon instance AND its getevent child. Killing only the parent (the old behaviour) left the
+     * pipeline's subshell and getevent alive, so each restart stacked another daemon and one key press typed
+     * several digits (wrong PIN).
+     */
+    private fun stopDaemon() {
+        RootShell.run(
+            "for p in \$(pgrep -f $PATTERN); do for c in \$(pgrep -P \$p); do kill \$c 2>/dev/null; done; kill \$p 2>/dev/null; done; " +
+                "for p in \$(pgrep -f $PATTERN); do kill -9 \$p 2>/dev/null; done; rm -f $LOCK"
+        )
+    }
 
     private fun isRunning(): Boolean =
         RootShell.run("pgrep -f $SCRIPT_NAME >/dev/null 2>&1 && echo yes || echo no").outString.trim() == "yes"
@@ -67,7 +83,7 @@ object PinKeysRoot {
         val pin = pinWanted(prefs)
         val enter = enterOpensWanted(prefs)
         if (!pin && !enter) {
-            RootShell.run("kill \$(pgrep -f $SCRIPT_NAME) 2>/dev/null; rm -f $LOCK")
+            stopDaemon()
             AssetInstaller.removeFile(TARGET)
             prefs.edit().putBoolean(KEY_ROOT_ACTIVE, false).apply()
             return false
@@ -76,7 +92,7 @@ object PinKeysRoot {
             AssetInstaller.matchesAsset(context, TEMPLATE_ASSET, TARGET) { render(it, pin, enter) }
         if (!healthy) {
             // kill + pgrep: pkill was unreliable on this toybox (see BtIdleController). setsid: survive the libsu session.
-            RootShell.run("kill \$(pgrep -f $SCRIPT_NAME) 2>/dev/null; rm -f $LOCK")
+            stopDaemon()
             AssetInstaller.installFromAsset(context, TEMPLATE_ASSET, TARGET) { render(it, pin, enter) }
             RootShell.run("nohup setsid sh $TARGET </dev/null >/dev/null 2>&1 &")
         }
@@ -87,7 +103,7 @@ object PinKeysRoot {
 
     /** Stops and removes the daemon (used when the whole feature is turned off). */
     fun remove(prefs: SharedPreferences) {
-        RootShell.run("kill \$(pgrep -f $SCRIPT_NAME) 2>/dev/null; rm -f $LOCK")
+        stopDaemon()
         AssetInstaller.removeFile(TARGET)
         prefs.edit().putBoolean(KEY_ROOT_ACTIVE, false).apply()
     }

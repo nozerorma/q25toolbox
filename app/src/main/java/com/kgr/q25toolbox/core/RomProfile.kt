@@ -74,7 +74,9 @@ object RomProfile {
 
     private fun detectAuto(): Triple<Rom, Int?, String> {
         val keys = listOf("ro.lineage.version", "ro.lineage.build.version", "ro.build.flavor", "ro.fota.version", "ro.fota.oem")
-        return classify(keys.associateWith(::prop), Build.MANUFACTURER, Build.VERSION.SDK_INT)
+        val manufacturer = try { Build.MANUFACTURER ?: "" } catch (_: Throwable) { "" }
+        val sdk = try { Build.VERSION.SDK_INT } catch (_: Throwable) { 0 }
+        return classify(keys.associateWith(::prop), manufacturer, sdk)
     }
 
     /** Blocking (spawns `getprop`); call off the main thread on first use. Result is cached. */

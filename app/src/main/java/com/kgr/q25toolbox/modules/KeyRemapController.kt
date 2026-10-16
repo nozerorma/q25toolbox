@@ -59,6 +59,21 @@ object KeyRemapController {
     private const val VENDOR_FILE = "/vendor/usr/keylayout/Q25_keyboard.kl"
 
     /**
+     * The Q25 Trackpad Customizer's root helper EVIOCGRABs the physical keyboard and re-emits its events
+     * through uinput as a virtual "Custom Q25 Keyboard" (name [VKBD_NAME]). EventHub lays that device out
+     * with the Generic.kl fallback, so while the customizer runs, the Q25_keyboard.kl override above never
+     * sees any event: the same remaps are therefore also overlaid on a copy of Generic.kl. Safe on this
+     * hardware: no other device that falls back to Generic.kl emits scancodes 41/54/580 (verified with
+     * getevent: mtk-kpd = MUTE/VOLUMEDOWN, mtk-pmic-keys = VOLUMEUP/POWER, headset jack = volume/media keys),
+     * so only the customizer's virtual keyboard is affected. When the customizer is absent the overlay is
+     * inert: the physical keyboard alone emits those scancodes, and it keeps its own Q25_keyboard.kl remap.
+     */
+    private const val VKBD_NAME = "Custom Q25 Keyboard"
+    private const val GENERIC_FILE = "/system/usr/keylayout/Generic.kl"
+    private const val TMP_GENERIC = "/data/local/tmp/Q25_Generic.kl"
+    private const val LOCK_FILE = "/data/adb/.key_remap.lock"
+
+    /**
      * Resolves to whichever of [SYSTEM_FILE] / [VENDOR_FILE] exists on this device, setting
      * $SYS_FILE and $SELABEL for the rest of the script to use. Waits (rather than failing
      * outright) since this can run at boot before either partition's overlay is mounted yet.
@@ -138,11 +153,16 @@ object KeyRemapController {
         prefs.edit().putString(KEY_REMAP_SOURCE, key.name).apply()
 
     /**
-     * Shell snippet that makes EventHub re-open the keyboard (and re-parse its keylayout) WITHOUT
+     * Shell snippet that makes EventHub re-open input devices (and re-parse their keylayouts) WITHOUT
      * touching the i2c driver: a uevent remove/add on the input node makes ueventd delete and
      * recreate /dev/input/eventN, which EventHub sees via inotify. Same idea as Key2Toolbox's
      * `reloadInputDevice`. Used where unbinding the driver can panic the kernel
      * ([RomProfile.keyboardRebindUnsafe]); verified live on LineageOS 23.
+     *
+     * Reloads BOTH keyboards: the physical Q25_keyboard (so its layout is re-parsed) and the
+     * customizer's virtual [VKBD_NAME] (which lays out with Generic.kl, so the overlay on it must be
+     * re-read too). A virtual keyboard that appears LATER reads the overlaid Generic.kl at its
+     * EventHub registration, so the customizer restarting needs no action.
      *
      * The loop runs in a subshell that ignores TERM/HUP: a new [applySettings] kills the previous daemon
      * (`pgrep -f key_remap.sh`), and without this a kill landing between `remove` and `add` left the
@@ -150,7 +170,15 @@ object KeyRemapController {
      */
     private const val UEVENT_RELOAD =
         "( trap \"\" TERM HUP; for d in /sys/class/input/event*; do " +
-            "if [ \"\$(cat \"\$d/device/name\" 2>/dev/null)\" = \"Q25_keyboard\" ]; then " +
+            "N=\$(cat \"\$d/device/name\" 2>/dev/null); " +
+            "if [ \"\$N\" = \"Q25_keyboard\" ] || [ \"\$N\" = \"$VKBD_NAME\" ]; then " +
+            "echo remove > \"\$d/uevent\"; sleep 1; echo add > \"\$d/uevent\"; fi; done )"
+
+    /** Same as [UEVENT_RELOAD] but for the virtual keyboard only, used on the BenOS path where the
+     * physical one is reloaded by re-binding its driver instead (the uinput device has no driver to bind). */
+    private const val UEVENT_RELOAD_VKBD =
+        "( trap \"\" TERM HUP; for d in /sys/class/input/event*; do " +
+            "if [ \"\$(cat \"\$d/device/name\" 2>/dev/null)\" = \"$VKBD_NAME\" ]; then " +
             "echo remove > \"\$d/uevent\"; sleep 1; echo add > \"\$d/uevent\"; fi; done )"
 
     /**
@@ -160,8 +188,29 @@ object KeyRemapController {
      * old cleanup a silent no-op. Capped, so it cannot spin.
      */
     private fun unmountAllIn(pidExpr: String) =
-        "for f in $SYSTEM_FILE $VENDOR_FILE; do i=0; " +
+        "for f in $SYSTEM_FILE $VENDOR_FILE $GENERIC_FILE; do i=0; " +
             "while [ \$i -lt 8 ] && nsenter -t $pidExpr -m -- umount -l \$f 2>/dev/null; do i=\$((i+1)); done; done"
+
+    /**
+     * Single-instance gate for the boot script, inserted at the top of the generated script. Two copies
+     * running at once (an app re-apply racing the boot script) once interleaved each other's
+     * unmount/mount/reload cycles and left the keyboard on the stale pre-remap layout. A fresh copy
+     * waits for a live predecessor to exit (applySettings kills it first) before taking over the lock.
+     * Built as a normal string: raw strings do not process the \$ escapes.
+     */
+    private const val LOCK_BLOCK =
+        "LOCK=$LOCK_FILE\n" +
+        "i=0\n" +
+        "while [ \$i -lt 15 ]; do\n" +
+        "  OLD_PID=\$(cat \"\$LOCK\" 2>/dev/null)\n" +
+        "  if [ -n \"\$OLD_PID\" ] && grep -q key_remap \"/proc/\$OLD_PID/cmdline\" 2>/dev/null; then\n" +
+        "    sleep 1\n" +
+        "    i=\$((i+1))\n" +
+        "  else\n" +
+        "    break\n" +
+        "  fi\n" +
+        "done\n" +
+        "echo \$\$ > \"\$LOCK\"\n"
 
     /**
      * Apply the remapping settings live and update the boot script. Serialized: two applies in flight used to
@@ -181,7 +230,7 @@ object KeyRemapController {
             // Stop any existing remap daemon first
             RootShell.run("kill \$(pgrep -f key_remap.sh) 2>/dev/null")
             // Unmount any global/master-namespace mount so all regular apps have a clean mountinfo
-            RootShell.run("su -M -c 'umount -l $SYSTEM_FILE 2>/dev/null ; umount -l $VENDOR_FILE 2>/dev/null'")
+            RootShell.run("su -M -c 'umount -l $SYSTEM_FILE 2>/dev/null ; umount -l $VENDOR_FILE 2>/dev/null ; umount -l $GENERIC_FILE 2>/dev/null'")
             // Write script to /data/adb/service.d/
             RootShell.run("cat << 'EOF' > $BOOT_SCRIPT\n$script\nEOF\nchmod 755 $BOOT_SCRIPT")
             // Execute the script live in the background
@@ -202,10 +251,11 @@ object KeyRemapController {
                 "su -M -c '$reload" +
                 "umount -l $SYSTEM_FILE 2>/dev/null" +
                 " ; umount -l $VENDOR_FILE 2>/dev/null" +
+                " ; umount -l $GENERIC_FILE 2>/dev/null" +
                 " ; SS_PID=\$(pidof system_server)" +
                 " ; if [ -n \"\$SS_PID\" ]; then ${unmountAllIn("\$SS_PID")}; fi" +
                 "$reattach" +
-                " ; rm -f $TMP_FILE'"
+                " ; rm -f $TMP_FILE ; rm -f $TMP_GENERIC'"
             )
             Log.d("KeyRemapController", "Cleared remaps and restored defaults (rebind=$rebind)")
             logVerification()
@@ -222,7 +272,7 @@ object KeyRemapController {
         val r = RootShell.run(
             "sleep 3; SS=\$(pidof system_server); " +
                 "echo \"binds=\$(grep -c keylayout /proc/\$SS/mountinfo)\"; " +
-                "for f in $SYSTEM_FILE $VENDOR_FILE; do nsenter -t \$SS -m -- grep -E '^key (41|54|580)[[:space:]]' \$f 2>/dev/null; done; " +
+                "for f in $SYSTEM_FILE $VENDOR_FILE $GENERIC_FILE; do nsenter -t \$SS -m -- grep -E '^key (41|54|580)[[:space:]]' \$f 2>/dev/null; done; " +
                 "grep -c Q25_keyboard /proc/bus/input/devices"
         )
         Log.d("KeyRemapController", "verify (system_server view): ${r.out.joinToString(" | ")}")
@@ -271,6 +321,7 @@ object KeyRemapController {
             if (recentsRemap) add("s/key $RECENTS_SCANCODE[[:space:]]+APP_SWITCH/key $RECENTS_SCANCODE $RECENTS_TRIGGER_KEYCODE/")
         }
         val sedCommand = "sed -E ${exprs.joinToString(" ") { "-e \"$it\"" }} $sysFileVar > $TMP_FILE.tmp"
+        val sedGenericCommand = "sed -E ${exprs.joinToString(" ") { "-e \"$it\"" }} $GENERIC_FILE > $TMP_GENERIC.tmp"
         val driver = "/sys/bus/i2c/drivers/Q25_keyboard"
         val unbindBlock = if (!rebind) "" else """
 # Unbind the driver FIRST if it's already bound (e.g. switching source key while
@@ -290,10 +341,14 @@ fi
 if [ -d $driver ]; then
   echo 6-001f > $driver/bind
 fi
+# The customizer's virtual keyboard has no driver to rebind: reload it via uevent.
+$UEVENT_RELOAD_VKBD
 """
         val bailRebind = if (!rebind) "" else "\n  if [ -d $driver ]; then echo 6-001f > $driver/bind; fi"
         return """
 #!/system/bin/sh
+# Single instance only: see the LOCK_BLOCK doc above.
+$LOCK_BLOCK
 # Resolve which partition actually has the layout file on this ROM (also waits for it
 # to be available - this can run at boot before either overlay is mounted yet).
 $resolveSysFile
@@ -323,14 +378,33 @@ fi
 chcon $selabelVar $TMP_FILE
 chmod 644 $TMP_FILE
 
+# The customizer overlay: while the Q25 Trackpad Customizer's helper grabs the physical
+# keyboard and re-emits through uinput (see the VKBD_NAME doc), its virtual keyboard is
+# laid out with Generic.kl, so the same remaps are overlaid there too. Built the same way:
+# copy from the pristine original, sed, and the same never-mount-an-empty-file safety.
+umount -l $GENERIC_FILE 2>/dev/null
+rm -f $TMP_GENERIC
+cp $GENERIC_FILE $TMP_GENERIC
+$sedGenericCommand
+cat $TMP_GENERIC.tmp > $TMP_GENERIC
+rm -f $TMP_GENERIC.tmp
+if [ ! -s $TMP_GENERIC ]; then
+  rm -f $TMP_GENERIC$bailRebind
+  exit 1
+fi
+chcon u:object_r:system_file:s0 $TMP_GENERIC
+chmod 644 $TMP_GENERIC
+
 # Mount ONLY inside system_server's mount namespace so EventHub sees it,
 # but untrusted apps, root detectors, and banking apps have a completely clean /proc/self/mountinfo.
 apply_to_system_server() {
   target_pid=$1
   # Drop binds left by earlier applies first (they stack), then bind the fresh copy.
   ${unmountAllIn(targetPidVar)}
-  nsenter -t $targetPidVar -m -- mount --make-slave /vendor 2>/dev/null || nsenter -t $targetPidVar -m -- mount --make-slave /system 2>/dev/null
+  nsenter -t $targetPidVar -m -- mount --make-slave /vendor 2>/dev/null
+  nsenter -t $targetPidVar -m -- mount --make-slave /system 2>/dev/null
   nsenter -t $targetPidVar -m -- mount --bind $TMP_FILE $sysFileVar
+  nsenter -t $targetPidVar -m -- mount --bind $TMP_GENERIC $GENERIC_FILE
 }
 
 # Wait for system_server

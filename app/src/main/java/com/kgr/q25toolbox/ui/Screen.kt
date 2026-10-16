@@ -34,6 +34,9 @@ sealed class Screen(val route: String, @StringRes val titleRes: Int, @StringRes 
     data object ImeCompat : Screen("ime_compat", R.string.title_ime_compat, R.string.subtitle_ime_compat)
     data object ZygiskDetach : Screen("zygisk_detach", R.string.title_zygisk_detach, R.string.subtitle_zygisk_detach)
     data object AdvancedSettings : Screen("advanced_settings", R.string.title_advanced_settings, R.string.subtitle_advanced_settings)
+    data object QrEnlarger : Screen("qr_enlarger", R.string.title_qr_enlarger, R.string.subtitle_qr_enlarger)
+    data object KeyboardShortcuts : Screen("keyboard_shortcuts", R.string.title_keyboard_shortcuts, R.string.subtitle_keyboard_shortcuts)
+    data object CircleToSearch : Screen("circle_to_search", R.string.title_circle_to_search, R.string.subtitle_circle_to_search)
 
     val title: String @Composable get() = stringResource(titleRes)
     val subtitle: String @Composable get() = if (subtitleRes != 0) stringResource(subtitleRes) else ""
@@ -66,6 +69,7 @@ val keyboardScreens = listOf(
     Screen.ImeSuggestions,
     Screen.ImeCompat,
     Screen.InCallShortcuts,
+    Screen.KeyboardShortcuts,
 )
 
 /** Screens listed under the Screen tab. */
@@ -75,6 +79,7 @@ val screenScreens = listOf(
     Screen.Rotation,
     Screen.RecentsTweaks,
     Screen.Gestures,
+    Screen.QrEnlarger,
 )
 
 /** Screens listed under the System tab. */
@@ -89,6 +94,7 @@ val systemScreens = listOf(
     Screen.CallScreenRecovery,
     Screen.CallProximitySleep,
     Screen.TickerNotifications,
+    Screen.CircleToSearch,
     Screen.Dt2w,
     Screen.AdvancedSettings,
 )

@@ -1,4 +1,4 @@
-val appVersionName = "v4.3.1"
+val appVersionName = "v4.4"
 
 plugins {
     id("com.android.application")
@@ -17,7 +17,7 @@ android {
         applicationId = "com.kgr.q25toolbox"
         minSdk = 28
         targetSdk = 34
-        versionCode = 44
+        versionCode = 45
         versionName = appVersionName
 
         ndk { abiFilters += "arm64-v8a" }
@@ -55,6 +55,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 
     buildFeatures {
@@ -104,6 +108,9 @@ dependencies {
     compileOnly("de.robv.android.xposed:api:82")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // QR and Aztec barcode decoding / encoding for QR Enlarger
+    implementation("com.google.zxing:core:3.5.3")
 
     testImplementation("junit:junit:4.13.2")
 }

@@ -130,11 +130,23 @@ object GestureSettings {
 
     /** Things a gesture can do. NONE leaves the gesture unassigned. Names are stored in prefs: do not rename. */
     enum class Action {
-        NONE, BACK, HOME, RECENTS, NOTIFICATIONS, QUICK_SETTINGS, LOCK_SCREEN, SCREENSHOT, POWER_MENU, SPLIT_SCREEN, FLASHLIGHT, PREVIOUS_APP
+        NONE, BACK, HOME, RECENTS, NOTIFICATIONS, QUICK_SETTINGS, LOCK_SCREEN, SCREENSHOT, POWER_MENU, SPLIT_SCREEN, FLASHLIGHT, PREVIOUS_APP, QR_ENLARGER,
+        ASPECT_RATIO, ROTATION, EXTRA_DIM, GESTURES, BLUETOOTH, LOCATION, CIRCLE_TO_SEARCH
     }
 
     /** Parses an action name from an external caller (case-insensitive); null if it is not one of ours. Pure, for tests. */
-    fun parseAction(name: String?): Action? = name?.trim()?.uppercase()?.let { n -> Action.entries.firstOrNull { it.name == n } }
+    fun parseAction(name: String?): Action? {
+        val n = name?.trim()?.uppercase() ?: return null
+        if (n == "ENLARGE_QR" || n == "QR") return Action.QR_ENLARGER
+        if (n == "RESOLUTION" || n == "RES" || n == "ASPECT") return Action.ASPECT_RATIO
+        if (n == "ROTATE" || n == "AUTO_ROTATE") return Action.ROTATION
+        if (n == "DIM" || n == "EXTRA_DIMMING") return Action.EXTRA_DIM
+        if (n == "GESTURE" || n == "EDGE_GESTURES" || n == "STRIPS") return Action.GESTURES
+        if (n == "BT") return Action.BLUETOOTH
+        if (n == "LOC" || n == "GPS") return Action.LOCATION
+        if (n == "CTS" || n == "CIRCLE_TO_SEARCH" || n == "OMNI" || n == "SEARCH") return Action.CIRCLE_TO_SEARCH
+        return Action.entries.firstOrNull { it.name == n }
+    }
 
     /** Gestures offered per zone: side edges tell straight from the two diagonals, the bottom edge only swipes up. */
     fun dirsOf(zone: Zone): List<EdgeSwipe.Dir> = when (zone) {

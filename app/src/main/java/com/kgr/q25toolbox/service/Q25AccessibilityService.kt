@@ -4,9 +4,11 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.KeyguardManager
 import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import com.kgr.q25toolbox.R
 import android.os.BatteryManager
 import android.util.Log
 import android.graphics.Bitmap
@@ -154,6 +156,7 @@ class Q25AccessibilityService : AccessibilityService() {
             if (intent?.action == Intent.ACTION_SCREEN_OFF) {
                 // An accessibility-overlay window can sit above the keyguard; never leave it up.
                 RecentsOverlays.hide(animate = false)
+                com.kgr.q25toolbox.modules.QrEnlargerController.hide()
                 GestureStripsController.hide()
                 foregroundPkg = null
                 reconcileScaling()
@@ -167,6 +170,9 @@ class Q25AccessibilityService : AccessibilityService() {
     // session, so a single crossing only triggers one reset (not one per broadcast) until the
     // level drops back below the threshold (e.g. unplugged, or a fresh charge from lower).
     private var batteryThresholdArmed = false
+
+    // Registered in onServiceConnected (see there for why it needs to be dynamic); unregistered in onDestroy.
+    private var runActionReceiver: RunActionReceiver? = null
 
     // Auto-resets battery usage stats once the level reaches the configured threshold while
     // charging - a substitute for BATTERY_STATUS_FULL, which this device's charging driver
@@ -280,14 +286,93 @@ class Q25AccessibilityService : AccessibilityService() {
      * suggestion shortcuts), features tied to the keyguard (while locked), and package-scoped fixes (while their
      * app is in front). Re-evaluated whenever one of those inputs changes.
      */
+    private fun isSysUiOrCredentialFocused(): Boolean {
+        if (foregroundPkg == "com.android.systemui" || foregroundPkg == "com.android.settings") return true
+        val windowList: List<AccessibilityWindowInfo> = try {
+            windows ?: return false
+        } catch (_: Exception) {
+            return false
+        }
+        for (w in windowList) {
+            val root = w.root ?: continue
+            try {
+                val pkg = root.packageName?.toString()
+                if (pkg == "com.android.systemui" || pkg == "com.android.settings" ||
+                    pkg == "com.google.android.packageinstaller" || pkg == "com.android.packageinstaller") return true
+            } finally {
+                root.recycle()
+            }
+        }
+        return false
+    }
+
+    private fun findNodeByPredicate(root: AccessibilityNodeInfo, predicate: (AccessibilityNodeInfo) -> Boolean): AccessibilityNodeInfo? {
+        if (predicate(root)) return AccessibilityNodeInfo.obtain(root)
+        val count = root.childCount
+        for (i in 0 until count) {
+            val child = root.getChild(i) ?: continue
+            val found = findNodeByPredicate(child, predicate)
+            child.recycle()
+            if (found != null) return found
+        }
+        return null
+    }
+
+    private fun hasPinPromptNodes(root: AccessibilityNodeInfo): Boolean {
+        val pkg = root.packageName?.toString()
+        if (pkg != "com.android.systemui" && pkg != "com.android.settings" &&
+            pkg != "com.google.android.packageinstaller" && pkg != "com.android.packageinstaller") {
+            return false
+        }
+        val match = findNodeByPredicate(root) { node ->
+            val id = node.viewIdResourceName
+            id == "com.android.systemui:id/key_enter" ||
+            id == "com.android.systemui:id/delete_button" ||
+            id == "com.android.systemui:id/keyguard_pin_view" ||
+            id == "com.android.systemui:id/compose_credential_view" ||
+            id == "com.android.systemui:id/cred_pin_pad" ||
+            id == "cred_pin_pad"
+        }
+        val found = (match != null)
+        match?.recycle()
+        return found
+    }
+
+    private fun isPinPromptShowing(): Boolean {
+        if (isDeviceLocked()) return true
+        val root = rootInActiveWindow
+        if (root != null) {
+            try {
+                if (hasPinPromptNodes(root)) return true
+            } finally {
+                root.recycle()
+            }
+        }
+        val windowList: List<AccessibilityWindowInfo> = try {
+            windows ?: return false
+        } catch (_: Exception) {
+            return false
+        }
+        for (w in windowList) {
+            val wRoot = w.root ?: continue
+            try {
+                if (hasPinPromptNodes(wRoot)) return true
+            } finally {
+                wRoot.recycle()
+            }
+        }
+        return false
+    }
+
     private fun refreshKeyFilter(force: Boolean = false) {
         val p = prefs ?: return
         val pkg = foregroundPkg
         val anywhere = com.kgr.q25toolbox.modules.ResolutionHotkey.isEnabled(this) ||
             imeSuggestionsEnabled() ||
+            pinInputEnabled() ||
+            com.kgr.q25toolbox.modules.QrEnlargerController.isShowing() ||
             (!recentsKeyExternal() && com.kgr.q25toolbox.modules.RecentsTweaksController.getOverlayMode(this).isOverlay)
-        val lockFeatures = lockscreenNavBlockEnabled() || lockscreenEnterOpensPinEnabled() ||
-            (pinInputEnabled() && !com.kgr.q25toolbox.modules.PinKeysRoot.isActive(p))
+        val lockFeatures = lockscreenNavBlockEnabled() || lockscreenEnterOpensPinEnabled()
         val scoped = pkg != null && (
             (calculatorEnabled() && CalculatorInputFix.isCalculatorPackage(pkg)) ||
             (chatComposerEnabled() && composerHandler.supportsPackage(pkg)) ||
@@ -367,6 +452,18 @@ class Q25AccessibilityService : AccessibilityService() {
         GestureStripsController.reconcile(this)
         syncNativeBottomGesture()
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        // RunActionReceiver: also registered dynamically, because since Android 8 a manifest receiver only
+        // gets broadcasts that explicitly target this app (setPackage/setComponent). An action-only
+        // "Send intent" broadcast from Key Mapper (and `am broadcast -a ...` without -p) is implicit and
+        // never reaches the manifest receiver on its own; the dynamic one receives it. A delivery can
+        // match both registrations when the intent does target the app; RunActionReceiver debounces that.
+        runActionReceiver = RunActionReceiver().also { r ->
+            if (Build.VERSION.SDK_INT >= 33) {
+                registerReceiver(r, IntentFilter(RunActionReceiver.ACTION_RUN), android.content.Context.RECEIVER_EXPORTED)
+            } else {
+                registerReceiver(r, IntentFilter(RunActionReceiver.ACTION_RUN))
+            }
+        }
     }
 
     private fun pinInputEnabled() = prefs?.getBoolean(KEY_PIN_INPUT, true) ?: true
@@ -405,6 +502,7 @@ class Q25AccessibilityService : AccessibilityService() {
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
             event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED
         ) {
+            refreshKeyFilter()
             val eventPkg = event.packageName?.toString()
             if (eventPkg == null || eventPkg != foregroundPkg) {
                 val pkg = foregroundAppPackage()
@@ -540,6 +638,7 @@ class Q25AccessibilityService : AccessibilityService() {
         val desired = hotkeyResolution
             ?: foregroundPkg?.let { AppScalingController.entries(this)[it] }
             ?: AppScalingController.NATIVE
+        Log.d("Q25Toolbox", "reconcileScaling: fg=$foregroundPkg desired=${desired.encode()} current=$currentScaleKey busy=${resolvingScale.get()}")
         if (desired.encode() == currentScaleKey) return
         if (!resolvingScale.compareAndSet(false, true)) {
             // A change is in flight: try again shortly instead of losing this one (a hotkey press must not be dropped).
@@ -677,10 +776,111 @@ class Q25AccessibilityService : AccessibilityService() {
             GestureSettings.Action.POWER_MENU -> performGlobalAction(GLOBAL_ACTION_POWER_DIALOG)
             GestureSettings.Action.SPLIT_SCREEN -> performGlobalAction(GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
             GestureSettings.Action.FLASHLIGHT -> TorchToggle.toggle(this)
+            GestureSettings.Action.QR_ENLARGER -> com.kgr.q25toolbox.modules.QrEnlargerController.trigger(this)
             GestureSettings.Action.PREVIOUS_APP -> {
                 if (RecentsOverlays.isShowing()) RecentsOverlays.hide(animate = false)
                 val front = foregroundPkg
                 worker.execute { try { switchToPreviousApp(front) } catch (t: Throwable) { Log.e("Q25Toolbox", "previous app failed", t) } }
+            }
+            GestureSettings.Action.ASPECT_RATIO -> cycleResolution()
+            GestureSettings.Action.ROTATION -> toggleRotation()
+            GestureSettings.Action.EXTRA_DIM -> toggleExtraDim()
+            GestureSettings.Action.GESTURES -> toggleGestures()
+            GestureSettings.Action.BLUETOOTH -> toggleBluetooth()
+            GestureSettings.Action.LOCATION -> toggleLocation()
+            GestureSettings.Action.CIRCLE_TO_SEARCH -> com.kgr.q25toolbox.modules.CircleToSearchController.trigger(this)
+        }
+    }
+
+    private fun toggleRotation() {
+        worker.execute {
+            try {
+                val current = com.kgr.q25toolbox.modules.RotationController.general(this)
+                val target = if (current == com.kgr.q25toolbox.modules.RotationController.Mode.SYSTEM) {
+                    val cr = contentResolver
+                    val auto = android.provider.Settings.System.getInt(cr, android.provider.Settings.System.ACCELEROMETER_ROTATION, 1)
+                    if (auto == 1) com.kgr.q25toolbox.modules.RotationController.Mode.R0 else com.kgr.q25toolbox.modules.RotationController.Mode.AUTO
+                } else {
+                    com.kgr.q25toolbox.modules.RotationController.Mode.SYSTEM
+                }
+                com.kgr.q25toolbox.modules.RotationController.setGeneral(this, target)
+                com.kgr.q25toolbox.modules.RotationController.apply(this, target)
+                val msg = when (target) {
+                    com.kgr.q25toolbox.modules.RotationController.Mode.SYSTEM -> getString(R.string.rot_mode_system)
+                    com.kgr.q25toolbox.modules.RotationController.Mode.AUTO -> getString(R.string.rot_mode_auto)
+                    com.kgr.q25toolbox.modules.RotationController.Mode.R0 -> getString(R.string.rot_mode_0)
+                    else -> target.name
+                }
+                mainHandler.post { android.widget.Toast.makeText(this, getString(R.string.toast_rotation_format, msg), android.widget.Toast.LENGTH_SHORT).show() }
+            } catch (t: Throwable) {
+                Log.e("Q25Toolbox", "toggleRotation failed", t)
+            }
+        }
+    }
+
+    private fun toggleExtraDim() {
+        worker.execute {
+            try {
+                val active = com.kgr.q25toolbox.modules.ExtraDimController.isActivated()
+                com.kgr.q25toolbox.modules.ExtraDimController.setActivated(!active)
+                mainHandler.post {
+                    android.widget.Toast.makeText(this, if (!active) getString(R.string.toast_extra_dim_on) else getString(R.string.toast_extra_dim_off), android.widget.Toast.LENGTH_SHORT).show()
+                }
+            } catch (t: Throwable) {
+                Log.e("Q25Toolbox", "toggleExtraDim failed", t)
+            }
+        }
+    }
+
+    private fun toggleGestures() {
+        mainHandler.post {
+            try {
+                val left = com.kgr.q25toolbox.modules.GestureSettings.get(this, com.kgr.q25toolbox.modules.GestureSettings.Zone.LEFT)
+                val right = com.kgr.q25toolbox.modules.GestureSettings.get(this, com.kgr.q25toolbox.modules.GestureSettings.Zone.RIGHT)
+                val bottom = com.kgr.q25toolbox.modules.GestureSettings.get(this, com.kgr.q25toolbox.modules.GestureSettings.Zone.BOTTOM)
+                val anyOn = left.mode == com.kgr.q25toolbox.modules.GestureSettings.Mode.CUSTOM ||
+                            right.mode == com.kgr.q25toolbox.modules.GestureSettings.Mode.CUSTOM ||
+                            bottom.mode == com.kgr.q25toolbox.modules.GestureSettings.Mode.CUSTOM
+                val newMode = if (anyOn) com.kgr.q25toolbox.modules.GestureSettings.Mode.OFF else com.kgr.q25toolbox.modules.GestureSettings.Mode.CUSTOM
+                com.kgr.q25toolbox.modules.GestureSettings.set(this, com.kgr.q25toolbox.modules.GestureSettings.Zone.LEFT, left.copy(mode = newMode))
+                com.kgr.q25toolbox.modules.GestureSettings.set(this, com.kgr.q25toolbox.modules.GestureSettings.Zone.RIGHT, right.copy(mode = newMode))
+                com.kgr.q25toolbox.modules.GestureSettings.set(this, com.kgr.q25toolbox.modules.GestureSettings.Zone.BOTTOM, bottom.copy(mode = newMode))
+                GestureStripsController.reconcile(this)
+                android.widget.Toast.makeText(this, if (newMode == com.kgr.q25toolbox.modules.GestureSettings.Mode.CUSTOM) getString(R.string.toast_gestures_on) else getString(R.string.toast_gestures_off), android.widget.Toast.LENGTH_SHORT).show()
+            } catch (t: Throwable) {
+                Log.e("Q25Toolbox", "toggleGestures failed", t)
+            }
+        }
+    }
+
+    private fun toggleBluetooth() {
+        worker.execute {
+            try {
+                val cr = contentResolver
+                val on = android.provider.Settings.Global.getInt(cr, android.provider.Settings.Global.BLUETOOTH_ON, 0) == 1
+                val cmd = if (on) "cmd bluetooth_manager disable" else "cmd bluetooth_manager enable"
+                RootShell.run(cmd)
+                mainHandler.post {
+                    android.widget.Toast.makeText(this, if (!on) getString(R.string.toast_bluetooth_on) else getString(R.string.toast_bluetooth_off), android.widget.Toast.LENGTH_SHORT).show()
+                }
+            } catch (t: Throwable) {
+                Log.e("Q25Toolbox", "toggleBluetooth failed", t)
+            }
+        }
+    }
+
+    private fun toggleLocation() {
+        worker.execute {
+            try {
+                val lm = getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
+                val on = lm.isLocationEnabled
+                val cmd = if (on) "cmd location set-location-enabled false" else "cmd location set-location-enabled true"
+                RootShell.run(cmd)
+                mainHandler.post {
+                    android.widget.Toast.makeText(this, if (!on) getString(R.string.toast_location_on) else getString(R.string.toast_location_off), android.widget.Toast.LENGTH_SHORT).show()
+                }
+            } catch (t: Throwable) {
+                Log.e("Q25Toolbox", "toggleLocation failed", t)
             }
         }
     }
@@ -752,6 +952,8 @@ class Q25AccessibilityService : AccessibilityService() {
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         if (event == null) return false
+        if (com.kgr.q25toolbox.modules.QrEnlargerController.onKeyEvent(event)) return true
+        if (com.kgr.q25toolbox.modules.KeyboardShortcutsController.onKeyEvent(this, event)) return true
         val kc = event.keyCode
 
         // Global resolution hotkey. Swallows the press, its auto-repeats and its release. Not on the lockscreen.
@@ -1049,35 +1251,69 @@ class Q25AccessibilityService : AccessibilityService() {
         // PIN Input: map physical keys to the lockscreen PIN pad. With root available the daemon types the letter
         // digits (it also works before the first unlock), so those keys are left to it here: doing both would type
         // twice. Raw digits, Enter and Delete stay on this path, which the daemon does not cover.
-        if (!pinInputEnabled()) return false
-        if (com.kgr.q25toolbox.modules.PinKeysRoot.isActive(prefs) && com.kgr.q25toolbox.modules.PinKeysRoot.isLetterDigit(kc)) return false
-        if (event.action != KeyEvent.ACTION_DOWN) return false
-        // Map first: isDeviceLocked() is a binder call, and this runs for every key pressed in every app.
+        val pinEnabled = pinInputEnabled()
+        val pinShowing = isPinPromptShowing()
+        val locked = isDeviceLocked()
+        val rootActive = com.kgr.q25toolbox.modules.PinKeysRoot.isActive(prefs)
+        val isLetter = com.kgr.q25toolbox.modules.PinKeysRoot.isLetterDigit(kc)
+        if (!pinEnabled) return false
+        if (!pinShowing) return false
+        if (locked && rootActive && isLetter && !com.kgr.q25toolbox.core.RomProfile.autoDetectedLineage()) return false
         val input = toPinInput(kc) ?: return false
-        if (!isDeviceLocked()) return false
+        if (event.action == KeyEvent.ACTION_UP) return true
+        if (event.action != KeyEvent.ACTION_DOWN) return false
 
-        // Straight from root to the button by resource id - a single native,
-        // index-backed lookup (same approach as the original q25pininput,
-        // which was noticeably snappier than scoping through an intermediate
-        // keyguard_pin_view container first via a manual tree walk). Only
-        // falls back to walking the tree by label if the id lookup misses
-        // (e.g. a SystemUI version using different ids).
-        val root = rootInActiveWindow ?: return false
-        try {
-            val buttonId = pinButtonId(input)
-            val button = findNodeByViewIdFirst(root, buttonId)
-                ?: findByFallbackTextUnique(root, pinButtonFallbackLabels(input))
-                ?: return false
+        Log.d("Q25Toolbox", "onKeyEvent PIN: kc=$kc, input=$input, locked=${isDeviceLocked()}")
+        return clickPinButton(input, event)
+    }
+
+    private fun clickPinButton(input: PinInput, event: KeyEvent): Boolean {
+        val root = rootInActiveWindow
+        if (root != null) {
             try {
-                if (!button.isClickable) return false
-                if (event.repeatCount > 0) return true
-                return button.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                val button = findPinButton(root, input)
+                if (button != null) {
+                    try {
+                        if (!button.isClickable) {
+                            Log.w("Q25Toolbox", "findPinButton: button not clickable")
+                            return false
+                        }
+                        if (event.repeatCount > 0) return true
+                        val res = button.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        Log.d("Q25Toolbox", "clickPinButton root: input=$input, res=$res")
+                        return res
+                    } finally {
+                        button.recycle()
+                    }
+                }
             } finally {
-                button.recycle()
+                root.recycle()
             }
-        } finally {
-            root.recycle()
         }
+
+        val windowList: List<AccessibilityWindowInfo> = try {
+            windows ?: return false
+        } catch (_: Exception) {
+            return false
+        }
+        for (w in windowList) {
+            val wRoot = w.root ?: continue
+            try {
+                val button = findPinButton(wRoot, input)
+                if (button != null) {
+                    try {
+                        if (!button.isClickable) return false
+                        if (event.repeatCount > 0) return true
+                        return button.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    } finally {
+                        button.recycle()
+                    }
+                }
+            } finally {
+                wRoot.recycle()
+            }
+        }
+        return false
     }
 
     // ------------------------------------------------------- AutoFocus injection
@@ -1210,7 +1446,8 @@ class Q25AccessibilityService : AccessibilityService() {
 
     private fun isLockscreenNavKey(kc: Int, pinActive: Boolean): Boolean = when (kc) {
         KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT,
-        KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_SPACE -> true
+        KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_TAB -> true
+        KeyEvent.KEYCODE_SPACE -> !pinActive || !isBouncerShowing()
         // Enter / pad centre open the PIN pad natively from the plain lockscreen (verified on LineageOS 23),
         // so they must pass until the bouncer is up. Once it is, they can activate the focused control (for
         // example the emergency-call button), so they are blocked - unless PIN-on-keyboard needs them.
@@ -1507,7 +1744,7 @@ class Q25AccessibilityService : AccessibilityService() {
             KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_7 -> PinInput.DIGIT_7
             KeyEvent.KEYCODE_X, KeyEvent.KEYCODE_8 -> PinInput.DIGIT_8
             KeyEvent.KEYCODE_C, KeyEvent.KEYCODE_9 -> PinInput.DIGIT_9
-            KeyEvent.KEYCODE_0 -> PinInput.DIGIT_0
+            KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_SPACE -> PinInput.DIGIT_0
             KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER -> PinInput.ENTER
             KeyEvent.KEYCODE_DEL -> PinInput.DELETE
             else -> null
@@ -1543,67 +1780,120 @@ class Q25AccessibilityService : AccessibilityService() {
             PinInput.DIGIT_7 -> listOf("7")
             PinInput.DIGIT_8 -> listOf("8")
             PinInput.DIGIT_9 -> listOf("9")
-            PinInput.DELETE -> listOf("delete", "backspace")
-            PinInput.ENTER -> listOf("enter", "confirm", "ok")
+            PinInput.DELETE -> listOf("delete", "backspace", "suprimeix", "borrar", "eliminar")
+            PinInput.ENTER -> listOf("enter", "confirm", "ok", "retorn", "intro", "continuar")
         }
     }
 
 
-    private fun findByFallbackTextUnique(
-        root: AccessibilityNodeInfo?,
-        fallbackTexts: List<CharSequence>
-    ): AccessibilityNodeInfo? {
-        if (root == null) return null
+    private fun findPinButton(root: AccessibilityNodeInfo, input: PinInput): AccessibilityNodeInfo? {
+        val buttonId = pinButtonId(input)
+        findNodeByPredicate(root) { it.viewIdResourceName == buttonId }?.let { return it }
 
-        var match: AccessibilityNodeInfo? = null
-        if (isActionableMatch(root, fallbackTexts)) {
-            match = AccessibilityNodeInfo.obtain(root)
+        val pad = findNodeByPredicate(root) {
+            it.viewIdResourceName == "com.android.systemui:id/cred_pin_pad" || it.viewIdResourceName == "cred_pin_pad"
         }
-
-        val childCount = root.childCount
-        for (i in 0 until childCount) {
-            val child = root.getChild(i) ?: continue
+        if (pad != null) {
             try {
-                val childMatch = findByFallbackTextUnique(child, fallbackTexts)
-                if (childMatch != null) {
-                    if (match != null) {
-                        match.recycle()
-                        childMatch.recycle()
-                        return null
+                val targetText = when (input) {
+                    PinInput.DIGIT_0 -> "0"
+                    PinInput.DIGIT_1 -> "1"
+                    PinInput.DIGIT_2 -> "2"
+                    PinInput.DIGIT_3 -> "3"
+                    PinInput.DIGIT_4 -> "4"
+                    PinInput.DIGIT_5 -> "5"
+                    PinInput.DIGIT_6 -> "6"
+                    PinInput.DIGIT_7 -> "7"
+                    PinInput.DIGIT_8 -> "8"
+                    PinInput.DIGIT_9 -> "9"
+                    else -> null
+                }
+                for (i in 0 until pad.childCount) {
+                    val child = pad.getChild(i) ?: continue
+                    val isMatch = when {
+                        targetText != null -> {
+                            val textNode = findNodeByPredicate(child) { it.text?.toString()?.trim() == targetText }
+                            val matched = (textNode != null)
+                            textNode?.recycle()
+                            matched
+                        }
+                        input == PinInput.DELETE -> {
+                            val delNode = findNodeByPredicate(child) {
+                                it.viewIdResourceName == "com.android.systemui:id/delete_button" ||
+                                it.contentDescription?.toString()?.trim()?.lowercase() in listOf("delete", "backspace", "suprimeix", "borrar", "eliminar")
+                            }
+                            val matched = (delNode != null)
+                            delNode?.recycle()
+                            matched
+                        }
+                        input == PinInput.ENTER -> {
+                            val enterNode = findNodeByPredicate(child) {
+                                it.viewIdResourceName == "com.android.systemui:id/key_enter" ||
+                                it.contentDescription?.toString()?.trim()?.lowercase() in listOf("enter", "confirm", "ok", "retorn", "intro", "continuar")
+                            }
+                            val matched = (enterNode != null)
+                            enterNode?.recycle()
+                            matched
+                        }
+                        else -> false
                     }
-                    match = childMatch
+                    if (isMatch) {
+                        if (child.isClickable) {
+                            return child
+                        }
+                        val clickableChild = findNodeByPredicate(child) { it.isClickable }
+                        child.recycle()
+                        if (clickableChild != null) return clickableChild
+                    } else {
+                        child.recycle()
+                    }
                 }
             } finally {
-                child.recycle()
+                pad.recycle()
             }
         }
 
-        return match
+        val labels = pinButtonFallbackLabels(input)
+        return findClickableNodeForLabels(root, labels)
     }
 
-    private fun isActionableMatch(node: AccessibilityNodeInfo?, expectedTexts: List<CharSequence>): Boolean {
-        if (node == null || expectedTexts.isEmpty()) return false
-        return node.isClickable && hasTextInTree(node, expectedTexts)
-    }
+    private fun findClickableNodeForLabels(root: AccessibilityNodeInfo, labels: List<String>): AccessibilityNodeInfo? {
+        val lowerLabels = labels.map { it.lowercase() }
+        val rect = android.graphics.Rect()
 
-    private fun hasTextInTree(node: AccessibilityNodeInfo?, expectedTexts: List<CharSequence>): Boolean {
-        if (node == null) return false
-        val contentDescription = node.contentDescription
-        if (contentDescription != null && expectedTexts.any { it.toString() == contentDescription.toString() }) return true
+        fun search(node: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+            val text = node.text?.toString()?.trim()?.lowercase()
+            val desc = node.contentDescription?.toString()?.trim()?.lowercase()
+            val matches = (text != null && text in lowerLabels) || (desc != null && desc in lowerLabels)
 
-        val nodeText = node.text
-        if (nodeText != null && expectedTexts.any { it.toString() == nodeText.toString() }) return true
-
-        val childCount = node.childCount
-        for (i in 0 until childCount) {
-            val child = node.getChild(i) ?: continue
-            try {
-                if (hasTextInTree(child, expectedTexts)) return true
-            } finally {
-                child.recycle()
+            if (matches) {
+                node.getBoundsInScreen(rect)
+                if (node.isClickable && rect.width() in 1..400 && rect.height() in 1..400) {
+                    return AccessibilityNodeInfo.obtain(node)
+                }
+                val parent = node.parent
+                if (parent != null) {
+                    parent.getBoundsInScreen(rect)
+                    if (parent.isClickable && rect.width() in 1..400 && rect.height() in 1..400) {
+                        return parent
+                    }
+                    parent.recycle()
+                }
             }
+
+            for (i in 0 until node.childCount) {
+                val child = node.getChild(i) ?: continue
+                try {
+                    val found = search(child)
+                    if (found != null) return found
+                } finally {
+                    child.recycle()
+                }
+            }
+            return null
         }
-        return false
+
+        return search(root)
     }
 
     // ------------------------------------------------------------- Lifecycle
@@ -1612,6 +1902,7 @@ class Q25AccessibilityService : AccessibilityService() {
 
     override fun onUnbind(intent: Intent?): Boolean {
         GestureStripsController.hide()
+        com.kgr.q25toolbox.modules.QrEnlargerController.hide()
         restoreImeBlock()  // never leave the soft keyboard globally suppressed
         restoreScaling()   // never leave the screen stuck at a scaled resolution
         restoreRotation()  // nor stuck in a forced rotation
@@ -1629,6 +1920,7 @@ class Q25AccessibilityService : AccessibilityService() {
     override fun onDestroy() {
         if (instance === this) instance = null
         GestureStripsController.hide()
+        com.kgr.q25toolbox.modules.QrEnlargerController.hide()
         RecentsOverlays.hide(animate = false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) callProximity?.stop()
         restoreImeBlock()
@@ -1637,6 +1929,8 @@ class Q25AccessibilityService : AccessibilityService() {
         prefs?.unregisterOnSharedPreferenceChangeListener(prefListener)
         try { unregisterReceiver(screenOffReceiver) } catch (_: Exception) {}
         try { unregisterReceiver(batteryReceiver) } catch (_: Exception) {}
+        runActionReceiver?.let { r -> try { unregisterReceiver(r) } catch (_: Exception) {} }
+        runActionReceiver = null
         worker.shutdown()
         imeWorker.shutdown()
         autoFocusWorker.shutdown()

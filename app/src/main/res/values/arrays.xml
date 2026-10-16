@@ -5,5 +5,6 @@
     <string-array name="xposed_scope">
         <item>com.android.launcher3</item>
         <item>org.lineageos.trebuchet</item>
+        <item>com.google.android.googlequicksearchbox</item>
     </string-array>
 </resources>

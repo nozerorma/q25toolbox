@@ -23,7 +23,7 @@ echo $$ > "$LOCK"
 
 PIN=__PIN__                  # 1: letters type digits
 ENTER_OPENS=__ENTER_OPENS__  # 1: Enter on the plain lockscreen opens the PIN pad
-KBD_NAME=Q25_keyboard
+IS_LINEAGE=__IS_LINEAGE__    # 1: LineageOS specific handling
 BACKLIGHT=/sys/class/leds/lcd-backlight/brightness
 CACHE_S=2        # how long a lock-state answer is trusted
 TYPED_S=15       # after this long without a digit, Enter means "open the pad" again
@@ -35,11 +35,15 @@ log() {
     fi
 }
 
-find_node() {
+# The Q25 Trackpad Customizer's helper EVIOCGRABs the physical keyboard and re-emits
+# its events through uinput as a virtual "Custom Q25 Keyboard": while it runs, the
+# physical node stays silent, so BOTH nodes are watched and whichever delivers the
+# scancode types the digit. Without the customizer only the physical node exists.
+find_nodes() {
     for d in /sys/class/input/event*; do
-        if [ "$(cat "$d/device/name" 2>/dev/null)" = "$KBD_NAME" ]; then
+        n=$(cat "$d/device/name" 2>/dev/null)
+        if [ "$n" = "Q25_keyboard" ] || [ "$n" = "Custom Q25 Keyboard" ]; then
             echo "/dev/input/${d##*/}"
-            return
         fi
     done
 }
@@ -47,26 +51,31 @@ find_node() {
 # One dumpsys call (~55 ms) answers "keyguard up, not covered by an app, screen awake".
 locked_awake() {
     s=$(dumpsys window policy 2>/dev/null)
+    echo "$s" | grep -q 'INTERACTIVE_STATE_AWAKE' || return 1
     echo "$s" | grep -q '^ *showing=true' || return 1
     echo "$s" | grep -q '^ *occluded=true' && return 1
-    echo "$s" | grep -q 'INTERACTIVE_STATE_AWAKE' || return 1
     return 0
 }
 
 log "start pin=$PIN enter_opens=$ENTER_OPENS"
 
 while true; do
-    NODE=$(find_node)
-    if [ -z "$NODE" ]; then sleep 2; continue; fi
+    NODES=$(find_nodes)
+    if [ -z "$NODES" ]; then sleep 2; continue; fi
 
     lock_ok=0; lock_ts=0; typed=0; typed_ts=0; was_off=1
-    # getevent prints "type code value" in hex for a single device; value 1 = key down.
-    getevent -q "$NODE" 2>/dev/null | while read -r t c v; do
+    # getevent prints "type code value" per line for a single device, but prefixes each
+    # line with "/dev/input/eventN:" when watching several, so both shapes are parsed.
+    getevent -q $NODES 2>/dev/null | while read -r a b c d; do
+        case "$a" in
+            *event*) t=$b; code=$c; v=$d ;;
+            *)       t=$a; code=$b; v=$c ;;
+        esac
         [ "$t" = "0001" ] && [ "$v" = "00000001" ] || continue
 
         # Which key? Anything else costs nothing, in particular no dumpsys.
         act=""
-        case "$c" in
+        case "$code" in
             0011) act=8 ;;  0012) act=9 ;;  0013) act=10 ;;   # W E R -> KEYCODE_1..3
             001f) act=11 ;; 0020) act=12 ;; 0021) act=13 ;;   # S D F -> 4..6
             002c) act=14 ;; 002d) act=15 ;; 002e) act=16 ;;   # Z X C -> 7..9
@@ -94,13 +103,37 @@ while true; do
         [ $((now - typed_ts)) -gt $TYPED_S ] && typed=0
 
         if [ "$act" = "ENTER" ]; then
-            # Enter after digits submits the PIN (native); with none typed it opens the pad.
+            # Enter after digits submits the PIN (native); with none typed on plain lockscreen it opens the pad.
             if [ "$typed" = "0" ]; then
-                cmd window dismiss-keyguard >/dev/null 2>&1
+                s=$(dumpsys window policy 2>/dev/null)
+                if echo "$s" | grep -q '^ *showing=true'; then
+                    cmd window dismiss-keyguard >/dev/null 2>&1
+                fi
             fi
             lock_ts=0   # Enter may unlock: look again next time
         else
-            input keyevent "$act" >/dev/null 2>&1
+            if [ "$IS_LINEAGE" = "1" ]; then
+                # The accessibility service is only alive after the first unlock (credential-encrypted storage
+                # available); from then on it clicks the keys itself. Before that, only this daemon can type.
+                if [ "$(getprop sys.user.0.ce_available)" = "true" ]; then
+                    : # Handled by Q25AccessibilityService with direct node click
+                else
+                    case "$act" in
+                        8) input tap 278 301 >/dev/null 2>&1 ;;
+                        9) input tap 359 301 >/dev/null 2>&1 ;;
+                        10) input tap 441 301 >/dev/null 2>&1 ;;
+                        11) input tap 278 372 >/dev/null 2>&1 ;;
+                        12) input tap 359 372 >/dev/null 2>&1 ;;
+                        13) input tap 441 372 >/dev/null 2>&1 ;;
+                        14) input tap 278 444 >/dev/null 2>&1 ;;
+                        15) input tap 359 444 >/dev/null 2>&1 ;;
+                        16) input tap 441 444 >/dev/null 2>&1 ;;
+                        *) input keyevent "$act" >/dev/null 2>&1 ;;
+                    esac
+                fi
+            else
+                input keyevent "$act" >/dev/null 2>&1
+            fi
             typed=1; typed_ts=$now
         fi
     done

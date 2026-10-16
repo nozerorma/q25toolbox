@@ -574,6 +574,18 @@ Both were merged from separate branches and have unit tests; the merged build wa
     <string name="gesture_action_flashlight">Flashlight</string>
     <string name="gestures_arrow">Show an arrow while swiping</string>
     <string name="gesture_action_previous_app">Previous app</string>
+    <string name="gesture_action_qr_enlarger">QR / Aztec Enlarger</string>
+    <string name="qr_enlarger_none_found">No QR / Aztec code found on screen</string>
+    <string name="qr_enlarger_capture_failed">Screen capture failed</string>
+    <string name="qr_enlarger_render_failed">Failed to enlarge barcode</string>
+    <string name="title_qr_enlarger">QR / Aztec Enlarger</string>
+    <string name="subtitle_qr_enlarger">Detect and display barcodes fullscreen at maximum brightness</string>
+    <string name="qr_enlarger_desc">Scans the current screen for QR or Aztec codes (e.g. train tickets, boarding passes, store cards), displays them maximized on a pure white canvas at 100% brightness, and temporarily disables Extra Dim. Tapping or pressing any physical key dismisses the overlay and restores your previous display settings.</string>
+    <string name="qr_enlarger_test_button">Test now</string>
+    <string name="qr_enlarger_trigger_title">How to trigger</string>
+    <string name="qr_enlarger_trigger_desc">Trigger with an edge gesture from screen borders, or assign physical keys and Key Mapper in Keyboard Shortcuts.</string>
+
+
     <string name="gestures_arrow_style">Arrow style</string>
     <string name="gestures_arrow_preview_inactive">Idle</string>
     <string name="gestures_arrow_preview_active">Active</string>
@@ -693,4 +705,100 @@ Both were merged from separate branches and have unit tests; the merged build wa
     <string name="hotfix_keymint_warn_text">This patch modifies AlwaysStrong\'s tee_classes.dex. If you update the AlwaysStrong module in KernelSU or Magisk, the update will overwrite this patch and you will need to re-enable it here.</string>
     <string name="hotfix_keymint_not_needed">KeyMint software import and RSA-OAEP work correctly (fix not needed)</string>
     <string name="hotfix_keymint_warn_confirm">Understood, Enable</string>
+    <string name="key_mapper_title">Key Mapper Integration</string>
+    <string name="key_mapper_desc">Configure any hardware key (e.g. long press Space, volume keys, convenience keys) to trigger this action via a Broadcast Intent:</string>
+    <string name="key_mapper_action_label">Action</string>
+    <string name="key_mapper_extra_label">String Extra</string>
+    <string name="key_mapper_copy_params">Copy Key Mapper parameters</string>
+    <string name="key_mapper_copy_cmd">Copy ADB / Shell command</string>
+    <string name="key_mapper_copied_toast">Copied to clipboard!</string>
+    <string name="key_mapper_no_root">No root required</string>
+    <string name="key_mapper_uses_broadcast">Uses Intent Broadcast</string>
+    <string name="key_mapper_step1_label">1. Action type in Key Mapper</string>
+    <string name="key_mapper_step1_value">Send intent</string>
+    <string name="key_mapper_step2_label">2. Intent target</string>
+    <string name="key_mapper_step2_value">Broadcast (Broadcast receiver)</string>
+    <string name="key_mapper_package_label">Package</string>
+    <string name="key_mapper_extra_type_label">Extra type</string>
+    <string name="key_mapper_extra_type_value">String</string>
+    <string name="key_mapper_extra_name_label">Extra name / key</string>
+    <string name="key_mapper_extra_value_label">Extra value</string>
+    <string name="key_mapper_recents_extra_optional">Optional for Recents: if omitted, opens Recents by default.</string>
+    <string name="key_mapper_copy">Copy</string>
+    <string name="key_mapper_adb_cmd_title">Equivalent ADB / Terminal command</string>
+    <string name="key_mapper_adb_note">Only for PC / ADB debugging. Do NOT use Shell commands inside Key Mapper; always use \"Send intent\".</string>
+
+    <!-- Keyboard Shortcuts & Unified Remaps -->
+    <string name="title_keyboard_shortcuts">Keyboard Shortcuts</string>
+    <string name="subtitle_keyboard_shortcuts">In-app remaps and Key Mapper integration</string>
+    <string name="keyboard_shortcuts_header_desc">Map hardware keys directly inside the app with flexible trigger detection (short, long, or double press), or configure them through Key Mapper via broadcast intents.</string>
+    <string name="shortcut_tab_in_app">In-app mapping</string>
+    <string name="shortcut_tab_key_mapper">Map through Key Mapper</string>
+    <string name="shortcut_enable_in_app">Enable in-app shortcut</string>
+    <string name="shortcut_trigger_label">Trigger key / combo:</string>
+    <string name="shortcut_unassigned">Unassigned</string>
+    <string name="shortcut_record_button">Detect key</string>
+    <string name="shortcut_press_type">Press type:</string>
+    <string name="shortcut_click_short">Short press</string>
+    <string name="shortcut_click_long">Long press (500 ms)</string>
+    <string name="shortcut_click_double">Double press</string>
+    <string name="shortcut_tap_pass">Quick tap pass-through</string>
+    <string name="shortcut_tap_pass_desc">If long or double press is not triggered, types the original key</string>
+    <string name="shortcut_vibrate">Vibrate on trigger</string>
+    <string name="shortcut_dialog_title">Detect key or combo</string>
+    <string name="shortcut_dialog_desc">Press any key or combination on your physical keyboard</string>
+    <string name="shortcut_dialog_waiting">Press a key...</string>
+    <string name="shortcut_dialog_cancel">Cancel</string>
+    <string name="shortcut_dialog_clear">Clear</string>
+    <string name="shortcut_notice_title">Hardware Key &amp; Key Mapper Shortcut</string>
+    <string name="shortcut_notice_desc">Configure hardware key triggers (short, long, or double press) or Key Mapper broadcast intents in Keyboard &gt; Keyboard Shortcuts.</string>
+
+    <string name="shortcut_action_recents">Recent apps</string>
+    <string name="shortcut_action_recents_desc">Opens custom Recents overlay (Slim List / Quilt) or system Overview.</string>
+    <string name="shortcut_action_qr">QR / Aztec Enlarger</string>
+    <string name="shortcut_action_qr_desc">Captures screen, maximizes 2D barcodes on pure white at 100% brightness.</string>
+    <string name="shortcut_action_aspect_ratio">Aspect ratio / Resolution</string>
+    <string name="shortcut_action_aspect_ratio_desc">Cycles sequentially through configured display resolutions.</string>
+    <string name="shortcut_action_rotation">Screen rotation</string>
+    <string name="shortcut_action_rotation_desc">Toggles forced portrait rotation on or off (restores auto-rotate/system).</string>
+    <string name="shortcut_action_extra_dim">Extra Dim</string>
+    <string name="shortcut_action_extra_dim_desc">Toggles Android Extra Dimming (reduce bright colors).</string>
+    <string name="shortcut_action_gestures">Edge gestures</string>
+    <string name="shortcut_action_gestures_desc">Toggles custom edge gesture navigation strips on or off.</string>
+
+    <string name="key_label_prog_red">Recents (HW)</string>
+    <string name="key_label_app_switch">Recents</string>
+    <string name="key_label_back">Back</string>
+    <string name="key_label_home">Home</string>
+    <string name="key_label_grave">Currency Key (`)</string>
+    <string name="key_label_search">Search</string>
+    <string name="key_label_camera">Camera</string>
+
+    <string name="toast_rotation_format">Rotation: %s</string>
+    <string name="toast_extra_dim_on">Extra Dim: ON</string>
+    <string name="toast_extra_dim_off">Extra Dim: OFF</string>
+    <string name="toast_gestures_on">Edge gestures: ON</string>
+    <string name="toast_gestures_off">Edge gestures: OFF</string>
+    <string name="toast_bluetooth_on">Bluetooth: ON</string>
+    <string name="toast_bluetooth_off">Bluetooth: OFF</string>
+    <string name="toast_location_on">Location: ON</string>
+    <string name="toast_location_off">Location: OFF</string>
+
+    <string name="gesture_action_aspect_ratio">Aspect ratio</string>
+    <string name="gesture_action_rotation">Screen rotation</string>
+    <string name="gesture_action_extra_dim">Extra Dim</string>
+    <string name="gesture_action_gestures">Toggle gestures</string>
+    <string name="gesture_action_bluetooth">Toggle Bluetooth</string>
+    <string name="gesture_action_location">Toggle Location</string>
+    <string name="gesture_action_circle_to_search">Circle to Search</string>
+
+    <!-- Circle to Search -->
+    <string name="title_circle_to_search">Circle to Search</string>
+    <string name="subtitle_circle_to_search">Visually search content by circling text or images on screen</string>
+    <string name="cts_master_switch_title">Enable Circle to Search</string>
+    <string name="cts_master_switch_desc">Configures launcher flags and contextual search assistant</string>
+    <string name="cts_status_active">Zygisk module active</string>
+    <string name="cts_status_inactive">Inactive</string>
+    <string name="cts_status_desc">Operates via native Zygisk module (/data/adb/modules/q25_cts) spoofing Pixel 8 Pro system features for the Google App.</string>
+    <string name="cts_test_trigger_button">Test Circle to Search now</string>
 </resources>
