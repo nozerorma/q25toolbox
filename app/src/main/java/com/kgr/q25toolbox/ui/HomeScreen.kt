@@ -177,6 +177,7 @@ private fun DetailHost(screen: Screen, onNavigate: (Screen) -> Unit = {}, onBack
         Screen.ZygiskDetach -> ZygiskDetachScreen(onBack)
         Screen.Gestures -> GesturesScreen(onBack)
         Screen.ImeCompat -> ImeCompatScreen(onBack)
+        Screen.GmsSensorGuard -> GmsSensorGuardScreen(onBack)
         Screen.AdvancedSettings -> AdvancedSettingsScreen(onBack)
         Screen.QrEnlarger -> QrEnlargerScreen(onBack = onBack, onOpenGestures = { onNavigate(Screen.Gestures) })
         Screen.CircleToSearch -> CircleToSearchScreen(onBack = onBack)

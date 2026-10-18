@@ -792,4 +792,24 @@ Ambas se fusionaron desde ramas separadas y tienen tests unitarios; la build fus
     <string name="cts_status_inactive">Inactivo</string>
     <string name="cts_status_desc">Opera mediante el módulo Zygisk nativo (/data/adb/modules/q25_cts) simulando las funciones de Pixel 8 Pro para la aplicación de Google.</string>
     <string name="cts_test_trigger_button">Probar Circle to Search ahora</string>
+    <!-- GMS Sensor Guard -->
+    <string name="title_gms_sensor_guard">Guardia de sensores GMS</string>
+    <string name="subtitle_gms_sensor_guard">Detén el martilleo de sensores de Play services (LineageOS)</string>
+    <string name="gms_guard_state">Estado: %1$s</string>
+    <string name="gms_guard_state_blocked">Bloqueado</string>
+    <string name="gms_guard_state_allowed">Permitido</string>
+    <string name="gms_guard_state_unknown">Comprobando estado…</string>
+    <string name="gms_guard_uid_suffix"> (UID %1$s)</string>
+    <string name="gms_guard_block_label">Bloquear reconocimiento de actividad</string>
+    <string name="gms_guard_status_applied">Bloqueo aplicado. Play services se ha reiniciado para liberar sus listeners de sensores en marcha.</string>
+    <string name="gms_guard_status_removed">Bloqueo eliminado.</string>
+    <string name="gms_guard_status_failed">No se pudo aplicar - revisa el acceso root.</string>
+    <string name="gms_guard_scans_title">Escaneo en segundo plano</string>
+    <string name="gms_guard_wifi_scan_label">Escaneo de redes Wi-Fi</string>
+    <string name="gms_guard_ble_scan_label">Escaneo de dispositivos Bluetooth</string>
+    <string name="gms_guard_scan_status_on">Escaneo en segundo plano activado.</string>
+    <string name="gms_guard_scan_status_off">Escaneo en segundo plano desactivado.</string>
+    <string name="gms_guard_desc">Google Play services mantiene el acelerómetro (a 50 Hz) y el sensor de luz ambiental registrados en ráfagas cortas y continuas desde su biblioteca de localización (collectionlib), aunque ninguna app esté pidiendo tu posición en ese momento - un consumo constante de batería que aparece atribuido a "Google Play services".\n\nEste bloqueo revoca el permiso de reconocimiento de actividad de Play services a nivel de UID. Las apps siguen obteniendo ubicación con normalidad (fixes de red y GPS); solo desaparece el escaneo de sensores en segundo plano. Play services se reinicia al aplicar o eliminar el bloqueo.\n\nNota técnica: en esta ROM el comando a nivel de paquete (cmd appops set &lt;package&gt;) se acepta pero no se aplica nunca - solo funciona el modo a nivel de UID. El bloqueo persiste tras reiniciar y se vuelve a aplicar al arrancar.</string>
+    <string name="gms_guard_manual_title">Ajustes manuales</string>
+    <string name="gms_guard_manual_text">Interruptores de Ajustes &gt; Ubicación &gt; Servicios de ubicación que no se pueden definir desde aquí:\n\n• Precisión de ubicación de Google: puede quedar activada. Su coste - el escaneo de sensores - ya está bloqueado en esta pantalla. Desactivarla solo empeora las fixes en interiores.\n• Escaneo de dispositivos Bluetooth: mejor apagado si no usas balizas BLE. Escaneo costoso y sin uso habitual.\n• Escaneo de redes Wi-Fi: depende del dispositivo. Apagado ahorra batería, pero la ubicación fused pierde su mejor fuente en interiores; con recepción GPS débil déjalo activado.\n• El GPS asistido (A-GPS) es otra cosa: solo descarga datos de satélites para acelerar la primera fijación. Déjalo activado.</string>
 </resources>

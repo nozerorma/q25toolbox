@@ -86,6 +86,7 @@ The all-in-one companion utility and tweak suite for the **Zinwa Q25** (MediaTek
 - **Double-Tap to Wake (DT2W):** Wake the device with a quick double tap on the screen when turned off (LineageOS).
 - **Call Proximity Sleep:** Reliable sensor sleep during phone calls to prevent cheek touches.
 - **Ticker Notifications:** Elegant scrolling notification text in the status bar instead of intrusive heads-up popups.
+- **GMS Sensor Guard (LineageOS):** Stop Google Play services from hammering the accelerometer (50 Hz bursts) and ambient-light sensor in the background via a UID-level activity-recognition block; re-asserted at boot. Includes toggles for background Wi-Fi/Bluetooth scanning and guidance for the manual Location Accuracy settings.
 - **Advanced System Hotfixes:** Fix 50MP camera capture, AlwaysStrong KeyMint, and Bluetooth audio playback on custom ROMs.
 
 ---

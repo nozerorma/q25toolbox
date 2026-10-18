@@ -573,4 +573,24 @@
     <string name="hotfix_keymint_warn_text">Este patch modifica o ficheiro tee_classes.dex do AlwaysStrong. Se atualizares o módulo AlwaysStrong no KernelSU ou Magisk, a atualização irá sobrescrever este patch e terás de o reativar aqui.</string>
     <string name="hotfix_keymint_not_needed">A importação de chaves assimétricas funciona nativamente no seu sistema (correção não necessária)</string>
     <string name="hotfix_keymint_warn_confirm">Entendido, ativar</string>
+    <!-- GMS Sensor Guard -->
+    <string name="title_gms_sensor_guard">Guarda de sensores GMS</string>
+    <string name="subtitle_gms_sensor_guard">Pára o martelamento de sensores do Play services (LineageOS)</string>
+    <string name="gms_guard_state">Estado: %1$s</string>
+    <string name="gms_guard_state_blocked">Bloqueado</string>
+    <string name="gms_guard_state_allowed">Permitido</string>
+    <string name="gms_guard_state_unknown">A verificar o estado…</string>
+    <string name="gms_guard_uid_suffix"> (UID %1$s)</string>
+    <string name="gms_guard_block_label">Bloquear reconhecimento de atividade</string>
+    <string name="gms_guard_status_applied">Bloqueio aplicado. O Play services foi reiniciado para libertar os listeners de sensores em execução.</string>
+    <string name="gms_guard_status_removed">Bloqueio removido.</string>
+    <string name="gms_guard_status_failed">Não foi possível aplicar - verifica o acesso root.</string>
+    <string name="gms_guard_scans_title">Deteção em segundo plano</string>
+    <string name="gms_guard_wifi_scan_label">Deteção de redes Wi-Fi</string>
+    <string name="gms_guard_ble_scan_label">Deteção de dispositivos Bluetooth</string>
+    <string name="gms_guard_scan_status_on">Deteção em segundo plano ativada.</string>
+    <string name="gms_guard_scan_status_off">Deteção em segundo plano desativada.</string>
+    <string name="gms_guard_desc">O Google Play services mantém o acelerómetro (a 50 Hz) e o sensor de luz ambiente registados em rajadas curtas e contínuas a partir da sua biblioteca de localização (collectionlib), mesmo quando nenhuma app está a pedir a tua posição nesse momento - um consumo constante de bateria que aparece atribuído a "Google Play services".\n\nEste bloqueio revoga a permissão de reconhecimento de atividade do Play services ao nível do UID. As apps continuam a obter localização normalmente (fixes de rede e GPS); só desaparece a análise de sensores em segundo plano. O Play services reinicia ao aplicar ou remover o bloqueio.\n\nNota técnica: nesta ROM o comando ao nível do pacote (cmd appops set &lt;package&gt;) é aceite mas nunca aplicado - só funciona o modo ao nível do UID. O bloqueio persiste após reinícios e é reaplicado no arranque.</string>
+    <string name="gms_guard_manual_title">Ajustes manuais</string>
+    <string name="gms_guard_manual_text">Interruptores em Definições &gt; Localização &gt; Serviços de localização que não podem ser definidos daqui:\n\n• Precisão de localização Google: pode ficar ativada. O seu custo - a análise de sensores - já está bloqueado neste ecrã. Desativá-la só degrada as fixes em interiores.\n• Deteção de dispositivos Bluetooth: melhor desligada salvo se usares beacons BLE. Deteção custosa e sem uso diário.\n• Deteção de redes Wi-Fi: depende do dispositivo. Desligada poupa bateria, mas a localização fused perde a sua melhor fonte em interiores; com receção GPS fraca deixa-a ligada.\n• O GPS assistido (A-GPS) é outra coisa: só descarrega dados de satélites para acelerar a primeira fixação. Deixa-o ativado.</string>
 </resources>

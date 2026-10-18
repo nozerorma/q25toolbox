@@ -786,4 +786,24 @@ Ambdues es van fusionar des de branques separades i tenen tests unitaris; la bui
     <string name="cts_status_inactive">Inactiu</string>
     <string name="cts_status_desc">Opera mitjançant el mòdul Zygisk natiu (/data/adb/modules/q25_cts) simulant les funcions de Pixel 8 Pro per a l\'aplicació de Google.</string>
     <string name="cts_test_trigger_button">Provar Circle to Search ara</string>
+    <!-- GMS Sensor Guard -->
+    <string name="title_gms_sensor_guard">Guarda de sensors GMS</string>
+    <string name="subtitle_gms_sensor_guard">Atura el martelleig de sensors de Play services (LineageOS)</string>
+    <string name="gms_guard_state">Estat: %1$s</string>
+    <string name="gms_guard_state_blocked">Blocat</string>
+    <string name="gms_guard_state_allowed">Permès</string>
+    <string name="gms_guard_state_unknown">Comprovant estat…</string>
+    <string name="gms_guard_uid_suffix"> (UID %1$s)</string>
+    <string name="gms_guard_block_label">Bloqueja el reconeixement d\'activitat</string>
+    <string name="gms_guard_status_applied">Blocatge aplicat. S\'ha reiniciat Play services per alliberar els seus listeners de sensors actius.</string>
+    <string name="gms_guard_status_removed">Blocatge eliminat.</string>
+    <string name="gms_guard_status_failed">No s\'ha pogut aplicar - comprova l\'accés root.</string>
+    <string name="gms_guard_scans_title">Cerca en segon pla</string>
+    <string name="gms_guard_wifi_scan_label">Cerca de xarxes Wi-Fi</string>
+    <string name="gms_guard_ble_scan_label">Cerca de dispositius Bluetooth</string>
+    <string name="gms_guard_scan_status_on">Cerca en segon pla activada.</string>
+    <string name="gms_guard_scan_status_off">Cerca en segon pla desactivada.</string>
+    <string name="gms_guard_desc">Google Play services manté l\'acceleròmetre (a 50 Hz) i el sensor de llum ambient registrats en ràfagues curtes i contínues des de la seva biblioteca d\'ubicació (collectionlib), encara que cap app demani la teva posició en aquell moment - un consum constant de bateria que apareix atribuït a "Google Play services".\n\nAquest blocatge revoca el permís de reconeixement d\'activitat de Play services a nivell d\'UID. Les apps continuen obtenint ubicació amb normalitat (fixes de xarxa i GPS); només desapareix l\'escaneig de sensors en segon pla. Play services es reinicia en aplicar o eliminar el blocatge.\n\nNota tècnica: en aquesta ROM l\'ordre a nivell de paquet (cmd appops set &lt;package&gt;) s\'accepta però no s\'aplica mai - només funciona el mode a nivell d\'UID. El blocatge persisteix després de reiniciar i es torna a aplicar a l\'arrancada.</string>
+    <string name="gms_guard_manual_title">Ajustos manuals</string>
+    <string name="gms_guard_manual_text">Interruptors de Configuració &gt; Ubicació &gt; Serveis d\'ubicació que no es poden definir des d\'aquí:\n\n• Precisió d\'ubicació de Google: pot quedar activada. El seu cost - l\'escaneig de sensors - ja està bloquejat en aquesta pantalla. Desactivar-la només empitjora les fixes en interiors.\n• Cerca de dispositius Bluetooth: millor desactivada si no uses balises BLE. Escaneig costós i sense ús habitual.\n• Cerca de xarxes Wi-Fi: depèn del dispositiu. Desactivada estalvia bateria, però la ubicació fused perd la seva millor font en interiors; amb recepció GPS feble deixa-la activada.\n• El GPS assistit (A-GPS) és una altra cosa: només descarrega dades de satèl·lits per accelerar la primera fixa. Deixa\'l activat.</string>
 </resources>

@@ -576,4 +576,24 @@
     <string name="hotfix_keymint_warn_text">Deze patch wijzigt AlwaysStrong\'s tee_classes.dex. Als je de AlwaysStrong-module bijwerkt in KernelSU of Magisk, overschrijft de update deze patch en moet je deze hier opnieuw inschakelen.</string>
     <string name="hotfix_keymint_not_needed">Asymmetrische sleutelimport werkt native op uw systeem (fix niet nodig)</string>
     <string name="hotfix_keymint_warn_confirm">Begrepen, inschakelen</string>
+    <!-- GMS Sensor Guard -->
+    <string name="title_gms_sensor_guard">GMS-sensorbewaking</string>
+    <string name="subtitle_gms_sensor_guard">Stopt het sensor-gedreun van Play services (LineageOS)</string>
+    <string name="gms_guard_state">Status: %1$s</string>
+    <string name="gms_guard_state_blocked">Geblokkeerd</string>
+    <string name="gms_guard_state_allowed">Toegestaan</string>
+    <string name="gms_guard_state_unknown">Status wordt gecontroleerd…</string>
+    <string name="gms_guard_uid_suffix"> (UID %1$s)</string>
+    <string name="gms_guard_block_label">Activiteitsherkenning blokkeren</string>
+    <string name="gms_guard_status_applied">Blokkade toegepast. Play services is herstart om actieve sensor-listeners vrij te geven.</string>
+    <string name="gms_guard_status_removed">Blokkade verwijderd.</string>
+    <string name="gms_guard_status_failed">Kon niet worden toegepast - controleer root-toegang.</string>
+    <string name="gms_guard_scans_title">Achtergrondscan</string>
+    <string name="gms_guard_wifi_scan_label">Wi-Fi-scan</string>
+    <string name="gms_guard_ble_scan_label">Bluetooth-scan</string>
+    <string name="gms_guard_scan_status_on">Achtergrondscan aangezet.</string>
+    <string name="gms_guard_scan_status_off">Achtergrondscan uitgezet.</string>
+    <string name="gms_guard_desc">Google Play services houdt de versnellingsmeter (op 50 Hz) en de omgevingslichtsensor geregistreerd in korte, doorlopende uitbarstingen vanuit zijn locatiebibliotheek (collectionlib), ook als er geen app op dat moment je positie vraagt - een constant batterijverbruik dat aan "Google Play services" wordt toegeschreven.\n\nDeze blokkade trekt de activiteitsherkenningstoestemming van Play services in op UID-niveau. Apps blijven locatie krijgen zoals normaal (netwerk- en GPS-fixes); alleen het scannen van sensoren op de achtergrond verdwijnt. Play services herstart bij het toepassen of verwijderen van de blokkade.\n\nTechnische noot: op deze ROM wordt het commando op pakketniveau (cmd appops set &lt;package&gt;) geaccepteerd maar nooit toegepast - alleen de modus op UID-niveau werkt. De blokkade overleeft herstarts en wordt bij het opstarten opnieuw toegepast.</string>
+    <string name="gms_guard_manual_title">Handmatige instellingen</string>
+    <string name="gms_guard_manual_text">Schakelaars onder Instellingen &gt; Locatie &gt; Locatiediensten die hier niet ingesteld kunnen worden:\n\n• Google-locatienauwkeurigheid: mag aan blijven. De kosten ervan - het scannen van sensoren - blokkeert dit scherm al. Uitzetten verslechtert alleen fixes binnenshuis.\n• Bluetooth-scan: beter uit tenzij je BLE-beacons gebruikt. Kostenrijk scannen zonder dagelijks gebruik.\n• Wi-Fi-scan: apparaatafhankelijk. Uit bespaart batterij, maar fused-locatie verliest zijn beste bron binnenshuis; bij zwak GPS-ontvang aan laten.\n• Assisted GPS (A-GPS) is iets anders: het downloadt alleen satellietgegevens om de eerste fix te versnellen. Aan laten.</string>
 </resources>

@@ -4,6 +4,19 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.4.1] - 2026-10-18
+
+GMS Sensor Guard. versionCode 45 → 46.
+
+### Added
+
+- **GMS Sensor Guard (System, LineageOS only).** Stops the background sensor hammering by Google Play services (its location library keeps the accelerometer registered at 50 Hz plus the ambient-light sensor in short continuous bursts, draining battery under the "Google Play services" attribution). Found by IvanTheTolerable (Discord):
+  - Revokes GMS's `ACTIVITY_RECOGNITION` appop at the UID level - measured on-device, location requests (network/GPS fixes) keep being served normally while the sensor bursts stop. The package-level `cmd appops set` form is accepted but silently never applied on this ROM; only the UID form works, so the UID is resolved at runtime (it differs per device/flash).
+  - Play services is force-stopped on toggle to release already-running sensor listeners; the appop does NOT survive reboots on this ROM (observed on-device: after a reboot the UID mode is gone and the bursts resume), so a one-shot boot script (`/data/adb/service.d/gms_guard_boot.sh`) re-asserts it at every boot - it also covers "Reset app preferences" and GMS reinstalls.
+  - State is read back from the OS on every render, never from a local pref, so the switch reflects adb-side changes too.
+  - Secondary toggles for the `wifi_scan_always_enabled` / `ble_scan_always_enabled` background scans, plus an explanation of the trade-offs of the manual settings (Google Location Accuracy, Wi-Fi/BLE scanning, A-GPS).
+  - Hidden on BenOS/ZinwaOS (LineageOS-specific behavior; untested elsewhere), self-healed by DaemonMaintenance.
+
 ## [4.4] - 2026-10-16
 
 Circle to Search, QR Enlarger, and Centralized Keyboard Shortcuts. versionCode 44 → 45.

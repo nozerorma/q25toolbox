@@ -801,4 +801,24 @@ Both were merged from separate branches and have unit tests; the merged build wa
     <string name="cts_status_inactive">Inactive</string>
     <string name="cts_status_desc">Operates via native Zygisk module (/data/adb/modules/q25_cts) spoofing Pixel 8 Pro system features for the Google App.</string>
     <string name="cts_test_trigger_button">Test Circle to Search now</string>
+    <!-- GMS Sensor Guard -->
+    <string name="title_gms_sensor_guard">GMS Sensor Guard</string>
+    <string name="subtitle_gms_sensor_guard">Stop Play services sensor hammering (LineageOS)</string>
+    <string name="gms_guard_state">State: %1$s</string>
+    <string name="gms_guard_state_blocked">Blocked</string>
+    <string name="gms_guard_state_allowed">Allowed</string>
+    <string name="gms_guard_state_unknown">Checking state…</string>
+    <string name="gms_guard_uid_suffix"> (UID %1$s)</string>
+    <string name="gms_guard_block_label">Block activity recognition</string>
+    <string name="gms_guard_status_applied">Block applied. Play services was restarted to release its running sensor listeners.</string>
+    <string name="gms_guard_status_removed">Block removed.</string>
+    <string name="gms_guard_status_failed">Could not apply - check root access.</string>
+    <string name="gms_guard_scans_title">Background scanning</string>
+    <string name="gms_guard_wifi_scan_label">Wi-Fi scanning</string>
+    <string name="gms_guard_ble_scan_label">Bluetooth scanning</string>
+    <string name="gms_guard_scan_status_on">Background scanning on.</string>
+    <string name="gms_guard_scan_status_off">Background scanning off.</string>
+    <string name="gms_guard_desc">Google Play services keeps the accelerometer (at 50 Hz) and the ambient light sensor registered in short, continuous bursts from its location library (collectionlib), even when no app is asking for your position at that moment - a constant battery drain that shows up attributed to "Google Play services".\n\nThis block revokes Play services\' activity-recognition permission at the UID level. Apps keep getting location as normal (network and GPS fixes); only the background sensor scanning disappears. Play services restarts when the block is applied or removed.\n\nTechnical note: on this ROM the package-level command (cmd appops set &lt;package&gt;) is accepted but never applied - only the UID-level mode works. The block persists across reboots and is re-asserted at boot.</string>
+    <string name="gms_guard_manual_title">Manual settings</string>
+    <string name="gms_guard_manual_text">Switches under Settings &gt; Location &gt; Location services that can\'t be set from here:\n\n• Google Location Accuracy: can stay on. Its cost - the sensor scanning - is already blocked by this screen. Turning it off only degrades indoor fixes.\n• Bluetooth scanning: best off unless you use BLE beacons. Costly scanning with no everyday use.\n• Wi-Fi scanning: device-dependent. Off saves battery, but fused location loses its best indoor source; with weak GPS reception leave it on.\n• Assisted GPS (A-GPS) is a different thing: it only downloads satellite data to speed up the first fix. Leave it on.</string>
 </resources>

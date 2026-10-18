@@ -574,4 +574,24 @@
     <string name="hotfix_keymint_warn_text">Dieser Patch modifiziert die tee_classes.dex von AlwaysStrong. Wenn Sie das AlwaysStrong-Modul in KernelSU oder Magisk aktualisieren, wird der Patch überschrieben und muss hier erneut aktiviert werden.</string>
     <string name="hotfix_keymint_not_needed">Asymmetrischer Schlüsselimport funktioniert nativ auf Ihrem System (Fix nicht erforderlich)</string>
     <string name="hotfix_keymint_warn_confirm">Verstanden, aktivieren</string>
+    <!-- GMS Sensor Guard -->
+    <string name="title_gms_sensor_guard">GMS-Sensorwächter</string>
+    <string name="subtitle_gms_sensor_guard">Beendet das Sensor-Hämmern der Play-Dienste (LineageOS)</string>
+    <string name="gms_guard_state">Status: %1$s</string>
+    <string name="gms_guard_state_blocked">Blockiert</string>
+    <string name="gms_guard_state_allowed">Erlaubt</string>
+    <string name="gms_guard_state_unknown">Status wird geprüft…</string>
+    <string name="gms_guard_uid_suffix"> (UID %1$s)</string>
+    <string name="gms_guard_block_label">Aktivitätserkennung blockieren</string>
+    <string name="gms_guard_status_applied">Block aktiviert. Play-Dienste wurden neu gestartet, um laufende Sensor-Listener freizugeben.</string>
+    <string name="gms_guard_status_removed">Block entfernt.</string>
+    <string name="gms_guard_status_failed">Konnte nicht angewendet werden - Root-Zugriff prüfen.</string>
+    <string name="gms_guard_scans_title">Hintergrundsuche</string>
+    <string name="gms_guard_wifi_scan_label">WLAN-Suche</string>
+    <string name="gms_guard_ble_scan_label">Bluetooth-Suche</string>
+    <string name="gms_guard_scan_status_on">Hintergrundsuche aktiviert.</string>
+    <string name="gms_guard_scan_status_off">Hintergrundsuche deaktiviert.</string>
+    <string name="gms_guard_desc">Die Play-Dienste halten das Accelerometer (mit 50 Hz) und den Umgebungslichtsensor aus ihrer Standort-Bibliothek (collectionlib) in kurzen, fortlaufenden Bursts registriert - selbst wenn gerade keine App eine Position anfordert. Das ist ein konstanter Akkuverbrauch, der als "Google Play services" auftaucht.\n\nDiese Blockierung entzieht den Play-Diensten die Aktivitätserkennungs-Berechtigung auf UID-Ebene. Apps erhalten weiterhin ganz normal Standorte (Netzwerk- und GPS-Fixes); nur die Sensor-Suche im Hintergrund verschwindet. Die Play-Dienste werden beim Anwenden oder Entfernen der Blockierung neu gestartet.\n\nTechnische Anmerkung: Auf dieser ROM wird der Befehl auf Paket-Ebene (cmd appops set &lt;package&gt;) akzeptiert, aber nie angewendet - nur der UID-Modus funktioniert. Die Blockierung übersteht Neustarts und wird beim Booten erneut angewendet.</string>
+    <string name="gms_guard_manual_title">Manuelle Einstellungen</string>
+    <string name="gms_guard_manual_text">Schalter unter Einstellungen &gt; Standort &gt; Standortdienste, die sich von hier aus nicht setzen lassen:\n\n• Google-Standortgenauigkeit: kann aktiviert bleiben. Ihre Kosten - die Sensor-Suche - blockiert dieser Bildschirm bereits. Deaktivieren verschlechtert nur Indoor-Fixes.\n• Bluetooth-Suche: am besten aus, sofern keine BLE-Beacons genutzt werden. Kostenintensive Suche ohne Alltagsnutzen.\n• WLAN-Suche: geräteabhängig. Aus spart Akku, aber die fused-Standortbestimmung verliert ihre beste Indoor-Quelle; bei schwachem GPS-Empfang aktiviert lassen.\n• Assisted GPS (A-GPS) ist etwas anderes: Es lädt nur Satellitendaten herunter, um den ersten Fix zu beschleunigen. Aktiviert lassen.</string>
 </resources>

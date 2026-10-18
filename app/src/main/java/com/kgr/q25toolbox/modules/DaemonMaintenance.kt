@@ -71,6 +71,13 @@ object DaemonMaintenance {
                 LocationIdleController.setEnabled(context, true, minutes)
             }
         }
+        // GMS sensor guard: the appop block persists in appops.xml on its own, but the
+        // boot re-assert script only gets repaired by visiting its screen - heal it here.
+        if (GmsSensorGuardController.isBlocked(GmsSensorGuardController.gmsUid()) &&
+            !GmsSensorGuardController.isBootGuardCurrent(context)
+        ) {
+            GmsSensorGuardController.ensureBootGuard(context)
+        }
         // v3: tear down the pre-v3 bind-mounted grid patch (module + patched
         // apk + boot script + mount). The hooked grid/masonry layout is an LSPosed module now.
         RecentsTweaksController.cleanupLegacyGridPatch()

@@ -34,6 +34,7 @@ sealed class Screen(val route: String, @StringRes val titleRes: Int, @StringRes 
     data object ImeCompat : Screen("ime_compat", R.string.title_ime_compat, R.string.subtitle_ime_compat)
     data object ZygiskDetach : Screen("zygisk_detach", R.string.title_zygisk_detach, R.string.subtitle_zygisk_detach)
     data object AdvancedSettings : Screen("advanced_settings", R.string.title_advanced_settings, R.string.subtitle_advanced_settings)
+    data object GmsSensorGuard : Screen("gms_sensor_guard", R.string.title_gms_sensor_guard, R.string.subtitle_gms_sensor_guard)
     data object QrEnlarger : Screen("qr_enlarger", R.string.title_qr_enlarger, R.string.subtitle_qr_enlarger)
     data object KeyboardShortcuts : Screen("keyboard_shortcuts", R.string.title_keyboard_shortcuts, R.string.subtitle_keyboard_shortcuts)
     data object CircleToSearch : Screen("circle_to_search", R.string.title_circle_to_search, R.string.subtitle_circle_to_search)
@@ -96,6 +97,7 @@ val systemScreens = listOf(
     Screen.TickerNotifications,
     Screen.CircleToSearch,
     Screen.Dt2w,
+    Screen.GmsSensorGuard,
     Screen.AdvancedSettings,
 )
 
@@ -126,5 +128,8 @@ fun Screen.availableOn(rom: Rom?): Boolean = when (this) {
     Screen.Dt2w -> rom == Rom.LINEAGE
     // A LineageOS-specific fix for the BlackBerry keyboard on the Q25 (see ImeCompat).
     Screen.ImeCompat -> rom == Rom.LINEAGE
+    // The package-level appops no-op this works around was verified on LineageOS; on
+    // BenOS/ZinwaOS the situation is untested, so the screen stays hidden there.
+    Screen.GmsSensorGuard -> rom == Rom.LINEAGE
     else -> true
 }
