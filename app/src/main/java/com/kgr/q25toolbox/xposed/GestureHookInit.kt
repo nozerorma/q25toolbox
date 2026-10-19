@@ -72,7 +72,9 @@ class GestureHookInit : IXposedHookLoadPackage {
         try {
             @Suppress("DEPRECATION")
             val versionCode = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionCode
-            java.io.File(ctx.filesDir, STATE_FILE).writeText("ok=1\nlauncher=$versionCode\n")
+            val f = java.io.File(ctx.filesDir, STATE_FILE)
+            f.parentFile?.mkdirs()
+            f.writeText("ok=1\nlauncher=$versionCode\n")
         } catch (t: Throwable) {
             XposedBridge.log("[$TAG] gesture proof write failed: ${t.message}")
         }

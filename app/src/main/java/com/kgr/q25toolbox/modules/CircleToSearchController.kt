@@ -10,22 +10,29 @@ import android.os.VibratorManager
 import android.util.Log
 import com.kgr.q25toolbox.core.RootShell
 import com.kgr.q25toolbox.service.Q25AccessibilityService
-import java.io.File
-import java.io.FileOutputStream
 
 /**
  * Controller for Circle to Search (CTS) management.
- * Operates via a lightweight standalone Zygisk module + system permission XML deployed
- * to /data/adb/modules/q25_cts to spoof Pixel 8 Pro system features and properties for
- * Google Search (com.google.android.googlequicksearchbox), alongside launcher device_config
- * flags and system contextual_search IPC trigger.
+ *
+ * The spoofing itself lives in the LSPosed hook
+ * [com.kgr.q25toolbox.xposed.CircleToSearchHookInit], scoped to the Google app only: it
+ * reports the Pixel 2023 Experience feature and spoofs the Pixel 8 Pro Build fields inside
+ * com.google.android.googlequicksearchbox. This controller owns the rest: the master toggle,
+ * the launcher device_config gesture flags, the world-readable Settings.Global key the hook
+ * reads, and the hook handshake health check.
  */
 object CircleToSearchController {
 
     private const val TAG = "Q25-CTS-Controller"
     private const val KEY_CTS_ENABLED = "cts_master_enabled"
 
-    const val MODULE_DIR = "/data/adb/modules/q25_cts"
+    const val GAPP_PKG = "com.google.android.googlequicksearchbox"
+
+    /** World-readable Settings.Global key the hook reads; 1 = spoof active in the Google app. */
+    const val HOOK_ENABLED_KEY = "q25_cts_hook_enabled"
+
+    /** Written by the hook inside the Google app's files dir; read here as root. */
+    private const val HOOK_STATE_FILE = "files/q25toolbox_cts_hook.state"
 
     private fun prefs(context: Context): SharedPreferences =
         context.getSharedPreferences(Q25AccessibilityService.PREFS, Context.MODE_PRIVATE)
@@ -33,34 +40,42 @@ object CircleToSearchController {
     fun isEnabled(context: Context): Boolean =
         prefs(context).getBoolean(KEY_CTS_ENABLED, false)
 
-    fun isModuleInstalled(): Boolean {
-        val cmd = """
-            if [ -f '$MODULE_DIR/module.prop' ] && [ -f '$MODULE_DIR/zygisk/arm64-v8a.so' ] && [ ! -f '$MODULE_DIR/disable' ]; then
-                echo yes
-            else
-                echo no
-            fi
-        """.trimIndent()
-        val result = RootShell.run(cmd).outString.trim()
-        val installed = result.contains("yes")
-        Log.d(TAG, "isModuleInstalled: $installed (raw='$result')")
-        return installed
-    }
+    /**
+     * Overridden to return true by [com.kgr.q25toolbox.xposed.CircleToSearchHookInit] when it
+     * loads in our own process, so the UI can tell whether the LSPosed module is actually
+     * enabled. Keep the body a plain `return false`.
+     */
+    @JvmStatic
+    fun isXposedActive(): Boolean = false
 
     fun setEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_CTS_ENABLED, enabled).apply()
 
-        // 1. Device config flags for launcher
+        // 1. Launcher gesture flags
         applyLauncherConfig(enabled)
 
-        // 2. Manage Zygisk module
-        if (enabled) {
-            deployZygiskModule(context)
-            RootShell.run("am force-stop com.google.android.googlequicksearchbox")
-        } else {
-            removeZygiskModule()
-            RootShell.run("am force-stop com.google.android.googlequicksearchbox")
-        }
+        // 2. The hook's gate
+        RootShell.run("settings put global $HOOK_ENABLED_KEY ${if (enabled) 1 else 0}")
+
+        // 3. Restart the Google app so the hook re-evaluates on a fresh process
+        RootShell.run("am force-stop $GAPP_PKG")
+    }
+
+    /**
+     * Reads the state file the hook leaves in the Google app: OK only if the hooks installed
+     * AND recorded the versionCode of the Google app installed now. A missing or stale file is
+     * UNKNOWN (the hook has not run on this build yet); a file saying a hook failed is BROKEN.
+     * Blocking (root).
+     */
+    fun hookHealth(): RecentsTweaksController.HookHealth {
+        val res = RootShell.run(
+            RecentsTweaksController.inGlobalNs("cat /data/user/0/$GAPP_PKG/$HOOK_STATE_FILE 2>/dev/null")
+        )
+        val state = res.outString
+        Log.i(TAG, "hookHealth: state=${state.replace("\n", "|")}")
+        if (state.isBlank()) return RecentsTweaksController.HookHealth.UNKNOWN
+        val installed = RecentsTweaksController.installedVersionCode(GAPP_PKG)
+        return RecentsTweaksController.parseHandshake(state, installed, "gapp")
     }
 
     fun applyLauncherConfig(enabled: Boolean) {
@@ -83,55 +98,6 @@ object CircleToSearchController {
         val fullCmd = cmds.joinToString(" && ")
         RootShell.run(fullCmd)
         Log.d(TAG, "Applied launcher device_config: enabled=$enabled")
-    }
-
-    fun deployZygiskModule(context: Context): Boolean {
-        return runCatching {
-            val cacheDir = context.cacheDir
-            val soFile = File(cacheDir, "arm64-v8a.so")
-            val xmlFile = File(cacheDir, "pixel_2023_experience.xml")
-            val propFile = File(cacheDir, "module.prop")
-
-            context.assets.open("cts/arm64-v8a.so").use { input ->
-                FileOutputStream(soFile).use { output -> input.copyTo(output) }
-            }
-            context.assets.open("cts/pixel_2023_experience.xml").use { input ->
-                FileOutputStream(xmlFile).use { output -> input.copyTo(output) }
-            }
-            context.assets.open("cts/module.prop").use { input ->
-                FileOutputStream(propFile).use { output -> input.copyTo(output) }
-            }
-
-            val installCmd = """
-                mkdir -p $MODULE_DIR/zygisk
-                mkdir -p $MODULE_DIR/system/etc/permissions
-                cp ${propFile.absolutePath} $MODULE_DIR/module.prop
-                cp ${soFile.absolutePath} $MODULE_DIR/zygisk/arm64-v8a.so
-                cp ${xmlFile.absolutePath} $MODULE_DIR/system/etc/permissions/pixel_2023_experience.xml
-                chmod 755 $MODULE_DIR
-                chmod 755 $MODULE_DIR/zygisk
-                chmod 755 $MODULE_DIR/system
-                chmod 755 $MODULE_DIR/system/etc
-                chmod 755 $MODULE_DIR/system/etc/permissions
-                chmod 644 $MODULE_DIR/module.prop
-                chmod 755 $MODULE_DIR/zygisk/arm64-v8a.so
-                chmod 644 $MODULE_DIR/system/etc/permissions/pixel_2023_experience.xml
-                rm -f $MODULE_DIR/disable
-            """.trimIndent().replace("\n", " && ")
-
-            RootShell.run(installCmd)
-            Log.d(TAG, "Deployed Zygisk module to $MODULE_DIR")
-            true
-        }.getOrElse { e ->
-            Log.e(TAG, "Failed to deploy Zygisk module", e)
-            false
-        }
-    }
-
-    fun removeZygiskModule(): Boolean {
-        val result = RootShell.run("rm -rf $MODULE_DIR")
-        Log.d(TAG, "Removed Zygisk module from $MODULE_DIR: success=${result.success}")
-        return result.success
     }
 
     /**

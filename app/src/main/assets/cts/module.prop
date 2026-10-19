@@ -1,7 +1,0 @@
-id=q25_cts
-name=Q25 Circle to Search (Zygisk)
-version=1.0
-versionCode=1
-author=Q25Toolbox
-description=Zygisk spoofer and system feature provider for Circle to Search without LSPosed.
-zygisk=1

@@ -34,6 +34,7 @@ import com.kgr.q25toolbox.R
 import com.kgr.q25toolbox.core.RootShell
 import java.io.File
 import java.util.concurrent.Executors
+import zxingcpp.BarcodeReader
 
 /**
  * QR / Aztec Code Enlarger:
@@ -219,7 +220,30 @@ object QrEnlargerController {
             return reader.decode(BinaryBitmap(HybridBinarizer(source.invert())), hints)
         } catch (_: Throwable) {}
 
-        return null
+        // 4. zxing-cpp fallback. Its detector is far stronger than ZXing's at native
+        //    resolution, which matters for small, dense, antialiased codes: the Aztec on
+        //    Renfe tickets (~240 px) fails every ZXing pass above but decodes here at once.
+        return decodeBarcodeNative(bitmap)
+    }
+
+    private fun decodeBarcodeNative(bitmap: Bitmap): Result? {
+        return try {
+            val options = BarcodeReader.Options().apply {
+                formats = setOf(BarcodeReader.Format.QR_CODE, BarcodeReader.Format.AZTEC)
+                tryHarder = true
+                tryInvert = true
+                tryRotate = true
+            }
+            val result = BarcodeReader(options).read(bitmap).firstOrNull() ?: return null
+            val format = when (result.format) {
+                BarcodeReader.Format.QR_CODE -> BarcodeFormat.QR_CODE
+                BarcodeReader.Format.AZTEC -> BarcodeFormat.AZTEC
+                else -> return null
+            }
+            result.text?.takeIf { it.isNotEmpty() }?.let { Result(it, null, null, format) }
+        } catch (_: Throwable) {
+            null
+        }
     }
 
     private fun renderBarcode(context: Context, result: Result): Bitmap? {

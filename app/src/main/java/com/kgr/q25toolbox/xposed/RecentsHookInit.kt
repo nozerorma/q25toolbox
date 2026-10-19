@@ -147,24 +147,94 @@ class RecentsHookInit : IXposedHookLoadPackage {
 
     // --- hooks ---------------------------------------------------------
 
-    /** `DisplayController.Info.isTablet(WindowBounds)` -> true while a grid mode is active. */
+    /**
+     * Tablet Overview -> true while a grid mode is active.
+     *
+     * Legacy (LineageOS <= 23 launchers): force `DisplayController.Info.isTablet(WindowBounds)`.
+     * That method computes, so ART cannot inline it and the hook is reliable.
+     *
+     * LineageOS 24 (launcher versionCode 37) removed that class; the grid path consults
+     * `DeviceProperties.isLargeScreen()` instead — a TRIVIAL getter that ART inlines at hot call
+     * sites, bypassing any method hook (a direct call inside TaskView.updateTaskSize reads the
+     * real field while a reflection read sees the hook). So on LineageOS 24 the FIELD is forced
+     * instead — see [forceLargeScreenFields].
+     */
     private fun forceOverviewTablet(cl: ClassLoader): Boolean {
-        return try {
-            XposedHelpers.findAndHookMethod(
-                "com.android.launcher3.util.DisplayController\$Info", cl,
-                "isTablet", "com.android.launcher3.util.WindowBounds",
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        if (gridActive()) param.result = true
-                    }
-                }
-            )
-            XposedBridge.log("[$TAG] hooked DisplayController.Info.isTablet")
-            true
-        } catch (t: Throwable) {
-            XposedBridge.log("[$TAG] Info.isTablet hook failed: ${t.message}")
-            false
+        if (HookTargets.isLineage24()) return forceLargeScreenFields(cl)
+        val hook = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                if (gridActive()) param.result = true
+            }
         }
+        return HookTargets.hookAny(
+            cl,
+            legacy = HookTargets.Candidate(
+                "com.android.launcher3.util.DisplayController\$Info", "isTablet",
+                arrayOf<Any>("com.android.launcher3.util.WindowBounds"), hook
+            ),
+            new = null
+        )
+    }
+
+    /**
+     * LineageOS 24: force the `isLargeScreen` field on DeviceProperties, while a grid mode is
+     * active. Two injection points, because the field is read both inlined (field reads see it
+     * directly) and at profile (re)build time:
+     *  - every DeviceProperties construction — the profile is rebuilt on rotation/display change;
+     *  - RecentsView.setInsets — it runs before updateSizeAndPadding in the same pass, covering
+     *    profiles built before the mode key was visible. Its after-callback also forces
+     *    mOverviewGridEnabled, in case setInsets computed it from a not-yet-DEFAULT state.
+     * Never throws into the launcher.
+     */
+    private fun forceLargeScreenFields(cl: ClassLoader): Boolean {
+        var ok = true
+        try {
+            val dps = XposedHelpers.findClass("com.android.launcher3.deviceprofile.DeviceProperties", cl)
+            XposedBridge.hookAllConstructors(dps, object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    forceLargeScreenFieldOn(param.thisObject)
+                }
+            })
+            XposedBridge.log("[$TAG] hooked DeviceProperties constructors (isLargeScreen field force)")
+        } catch (t: Throwable) {
+            XposedBridge.log("[$TAG] DeviceProperties ctor hook failed: ${t.message}")
+            ok = false
+        }
+        val setInsetsHook = object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                try {
+                    val container = XposedHelpers.getObjectField(param.thisObject, "mContainer")
+                    val dp = XposedHelpers.callMethod(container, "getDeviceProfile")
+                    forceLargeScreenFieldOn(XposedHelpers.callMethod(dp, "getDeviceProperties"))
+                } catch (t: Throwable) {
+                    XposedBridge.log("[$TAG] setInsets field force failed: ${t.message}")
+                }
+            }
+
+            override fun afterHookedMethod(param: MethodHookParam) {
+                try {
+                    if (gridActive()) {
+                        XposedHelpers.setBooleanField(param.thisObject, "mOverviewGridEnabled", true)
+                    }
+                } catch (t: Throwable) {
+                    XposedBridge.log("[$TAG] setInsets gridEnabled force failed: ${t.message}")
+                }
+            }
+        }
+        ok = ok && HookTargets.hookAny(
+            cl,
+            legacy = null,
+            new = HookTargets.Candidate(
+                "com.android.quickstep.views.RecentsView", "setInsets",
+                arrayOf<Any>("android.graphics.Rect"), setInsetsHook
+            )
+        )
+        return ok
+    }
+
+    private fun forceLargeScreenFieldOn(dps: Any?) {
+        if (dps == null || !gridActive()) return
+        runCatching { XposedHelpers.setBooleanField(dps, "isLargeScreen", true) }
     }
 
     /**
@@ -178,22 +248,26 @@ class RecentsHookInit : IXposedHookLoadPackage {
      * a grid mode is active.
      */
     private fun guardHotseatRecalc(cl: ClassLoader): Boolean {
-        return try {
-            XposedHelpers.findAndHookMethod(
-                "com.android.launcher3.DeviceProfile", cl,
-                "recalculateHotseatWidthAndBorderSpace",
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam) {
-                        if (gridActive()) param.result = null
-                    }
-                }
-            )
-            XposedBridge.log("[$TAG] hooked DeviceProfile.recalculateHotseatWidthAndBorderSpace")
-            true
-        } catch (t: Throwable) {
-            XposedBridge.log("[$TAG] hotseat recalc guard failed: ${t.message}")
-            false
+        val hook = object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                if (gridActive()) param.result = null
+            }
         }
+        // Legacy target is the no-arg recalculateHotseatWidthAndBorderSpace(); the LineageOS 24
+        // launcher takes an int and the divide-by-zero moved into HotseatProfile. No-op'ing the
+        // DeviceProfile entry still cuts the whole chain, same as before. Both targets preserved,
+        // ROM-ordered (HookTargets).
+        return HookTargets.hookAny(
+            cl,
+            legacy = HookTargets.Candidate(
+                "com.android.launcher3.DeviceProfile", "recalculateHotseatWidthAndBorderSpace",
+                arrayOf(), hook
+            ),
+            new = HookTargets.Candidate(
+                "com.android.launcher3.DeviceProfile", "recalculateHotseatWidthAndBorderSpace",
+                arrayOf<Any>(Integer.TYPE), hook
+            )
+        )
     }
 
     /**
@@ -244,8 +318,14 @@ class RecentsHookInit : IXposedHookLoadPackage {
                         // against the first row's snapshots, so the tiles look like they overlap.
                         if ((geti(rowSpacing) ?: 1) <= 0) seti(rowSpacing, px(ROW_SPACING_DP))
                         if ((geti(sideMargin) ?: 1) <= 0) seti(sideMargin, px(12))
+                        // Baked values of the freshly built profile: on LineageOS 24 the grid only
+                        // renders when isLargeScreen was forced at construction time, so log it.
+                        val dps = runCatching { XposedHelpers.getObjectField(o, "mDeviceProperties") }.getOrNull()
+                        val ils = dps?.let { runCatching { XposedHelpers.callMethod(it, "isLargeScreen") }.getOrNull() }
+                        val ar = dps?.let { runCatching { XposedHelpers.callMethod(it, "getAspectRatio") }.getOrNull() }
                         XposedBridge.log("[$TAG] DeviceProfile fixup (${if (nested != null) "overviewProfile" else "legacy"}): " +
-                            "rowSpacing=${geti(rowSpacing)} side=${geti(sideMargin)} iconGrid=${geti(iconGrid)}")
+                            "rowSpacing=${geti(rowSpacing)} side=${geti(sideMargin)} iconGrid=${geti(iconGrid)} " +
+                            "isLargeScreen=$ils aspectRatio=$ar")
                     }
                 })
                 n++
@@ -286,30 +366,35 @@ class RecentsHookInit : IXposedHookLoadPackage {
      * paging and swipe-to-dismiss are unchanged. Focused / desktop tasks skipped.
      */
     private fun mosaicTileHeights(cl: ClassLoader) {
-        try {
-            XposedHelpers.findAndHookMethod(
-                "com.android.quickstep.views.TaskView", cl, "updateTaskSize",
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        val tv = param.thisObject as? View ?: return
-                        if (mode(tv.context) != MODE_MASONRY) return
-                        if (XposedHelpers.callMethod(tv, "isFocusedTask") == true) return
-                        if (XposedHelpers.callMethod(tv, "isDesktopTask") == true) return
-                        val lp = tv.layoutParams ?: return
-                        if (lp.height <= 0) return
-                        val id = (XposedHelpers.callMethod(tv, "getTaskViewId") as? Int) ?: return
-                        val f = MOSAIC_FACTORS[((id % MOSAIC_FACTORS.size) + MOSAIC_FACTORS.size) % MOSAIC_FACTORS.size]
-                        val newH = (lp.height * f).toInt()
-                        if (newH <= 0 || newH == lp.height) return
-                        lp.height = newH
-                        tv.layoutParams = lp
-                    }
-                }
-            )
-            XposedBridge.log("[$TAG] hooked TaskView.updateTaskSize (masonry)")
-        } catch (t: Throwable) {
-            XposedBridge.log("[$TAG] masonry hook failed: ${t.message}")
+        val hook = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val tv = param.thisObject as? View ?: return
+                if (mode(tv.context) != MODE_MASONRY) return
+                if (XposedHelpers.callMethod(tv, "isFocusedTask") == true) return
+                if (XposedHelpers.callMethod(tv, "isDesktopTask") == true) return
+                val lp = tv.layoutParams ?: return
+                if (lp.height <= 0) return
+                val id = (XposedHelpers.callMethod(tv, "getTaskViewId") as? Int) ?: return
+                val f = MOSAIC_FACTORS[((id % MOSAIC_FACTORS.size) + MOSAIC_FACTORS.size) % MOSAIC_FACTORS.size]
+                val newH = (lp.height * f).toInt()
+                if (newH <= 0 || newH == lp.height) return
+                lp.height = newH
+                tv.layoutParams = lp
+            }
         }
+        // Legacy: no-arg updateTaskSize(). The LineageOS 24 launcher (versionCode 37) takes
+        // (Rect, Rect). Same callback works for both. Both targets preserved (HookTargets).
+        HookTargets.hookAny(
+            cl,
+            legacy = HookTargets.Candidate(
+                "com.android.quickstep.views.TaskView", "updateTaskSize",
+                arrayOf(), hook
+            ),
+            new = HookTargets.Candidate(
+                "com.android.quickstep.views.TaskView", "updateTaskSize",
+                arrayOf<Any>("android.graphics.Rect", "android.graphics.Rect"), hook
+            )
+        )
     }
 
     /** Masonry only: square task-tile corners. */

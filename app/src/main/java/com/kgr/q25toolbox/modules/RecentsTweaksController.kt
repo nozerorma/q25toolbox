@@ -188,9 +188,13 @@ object RecentsTweaksController {
     }
 
     /** Pure part of [hookHealth]: a handshake file and the launcher versionCode installed now. */
-    internal fun parseHandshake(state: String, installedVersion: String?): HookHealth {
+    internal fun parseHandshake(
+        state: String,
+        installedVersion: String?,
+        versionKey: String = "launcher"
+    ): HookHealth {
         val ok = Regex("""ok=(\d)""").find(state)?.groupValues?.get(1) == "1"
-        val recorded = Regex("""launcher=(\d+)""").find(state)?.groupValues?.get(1)
+        val recorded = Regex("""$versionKey=(\d+)""").find(state)?.groupValues?.get(1)
         if (recorded == null || installedVersion == null || recorded != installedVersion) return HookHealth.UNKNOWN
         return if (ok) HookHealth.OK else HookHealth.BROKEN
     }

@@ -64,10 +64,19 @@ fun RecentsTweaksScreen(onBack: () -> Unit) {
     // Reads everything the screen shows from the device (root); also used after any change.
     fun refresh() {
         scope.launch(Dispatchers.IO) {
-            val m = RecentsTweaksController.getLayoutMode()
+            var m = RecentsTweaksController.getLayoutMode()
             val a = RecentsTweaksController.getScrimAlpha()
-            val h = RecentsTweaksController.hookHealth()
-            val inUse = RecentsTweaksController.gridUsesHook()
+            var h = RecentsTweaksController.hookHealth()
+            var inUse = RecentsTweaksController.gridUsesHook()
+            // Self-heal: the LineageOS 24 hook targets flip the handshake to OK after the fact, but a
+            // Grid (auto) choice that fell back to the overlay while BROKEN keeps the hook key off.
+            // Re-reconcile once the hook is healthy so the choice starts using the hook again.
+            if (m == LayoutMode.GRID_AUTO && h == HookHealth.OK && !inUse) {
+                RecentsTweaksController.reconcileGrid(context)
+                m = RecentsTweaksController.getLayoutMode()
+                h = RecentsTweaksController.hookHealth()
+                inUse = RecentsTweaksController.gridUsesHook()
+            }
             withContext(Dispatchers.Main) {
                 mode = m
                 scrimAlpha = a

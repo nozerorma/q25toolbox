@@ -28,7 +28,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Two-row grid / masonry Recents/Overview for Launcher3 QuickStep" />
+            android:value="Two-row grid / masonry Recents/Overview for Launcher3 QuickStep; Circle to Search enabler for the Google app (Pixel 2023 Experience feature + Pixel 8 Pro Build spoof, scoped to com.google.android.googlequicksearchbox)" />
         <meta-data
             android:name="xposedminversion"
             android:value="54" />

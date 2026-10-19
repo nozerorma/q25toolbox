@@ -111,6 +111,12 @@ dependencies {
 
     // QR and Aztec barcode decoding / encoding for QR Enlarger
     implementation("com.google.zxing:core:3.5.3")
+    // Stronger native decoder used as fallback when ZXing misses small/dense 2D codes (e.g. Renfe Aztec)
+    implementation("io.github.zxing-cpp:android:2.3.0") {
+        // Only the Bitmap read() API is used; camera-core (optional ImageProxy support)
+        // drags in a version that requires compileSdk 35.
+        exclude(group = "androidx.camera")
+    }
 
     testImplementation("junit:junit:4.13.2")
 }

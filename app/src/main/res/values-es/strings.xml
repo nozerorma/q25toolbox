@@ -787,10 +787,14 @@ Ambas se fusionaron desde ramas separadas y tienen tests unitarios; la build fus
     <string name="title_circle_to_search">Circle to Search</string>
     <string name="subtitle_circle_to_search">Busca visualmente rodeando texto o imágenes en pantalla</string>
     <string name="cts_master_switch_title">Activar Circle to Search</string>
-    <string name="cts_master_switch_desc">Configura las flags del launcher y el asistente de búsqueda contextual</string>
-    <string name="cts_status_active">Módulo Zygisk activo</string>
-    <string name="cts_status_inactive">Inactivo</string>
-    <string name="cts_status_desc">Opera mediante el módulo Zygisk nativo (/data/adb/modules/q25_cts) simulando las funciones de Pixel 8 Pro para la aplicación de Google.</string>
+    <string name="cts_master_switch_desc">Configura las flags del launcher y el hook LSPosed que activa la búsqueda contextual</string>
+    <string name="cts_status_desc">Opera mediante un hook LSPosed (Vector) dirigido solo a la aplicación de Google: informa de la función Pixel 2023 Experience y suplanta los campos Build de Pixel 8 Pro ahí; las flags de gestos del launcher se ponen vía device_config.</string>
+    <string name="cts_xposed_ok">Módulo LSPosed activo.</string>
+    <string name="cts_xposed_missing">Módulo LSPosed no activo.</string>
+    <string name="cts_xposed_hint">Abre tu gestor de Xposed (Vector), activa \"Q25 Toolbox\" y marca la aplicación de Google (com.google.android.googlequicksearchbox) en su scope; luego fuerza la detención de la aplicación de Google. Requiere un framework Xposed sobre KernelSU / APatch / Magisk.</string>
+    <string name="cts_hook_status_ok">Hook LSPosed: funcionando en la aplicación de Google.</string>
+    <string name="cts_hook_status_broken">Hook LSPosed: no se pudo enganchar en esta versión de la aplicación de Google.</string>
+    <string name="cts_hook_status_unknown">Hook LSPosed: todavía no se ha visto en la aplicación de Google. Fuerza la detención de la aplicación de Google para que se cargue el hook.</string>
     <string name="cts_test_trigger_button">Probar Circle to Search ahora</string>
     <!-- GMS Sensor Guard -->
     <string name="title_gms_sensor_guard">Guardia de sensores GMS</string>

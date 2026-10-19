@@ -796,10 +796,14 @@ Both were merged from separate branches and have unit tests; the merged build wa
     <string name="title_circle_to_search">Circle to Search</string>
     <string name="subtitle_circle_to_search">Visually search content by circling text or images on screen</string>
     <string name="cts_master_switch_title">Enable Circle to Search</string>
-    <string name="cts_master_switch_desc">Configures launcher flags and contextual search assistant</string>
-    <string name="cts_status_active">Zygisk module active</string>
-    <string name="cts_status_inactive">Inactive</string>
-    <string name="cts_status_desc">Operates via native Zygisk module (/data/adb/modules/q25_cts) spoofing Pixel 8 Pro system features for the Google App.</string>
+    <string name="cts_master_switch_desc">Configures launcher flags and the LSPosed hook that enables contextual search</string>
+    <string name="cts_status_desc">Operates via an LSPosed hook (Vector) scoped to the Google App: it reports the Pixel 2023 Experience feature and spoofs Pixel 8 Pro Build fields there; the launcher gesture flags are set via device_config.</string>
+    <string name="cts_xposed_ok">LSPosed module active.</string>
+    <string name="cts_xposed_missing">LSPosed module not active.</string>
+    <string name="cts_xposed_hint">Open your Xposed manager (Vector), enable \"Q25 Toolbox\" and tick the Google app (com.google.android.googlequicksearchbox) in its scope, then force-stop the Google app. Requires an Xposed framework on KernelSU / APatch / Magisk.</string>
+    <string name="cts_hook_status_ok">LSPosed hook: working in the Google app.</string>
+    <string name="cts_hook_status_broken">LSPosed hook: it could not hook this build of the Google app.</string>
+    <string name="cts_hook_status_unknown">LSPosed hook: not seen in the Google app yet. Force-stop the Google app so the hook loads.</string>
     <string name="cts_test_trigger_button">Test Circle to Search now</string>
     <!-- GMS Sensor Guard -->
     <string name="title_gms_sensor_guard">GMS Sensor Guard</string>

@@ -36,7 +36,7 @@ object HotfixController {
 
     // KeyMint / TrickyStore constants
     private const val TRUSTKERNEL_KEYMINT_BIN = "/vendor/bin/hw/android.hardware.security.keymint-service.trustkernel"
-    const val SUPPORTED_ALWAYS_STRONG_VERSIONS = "v1.0.4"
+    const val SUPPORTED_ALWAYS_STRONG_VERSIONS = "v1.0.4 / v1.0.5"
     private val TEE_CANDIDATE_PATHS = listOf(
         "/data/adb/modules/tricky_store/tee_classes.dex",
         "/data/adb/modules/always_strong/tee_classes.dex"

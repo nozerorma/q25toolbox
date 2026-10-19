@@ -1,2 +1,3 @@
 com.kgr.q25toolbox.xposed.RecentsHookInit
 com.kgr.q25toolbox.xposed.GestureHookInit
+com.kgr.q25toolbox.xposed.CircleToSearchHookInit
