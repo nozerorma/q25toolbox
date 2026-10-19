@@ -4,6 +4,31 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.4.2] - 2026-10-19
+
+Circle to Search reworked onto LSPosed hooks; Recents grid fixed on LineageOS 24. versionCode 46 → 47.
+
+### Changed
+
+- **Circle to Search (System).** Reworked from the Zygisk module + permissions overlay (which broke on Android 17: the module's native library links `libc++_shared.so`, absent from every system path on this ROM, so it never loaded into zygote) onto an LSPosed hook built into the app (`CircleToSearchHookInit`), scoped to `com.google.android.googlequicksearchbox` only:
+  - Reports `com.google.android.feature.PIXEL_2023_EXPERIENCE` from `ApplicationPackageManager.hasSystemFeature` (both overloads) and spoofs the Pixel 8 Pro (husky) `android.os.Build` fields, gated live on a `Settings.Global` key written by the app toggle; the Google app is force-stopped on toggle so the hook re-evaluates.
+  - No LSPosed app shipped and no global spoofing: the feature-declaration overlay is gone, so the feature is only reported inside the Google app.
+  - The toggle shows LSPosed status (self-probe) and the hook handshake health (a state file the hook writes into the Google app's data dir, versionCode-stamped), like the Recents module.
+  - The `device_config` launcher gesture flags and the `service call contextual_search 3 i32 1` test trigger are unchanged.
+- **Hook targets (all LSPosed hooks).** Dual-target helper (`HookTargets`): the legacy target is tried first on older ROMs (previous behaviour preserved), the LineageOS 24 target first on SDK 37+, with serial fallback. ROM detection reads `ro.lineage.*` with a reflection fallback and an SDK last-resort.
+
+### Fixed
+
+- **Recents Grid (LSPosed) on LineageOS 24 (launcher versionCode 37).** The two-row grid is back:
+  - The launcher removed `DisplayController$Info` and the no-arg hotseat recalc, and the grid path consults `DeviceProperties.isLargeScreen()` — a trivial getter that ART inlines at hot call sites, bypassing method hooks. The hook now forces the FIELD at `DeviceProperties` construction and from `RecentsView.setInsets` (before the first measure). New signatures for the hotseat-recalc guard (`recalculateHotseatWidthAndBorderSpace(int)`) and masonry (`updateTaskSize(Rect, Rect)`); legacy targets kept and tried first on older launchers.
+  - Grid (auto) self-heals: a choice that fell back to the standalone overlay while the handshake was broken switches back to the hook once it is healthy.
+- **Gesture hook proof file.** `mkdirs()` before writing (was failing with ENOENT on some launcher processes).
+- **AlwaysStrong version check.** Accepts v1.0.5.
+
+### Added
+
+- **QR Enlarger.** zxing-cpp native decoder as a fallback when ZXing misses small/dense 2D codes (e.g. Renfe Aztec).
+
 ## [4.4.1] - 2026-10-18
 
 GMS Sensor Guard. versionCode 45 → 46.
