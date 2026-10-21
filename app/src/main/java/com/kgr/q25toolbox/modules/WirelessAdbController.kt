@@ -13,6 +13,10 @@ import com.kgr.q25toolbox.core.ShellResult
  * enables the "Wireless debugging" toggle (adb_wifi_enabled) and pins the
  * ADB TCP port via persist./service. props, so it survives reboot.
  *
+ * Disabling must undo every piece (script, persist.* and service.* ports, the
+ * toggle) and restart adbd; leaving persist.adb.tcp.port behind keeps ADB
+ * listening on the LAN after reboot.
+ *
  * NOTE: this is a *different* file/path than any pre-existing
  * adb-static-port.sh you may already have. If you enable this and it's
  * persisting successfully, remove the old script to avoid two boot scripts
@@ -35,10 +39,15 @@ object WirelessAdbController {
         return match?.groupValues?.get(1)?.toIntOrNull()
     }
 
-    /** Current live ADB TCP port (service.adb.tcp.port), or null if unset/-1. */
+    /**
+     * ADB TCP port adbd will listen on: service.adb.tcp.port, falling back to
+     * persist.adb.tcp.port (adbd reads both, so a leftover persist.* value keeps
+     * the port open across reboots even when service.* is empty). Null if unset/-1.
+     */
     fun currentLivePort(): Int? {
-        val out = RootShell.run("getprop service.adb.tcp.port").outString.trim()
-        return out.toIntOrNull()?.takeIf { it > 0 }
+        fun prop(name: String) =
+            RootShell.run("getprop $name").outString.trim().toIntOrNull()?.takeIf { it > 0 }
+        return prop("service.adb.tcp.port") ?: prop("persist.adb.tcp.port")
     }
 
     /**
@@ -74,12 +83,22 @@ object WirelessAdbController {
         return installResult
     }
 
-    /** Removes the persisted script and disables the live ADB TCP port. */
+    /**
+     * Removes the persisted script and closes ADB over TCP completely:
+     * clears persist.adb.tcp.port too (otherwise adbd reopens the port on the
+     * next boot even with the script gone), pins service.adb.tcp.port to -1,
+     * turns the Wireless debugging toggle off, and restarts adbd, which only
+     * reads the port at start. The restart is skipped if no port was set, and
+     * USB ADB reconnects on its own within a couple of seconds.
+     */
     fun disable(): ShellResult {
+        val hadPort = currentLivePort() != null
         val result = AssetInstaller.removeFile(TARGET)
         RootShell.run(
-            "setprop service.adb.tcp.port -1; " +
-                "settings put global adb_wifi_enabled 0"
+            "setprop persist.adb.tcp.port ''; " +
+                "setprop service.adb.tcp.port -1; " +
+                "settings put global adb_wifi_enabled 0" +
+                if (hadPort) "; setprop ctl.restart adbd" else ""
         )
         return result
     }
