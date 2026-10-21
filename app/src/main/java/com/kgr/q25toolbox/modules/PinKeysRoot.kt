@@ -76,15 +76,20 @@ object PinKeysRoot {
      */
     @Synchronized
     fun reconcile(context: Context, prefs: SharedPreferences): Boolean {
-        if (!RootShell.isRootAvailable()) {
+        val pin = pinWanted(prefs)
+        val enter = enterOpensWanted(prefs)
+        val rootOk = RootShell.isRootAvailable()
+        if (!pin && !enter) {
+            // Both toggles off: clean up whenever root answers. If it does not, the daemon ends itself on its
+            // next key press (it reads these same prefs), so the toggle never leaves it typing.
+            if (rootOk) {
+                stopDaemon()
+                AssetInstaller.removeFile(TARGET)
+            }
             prefs.edit().putBoolean(KEY_ROOT_ACTIVE, false).apply()
             return false
         }
-        val pin = pinWanted(prefs)
-        val enter = enterOpensWanted(prefs)
-        if (!pin && !enter) {
-            stopDaemon()
-            AssetInstaller.removeFile(TARGET)
+        if (!rootOk) {
             prefs.edit().putBoolean(KEY_ROOT_ACTIVE, false).apply()
             return false
         }

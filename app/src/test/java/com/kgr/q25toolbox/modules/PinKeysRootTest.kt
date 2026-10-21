@@ -21,4 +21,18 @@ class PinKeysRootTest {
             assertFalse(it, it.contains("\$act") || it.contains("\$c"))
         }
     }
+
+    @Test fun daemonReadsTheSamePrefKeysAsTheApp() {
+        // the script follows the toggles by reading these exact names; a rename must not silently break it
+        assertTrue(raw.contains("pref_flag ${PinKeysRoot.KEY_PIN_INPUT} "))
+        assertTrue(raw.contains("pref_flag ${PinKeysRoot.KEY_ENTER_OPENS} "))
+        assertTrue(raw.contains("shared_prefs/q25tweaks.xml"))
+    }
+
+    @Test fun daemonEndsAndRemovesItselfWhenBothTogglesAreOff() {
+        val fn = raw.substringAfter("shutdown_if_unwanted() {").substringBefore("\n}")
+        assertTrue(fn.contains("rm -f \"\$0\""))     // no restart at the next boot
+        assertTrue(fn.contains("pgrep -P \$\$"))      // subshell and getevent go too
+        assertTrue(fn.contains("kill \$\$"))
+    }
 }
