@@ -4,6 +4,15 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [4.4.3] - 2026-10-21
+
+Two small cleanup fixes (ADB over TCP, lockscreen PIN daemon). versionCode 47 → 48.
+
+### Fixed
+
+- **Wireless ADB: turning it off now closes ADB over TCP completely.** `disable()` left `persist.adb.tcp.port` set, so `adbd` reopened the port after the next reboot even with the boot script gone. It now clears the `persist.*` value, pins `service.adb.tcp.port` to -1, turns the Wireless debugging toggle off and restarts `adbd` (only if a port was set; USB ADB reconnects on its own). The port shown in the app also falls back to `persist.adb.tcp.port`, since `adbd` reads both.
+- **Lockscreen PIN daemon follows the app toggles itself.** With both toggles off and the app unable to reach root (a libsu shell cached before the grant), the daemon kept typing the PIN. It now re-reads `pin_input_enabled` and `lockscreen_enter_opens_pin` from the app's prefs (on a key press, at most every 2 s) and, with both off, removes its script (no restart at boot) and ends. If the prefs are unreadable (credential-encrypted storage before first unlock) it keeps the values it was installed with.
+
 ## [4.4.2] - 2026-10-19
 
 Circle to Search reworked onto LSPosed hooks; Recents grid fixed on LineageOS 24. versionCode 46 → 47.
