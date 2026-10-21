@@ -21,8 +21,9 @@ if [ -f "$LOCK" ]; then
 fi
 echo $$ > "$LOCK"
 
-PIN=__PIN__                  # 1: letters type digits
-ENTER_OPENS=__ENTER_OPENS__  # 1: Enter on the plain lockscreen opens the PIN pad
+PIN=__PIN__                  # 1: letters type digits (value at install; refreshed from the app's prefs below)
+ENTER_OPENS=__ENTER_OPENS__  # 1: Enter on the plain lockscreen opens the PIN pad (same)
+PREFS=/data/data/com.kgr.q25toolbox/shared_prefs/q25tweaks.xml
 IS_LINEAGE=__IS_LINEAGE__    # 1: LineageOS specific handling
 BACKLIGHT=/sys/class/leds/lcd-backlight/brightness
 CACHE_S=2        # how long a lock-state answer is trusted
@@ -57,13 +58,36 @@ locked_awake() {
     return 0
 }
 
+# The daemon obeys the app's toggles itself, so switching them off ends it even when the app cannot reach root
+# (a libsu shell cached before the grant). An unreadable file (credential-encrypted storage before the first
+# unlock) or a missing key keeps the value installed with the script.
+pref_flag() {   # $1 = pref name, $2 = current value -> new value
+    v=$(grep -o "name=\"$1\" value=\"[a-z]*\"" "$PREFS" 2>/dev/null)
+    case "$v" in
+        *'"true"')  echo 1 ;;
+        *'"false"') echo 0 ;;
+        *)          echo "$2" ;;
+    esac
+}
+
+# Both features off: remove the script (so it is not restarted at boot) and end the whole daemon: the main
+# shell, this pipeline's subshell and getevent are all children of $$.
+shutdown_if_unwanted() {
+    [ "$PIN" = "0" ] && [ "$ENTER_OPENS" = "0" ] || return 0
+    log "toggles off: exiting"
+    rm -f "$0" "$LOCK"
+    for c in $(pgrep -P $$); do kill "$c" 2>/dev/null; done
+    kill $$ 2>/dev/null
+    exit 0
+}
+
 log "start pin=$PIN enter_opens=$ENTER_OPENS"
 
 while true; do
     NODES=$(find_nodes)
     if [ -z "$NODES" ]; then sleep 2; continue; fi
 
-    lock_ok=0; lock_ts=0; typed=0; typed_ts=0; was_off=1
+    lock_ok=0; lock_ts=0; typed=0; typed_ts=0; was_off=1; flags_ts=0
     # getevent prints "type code value" per line for a single device, but prefixes each
     # line with "/dev/input/eventN:" when watching several, so both shapes are parsed.
     getevent -q $NODES 2>/dev/null | while read -r a b c d; do
@@ -82,6 +106,14 @@ while true; do
             001c|0060) act=ENTER ;;
             *) continue ;;
         esac
+        # Toggles may have changed since install: re-read them at most every CACHE_S seconds.
+        now=$(date +%s)
+        if [ $((now - flags_ts)) -gt $CACHE_S ]; then
+            PIN=$(pref_flag pin_input_enabled "$PIN")
+            ENTER_OPENS=$(pref_flag lockscreen_enter_opens_pin "$ENTER_OPENS")
+            flags_ts=$now
+            shutdown_if_unwanted
+        fi
         if [ "$act" = "ENTER" ]; then
             [ "$ENTER_OPENS" = "1" ] || continue
         else
@@ -94,7 +126,6 @@ while true; do
             continue
         fi
 
-        now=$(date +%s)
         if [ "$was_off" = "1" ] || [ $((now - lock_ts)) -gt $CACHE_S ]; then
             if locked_awake; then lock_ok=1; else lock_ok=0; typed=0; fi
             lock_ts=$now; was_off=0
