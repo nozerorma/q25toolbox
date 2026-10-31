@@ -4,7 +4,9 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
-## [Unreleased]
+## [4.5.0] - 2026-10-31
+
+Airplane Scheduler and Battery Meter (ported from Key2 Toolbox), a hotfix that hides the JL10 (John Launcher) mounts, per-task Recents buttons and a Recents swipe fix. versionCode 48 → 49.
 
 ### Added
 
