@@ -631,4 +631,12 @@
     <string name="battery_meter_ma">Strom wird in mA gemeldet</string>
     <string name="battery_meter_ma_desc">Aktiviere dies, wenn die Leistung 1000-mal zu klein oder zu groß wirkt: Manche Kernel melden Milliampere, wo Android Mikroampere erwartet.</string>
 
+    <!-- John Launcher (JL10) mount hide -->
+    <string name="hotfix_jl10_title">John-Launcher-(JL10)-Mounts verbergen</string>
+    <string name="hotfix_jl10_desc">Verbirgt die Bind-Mounts, die das JL10-QuickStep-Modul auf /product/overlay, /system/etc/permissions und /system/priv-app hinterlässt, mit Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_missing_vfs">Erfordert Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_hidden">JL10-Mounts verborgen</string>
+    <string name="hotfix_jl10_not_installed">JL10-QuickStep-Modul nicht installiert</string>
+    <string name="hotfix_jl10_not_needed">JL10-Mounts sind nicht sichtbar</string>
+    <string name="hotfix_jl10_mount_exposed">JL10-Bind-Mounts in der Mount-Tabelle sichtbar</string>
 </resources>

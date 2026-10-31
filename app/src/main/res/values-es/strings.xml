@@ -853,4 +853,12 @@ Ambas se fusionaron desde ramas separadas y tienen tests unitarios; la build fus
     <string name="battery_meter_ma">La corriente se reporta en mA</string>
     <string name="battery_meter_ma_desc">Actívalo si la potencia sale 1000 veces menor o mayor de lo esperado: algunos kernels reportan miliamperios donde Android espera microamperios.</string>
 
+    <!-- John Launcher (JL10) mount hide -->
+    <string name="hotfix_jl10_title">Ocultar mounts de John Launcher (JL10)</string>
+    <string name="hotfix_jl10_desc">Oculta los bind mounts que el módulo JL10 QuickStep deja en /product/overlay, /system/etc/permissions y /system/priv-app, usando Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_missing_vfs">Requiere Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_hidden">Mounts de JL10 ocultos</string>
+    <string name="hotfix_jl10_not_installed">Módulo JL10 QuickStep no instalado</string>
+    <string name="hotfix_jl10_not_needed">Los mounts de JL10 no están expuestos</string>
+    <string name="hotfix_jl10_mount_exposed">Bind mounts de JL10 expuestos en la tabla de montajes</string>
 </resources>

@@ -633,4 +633,12 @@
     <string name="battery_meter_ma">Stroom wordt gemeld in mA</string>
     <string name="battery_meter_ma_desc">Schakel dit in als het vermogen 1000 keer te klein of te groot lijkt: sommige kernels melden milliampère waar Android microampère verwacht.</string>
 
+    <!-- John Launcher (JL10) mount hide -->
+    <string name="hotfix_jl10_title">John Launcher (JL10)-mounts verbergen</string>
+    <string name="hotfix_jl10_desc">Verbergt de bind mounts die de JL10 QuickStep-module achterlaat op /product/overlay, /system/etc/permissions en /system/priv-app, met Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_missing_vfs">Vereist Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_hidden">JL10-mounts verborgen</string>
+    <string name="hotfix_jl10_not_installed">JL10 QuickStep-module niet geïnstalleerd</string>
+    <string name="hotfix_jl10_not_needed">JL10-mounts zijn niet zichtbaar</string>
+    <string name="hotfix_jl10_mount_exposed">JL10-bind mounts zichtbaar in de mounttabel</string>
 </resources>

@@ -862,4 +862,12 @@ Both were merged from separate branches and have unit tests; the merged build wa
     <string name="battery_meter_ma">Current is reported in mA</string>
     <string name="battery_meter_ma_desc">Turn this on if the power looks 1000 times too small or large: some kernels report milliamps where Android expects microamps.</string>
 
+    <!-- John Launcher (JL10) mount hide -->
+    <string name="hotfix_jl10_title">Hide John Launcher (JL10) Mounts</string>
+    <string name="hotfix_jl10_desc">Hides the bind mounts that the JL10 QuickStep module leaves on /product/overlay, /system/etc/permissions and /system/priv-app, using Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_missing_vfs">Requires Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_hidden">JL10 mounts hidden</string>
+    <string name="hotfix_jl10_not_installed">JL10 QuickStep module not installed</string>
+    <string name="hotfix_jl10_not_needed">JL10 mounts are not exposed</string>
+    <string name="hotfix_jl10_mount_exposed">JL10 bind mounts exposed in mount table</string>
 </resources>
