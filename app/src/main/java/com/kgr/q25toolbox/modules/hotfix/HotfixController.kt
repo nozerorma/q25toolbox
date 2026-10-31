@@ -602,6 +602,68 @@ object HotfixController {
     }
 
     // -------------------------------------------------------------------------
+    // John Launcher (JL10) Mount Hide (Hybrid Mount VFS)
+    // -------------------------------------------------------------------------
+
+    private const val JL10_MODULE = "/data/adb/modules/bb10launcher_quickstep"
+    private const val JL10_SCRIPT = "$HOTFIXES_DIR/jl10_hide.sh"
+
+    /**
+     * The JL10 QuickStep module bind-mounts copies of /product/overlay, /system/etc/permissions and
+     * /system/priv-app (that is how JL10 becomes a privileged app). Their source folders carry the
+     * module id, so a mountinfo line naming it is a mount apps can see.
+     */
+    fun probeJl10MountExposure(): Boolean =
+        RootShell.run("grep -q bb10launcher_quickstep /proc/self/mountinfo && echo yes || echo no").outString.trim() == "yes"
+
+    fun isJl10Installed(): Boolean = AssetInstaller.fileExists("$JL10_MODULE/module.prop")
+
+    private fun jl10RulesActive(): Boolean =
+        VfsManager.getActiveRules().any { it.realPath.contains("bb10launcher_quickstep") }
+
+    fun checkJl10MountHide(context: Context): HotfixItem {
+        val enabled = isHotfixEnabled(context, HotfixId.JL10_MOUNT_HIDE)
+        val exposed = probeJl10MountExposure()
+        val vfsReady = VfsManager.isVfsReady()
+
+        fun item(status: HotfixStatus, detail: String?, live: Boolean = false) = HotfixItem(
+            id = HotfixId.JL10_MOUNT_HIDE,
+            titleRes = R.string.hotfix_jl10_title,
+            descRes = R.string.hotfix_jl10_desc,
+            requiresReboot = false,
+            status = status,
+            statusDetail = detail,
+            isEnabled = live || enabled,
+            isLiveApplied = live
+        )
+
+        if (!isJl10Installed() && !exposed) {
+            return item(HotfixStatus.NOT_APPLICABLE, context.getString(R.string.hotfix_jl10_not_installed))
+        }
+        // No kernel_umount fallback here: unmounting the folders for apps only would not cover system_server,
+        // and the files have to stay reachable for it. The VFS is the only way.
+        if (!vfsReady) {
+            return item(HotfixStatus.PREREQUISITE_MISSING, context.getString(R.string.hotfix_jl10_missing_vfs))
+        }
+        return when {
+            !exposed && jl10RulesActive() -> item(HotfixStatus.ACTIVE, context.getString(R.string.hotfix_jl10_hidden), live = true)
+            exposed -> item(HotfixStatus.AVAILABLE, context.getString(R.string.hotfix_jl10_mount_exposed))
+            else -> item(HotfixStatus.NOT_APPLICABLE, context.getString(R.string.hotfix_jl10_not_needed))
+        }
+    }
+
+    /** Installs the helper script, then runs [mode] (apply / revert). Blocking. True when the script ended with 0. */
+    private fun runJl10Script(context: Context, mode: String): Boolean {
+        val installed = AssetInstaller.installAsset(context, "hotfixes/jl10_hide.sh", JL10_SCRIPT, "755")
+        if (!installed.success) return false
+        return RootShell.run("sh '$JL10_SCRIPT' $mode").success
+    }
+
+    fun applyJl10MountHide(context: Context): Boolean = runJl10Script(context, "apply")
+
+    fun revertJl10MountHide(context: Context): Boolean = runJl10Script(context, "revert")
+
+    // -------------------------------------------------------------------------
     // Camera 50 MP (S5KJN1)
     // -------------------------------------------------------------------------
 
@@ -788,7 +850,8 @@ object HotfixController {
             checkBtAudio(context),
             checkCamera50mp(context),
             checkKeymintTee(context),
-            checkVectorDex2oat(context)
+            checkVectorDex2oat(context),
+            checkJl10MountHide(context)
         )
     }
 
@@ -803,6 +866,7 @@ object HotfixController {
                 HotfixId.BT_AUDIO -> applyBtAudio()
                 HotfixId.KEYMINT_TEE -> applyKeymintTee(context)
                 HotfixId.VECTOR_DEX2OAT -> applyVectorDex2oat()
+                HotfixId.JL10_MOUNT_HIDE -> applyJl10MountHide(context)
                 HotfixId.CAMERA_50MP -> applyCamera50mp(context)
             }
         } else {
@@ -810,6 +874,7 @@ object HotfixController {
                 HotfixId.BT_AUDIO -> revertBtAudio()
                 HotfixId.KEYMINT_TEE -> revertKeymintTee(context)
                 HotfixId.VECTOR_DEX2OAT -> revertVectorDex2oat()
+                HotfixId.JL10_MOUNT_HIDE -> revertJl10MountHide(context)
                 HotfixId.CAMERA_50MP -> revertCamera50mp()
             }
         }
@@ -833,6 +898,7 @@ object HotfixController {
         val cam = isHotfixEnabled(context, HotfixId.CAMERA_50MP) && rom == Rom.LINEAGE
         val keymint = isHotfixEnabled(context, HotfixId.KEYMINT_TEE)
         val vector = isHotfixEnabled(context, HotfixId.VECTOR_DEX2OAT)
+        val jl10 = isHotfixEnabled(context, HotfixId.JL10_MOUNT_HIDE)
 
         val script = StringBuilder()
         script.appendLine("#!/system/bin/sh")
@@ -857,6 +923,17 @@ object HotfixController {
             script.appendLine("    \"\$KSUD\" feature set kernel_umount 1 >/dev/null 2>&1")
             script.appendLine("    \"\$KSUD\" kernel umount add '$DEX2OAT_32' >/dev/null 2>&1")
             script.appendLine("    \"\$KSUD\" kernel umount add '$DEX2OAT_64' >/dev/null 2>&1")
+            script.appendLine("fi")
+            script.appendLine()
+        }
+
+        if (jl10) {
+            // The module re-creates its bind mounts every boot (post-fs-data); this runs after it. The script is
+            // idempotent ("already hidden" / "nothing mounted"), so two later passes just catch a late mount.
+            script.appendLine("# John Launcher (JL10) mount hide: VFS rules + unmount, see jl10_hide.sh")
+            script.appendLine("if [ -f '$JL10_SCRIPT' ]; then")
+            script.appendLine("    sh '$JL10_SCRIPT' apply >/dev/null 2>&1")
+            script.appendLine("    { for i in 1 2; do sleep 20; sh '$JL10_SCRIPT' apply >/dev/null 2>&1; done; } &")
             script.appendLine("fi")
             script.appendLine()
         }

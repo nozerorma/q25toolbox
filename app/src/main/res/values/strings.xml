@@ -825,4 +825,49 @@ Both were merged from separate branches and have unit tests; the merged build wa
     <string name="gms_guard_desc">Google Play services keeps the accelerometer (at 50 Hz) and the ambient light sensor registered in short, continuous bursts from its location library (collectionlib), even when no app is asking for your position at that moment - a constant battery drain that shows up attributed to "Google Play services".\n\nThis block revokes Play services\' activity-recognition permission at the UID level. Apps keep getting location as normal (network and GPS fixes); only the background sensor scanning disappears. Play services restarts when the block is applied or removed.\n\nTechnical note: on this ROM the package-level command (cmd appops set &lt;package&gt;) is accepted but never applied - only the UID-level mode works. The block persists across reboots and is re-asserted at boot.</string>
     <string name="gms_guard_manual_title">Manual settings</string>
     <string name="gms_guard_manual_text">Switches under Settings &gt; Location &gt; Location services that can\'t be set from here:\n\n• Google Location Accuracy: can stay on. Its cost - the sensor scanning - is already blocked by this screen. Turning it off only degrades indoor fixes.\n• Bluetooth scanning: best off unless you use BLE beacons. Costly scanning with no everyday use.\n• Wi-Fi scanning: device-dependent. Off saves battery, but fused location loses its best indoor source; with weak GPS reception leave it on.\n• Assisted GPS (A-GPS) is a different thing: it only downloads satellite data to speed up the first fix. Leave it on.</string>
+
+    <!-- Airplane Scheduler / Battery Meter (ported from Key2 Toolbox) -->
+    <string name="title_airplane_scheduler">Airplane Scheduler</string>
+    <string name="subtitle_airplane_scheduler">Switch airplane mode on and off on a schedule (root)</string>
+    <string name="airplane_intro">Airplane mode turns on when a window opens and off when it closes. Only what the schedule changed is reverted: if airplane mode was already on, or you switched it off yourself mid-window, it is left alone. Windows may run past midnight.</string>
+    <string name="airplane_state_on">Airplane mode is on</string>
+    <string name="airplane_state_off">Airplane mode is off</string>
+    <string name="airplane_state_unknown">Reading airplane mode…</string>
+    <string name="airplane_next">Next change: %1$s</string>
+    <string name="airplane_default_name">Schedule %1$d</string>
+    <string name="airplane_add">Add schedule</string>
+    <string name="airplane_from">From %1$s</string>
+    <string name="airplane_to">To %1$s</string>
+    <string name="airplane_once">No day selected: runs once, at the next occurrence of the start time.</string>
+    <string name="airplane_repeat">Repeats on the selected days.</string>
+    <string name="airplane_wifi_off">Also turn Wi-Fi off (restored afterwards if it was on)</string>
+    <string name="airplane_skip">Skip next / current</string>
+    <string name="airplane_unskip">Undo skip</string>
+    <string name="airplane_delete">Delete</string>
+    <string name="title_battery_meter">Battery Meter</string>
+    <string name="subtitle_battery_meter">Live power, current, voltage and temperature, with an optional notification</string>
+    <string name="battery_meter_intro">Live readings from the battery gauge. A negative power is the phone drawing from the battery; positive is energy entering it. While charging this is what reaches the cell, not what the charger delivers.</string>
+    <string name="battery_meter_channel">Battery meter</string>
+    <string name="battery_meter_charging">Charging</string>
+    <string name="battery_meter_discharging">Discharging</string>
+    <string name="battery_meter_full">Full</string>
+    <string name="battery_meter_level">Level</string>
+    <string name="battery_meter_current">Current</string>
+    <string name="battery_meter_voltage">Voltage</string>
+    <string name="battery_meter_temp">Temperature</string>
+    <string name="battery_meter_energy">Energy stored</string>
+    <string name="battery_meter_to_full">Time to full</string>
+    <string name="battery_meter_since">Charging since</string>
+    <string name="battery_meter_notify">Live notification</string>
+    <string name="battery_meter_ma">Current is reported in mA</string>
+    <string name="battery_meter_ma_desc">Turn this on if the power looks 1000 times too small or large: some kernels report milliamps where Android expects microamps.</string>
+
+    <!-- John Launcher (JL10) mount hide -->
+    <string name="hotfix_jl10_title">Hide John Launcher (JL10) Mounts</string>
+    <string name="hotfix_jl10_desc">Hides the bind mounts that the JL10 QuickStep module leaves on /product/overlay, /system/etc/permissions and /system/priv-app, using Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_missing_vfs">Requires Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_hidden">JL10 mounts hidden</string>
+    <string name="hotfix_jl10_not_installed">JL10 QuickStep module not installed</string>
+    <string name="hotfix_jl10_not_needed">JL10 mounts are not exposed</string>
+    <string name="hotfix_jl10_mount_exposed">JL10 bind mounts exposed in mount table</string>
 </resources>

@@ -37,6 +37,8 @@ sealed class Screen(val route: String, @StringRes val titleRes: Int, @StringRes 
     data object GmsSensorGuard : Screen("gms_sensor_guard", R.string.title_gms_sensor_guard, R.string.subtitle_gms_sensor_guard)
     data object QrEnlarger : Screen("qr_enlarger", R.string.title_qr_enlarger, R.string.subtitle_qr_enlarger)
     data object KeyboardShortcuts : Screen("keyboard_shortcuts", R.string.title_keyboard_shortcuts, R.string.subtitle_keyboard_shortcuts)
+    data object AirplaneScheduler : Screen("airplane_scheduler", R.string.title_airplane_scheduler, R.string.subtitle_airplane_scheduler)
+    data object BatteryMeter : Screen("battery_meter", R.string.title_battery_meter, R.string.subtitle_battery_meter)
     data object CircleToSearch : Screen("circle_to_search", R.string.title_circle_to_search, R.string.subtitle_circle_to_search)
 
     val title: String @Composable get() = stringResource(titleRes)
@@ -98,6 +100,7 @@ val systemScreens = listOf(
     Screen.CircleToSearch,
     Screen.Dt2w,
     Screen.GmsSensorGuard,
+    Screen.BatteryMeter,
     Screen.AdvancedSettings,
 )
 
@@ -109,6 +112,7 @@ val networkScreens = listOf(
     Screen.WirelessAdb,
     Screen.BtIdle,
     Screen.LocationIdle,
+    Screen.AirplaneScheduler,
 )
 
 val allScreens = keyboardScreens + screenScreens + systemScreens + networkScreens + listOf(Screen.BatteryUsage, Screen.Dt2w)

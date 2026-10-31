@@ -596,4 +596,49 @@
     <string name="gms_guard_desc">Google Play services houdt de versnellingsmeter (op 50 Hz) en de omgevingslichtsensor geregistreerd in korte, doorlopende uitbarstingen vanuit zijn locatiebibliotheek (collectionlib), ook als er geen app op dat moment je positie vraagt - een constant batterijverbruik dat aan "Google Play services" wordt toegeschreven.\n\nDeze blokkade trekt de activiteitsherkenningstoestemming van Play services in op UID-niveau. Apps blijven locatie krijgen zoals normaal (netwerk- en GPS-fixes); alleen het scannen van sensoren op de achtergrond verdwijnt. Play services herstart bij het toepassen of verwijderen van de blokkade.\n\nTechnische noot: op deze ROM wordt het commando op pakketniveau (cmd appops set &lt;package&gt;) geaccepteerd maar nooit toegepast - alleen de modus op UID-niveau werkt. De blokkade overleeft herstarts en wordt bij het opstarten opnieuw toegepast.</string>
     <string name="gms_guard_manual_title">Handmatige instellingen</string>
     <string name="gms_guard_manual_text">Schakelaars onder Instellingen &gt; Locatie &gt; Locatiediensten die hier niet ingesteld kunnen worden:\n\n• Google-locatienauwkeurigheid: mag aan blijven. De kosten ervan - het scannen van sensoren - blokkeert dit scherm al. Uitzetten verslechtert alleen fixes binnenshuis.\n• Bluetooth-scan: beter uit tenzij je BLE-beacons gebruikt. Kostenrijk scannen zonder dagelijks gebruik.\n• Wi-Fi-scan: apparaatafhankelijk. Uit bespaart batterij, maar fused-locatie verliest zijn beste bron binnenshuis; bij zwak GPS-ontvang aan laten.\n• Assisted GPS (A-GPS) is iets anders: het downloadt alleen satellietgegevens om de eerste fix te versnellen. Aan laten.</string>
+
+    <!-- Airplane Scheduler / Battery Meter (ported from Key2 Toolbox) -->
+    <string name="title_airplane_scheduler">Vliegtuigmodus-planner</string>
+    <string name="subtitle_airplane_scheduler">Zet de vliegtuigmodus volgens een schema aan en uit (root)</string>
+    <string name="airplane_intro">De vliegtuigmodus gaat aan zodra een tijdvenster opent en uit zodra het sluit. Alleen wat het schema heeft gewijzigd wordt teruggedraaid: stond de vliegtuigmodus al aan, of heb je hem zelf halverwege uitgezet, dan blijft hij ongemoeid. Vensters mogen over middernacht heen lopen.</string>
+    <string name="airplane_state_on">Vliegtuigmodus staat aan</string>
+    <string name="airplane_state_off">Vliegtuigmodus staat uit</string>
+    <string name="airplane_state_unknown">Vliegtuigmodus wordt gelezen…</string>
+    <string name="airplane_next">Volgende wijziging: %1$s</string>
+    <string name="airplane_default_name">Schema %1$d</string>
+    <string name="airplane_add">Schema toevoegen</string>
+    <string name="airplane_from">Van %1$s</string>
+    <string name="airplane_to">Tot %1$s</string>
+    <string name="airplane_once">Geen dag geselecteerd: wordt één keer uitgevoerd, bij het eerstvolgende voorkomen van de starttijd.</string>
+    <string name="airplane_repeat">Herhaalt op de geselecteerde dagen.</string>
+    <string name="airplane_wifi_off">Zet ook wifi uit (daarna hersteld als het aan stond)</string>
+    <string name="airplane_skip">Volgende / huidige overslaan</string>
+    <string name="airplane_unskip">Overslaan ongedaan maken</string>
+    <string name="airplane_delete">Verwijderen</string>
+    <string name="title_battery_meter">Batterijmeter</string>
+    <string name="subtitle_battery_meter">Live vermogen, stroom, spanning en temperatuur, met optionele melding</string>
+    <string name="battery_meter_intro">Live metingen van de batterijmeter. Een negatief vermogen betekent dat de telefoon uit de batterij put; positief dat er energie in stroomt. Tijdens het laden is dit wat de cel bereikt, niet wat de lader levert.</string>
+    <string name="battery_meter_channel">Batterijmeter</string>
+    <string name="battery_meter_charging">Opladen</string>
+    <string name="battery_meter_discharging">Ontladen</string>
+    <string name="battery_meter_full">Vol</string>
+    <string name="battery_meter_level">Niveau</string>
+    <string name="battery_meter_current">Stroom</string>
+    <string name="battery_meter_voltage">Spanning</string>
+    <string name="battery_meter_temp">Temperatuur</string>
+    <string name="battery_meter_energy">Opgeslagen energie</string>
+    <string name="battery_meter_to_full">Tijd tot vol</string>
+    <string name="battery_meter_since">Opladen sinds</string>
+    <string name="battery_meter_notify">Livemelding</string>
+    <string name="battery_meter_ma">Stroom wordt gemeld in mA</string>
+    <string name="battery_meter_ma_desc">Schakel dit in als het vermogen 1000 keer te klein of te groot lijkt: sommige kernels melden milliampère waar Android microampère verwacht.</string>
+
+    <!-- John Launcher (JL10) mount hide -->
+    <string name="hotfix_jl10_title">John Launcher (JL10)-mounts verbergen</string>
+    <string name="hotfix_jl10_desc">Verbergt de bind mounts die de JL10 QuickStep-module achterlaat op /product/overlay, /system/etc/permissions en /system/priv-app, met Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_missing_vfs">Vereist Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_hidden">JL10-mounts verborgen</string>
+    <string name="hotfix_jl10_not_installed">JL10 QuickStep-module niet geïnstalleerd</string>
+    <string name="hotfix_jl10_not_needed">JL10-mounts zijn niet zichtbaar</string>
+    <string name="hotfix_jl10_mount_exposed">JL10-bind mounts zichtbaar in de mounttabel</string>
 </resources>

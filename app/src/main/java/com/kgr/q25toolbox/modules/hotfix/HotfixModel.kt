@@ -6,7 +6,8 @@ enum class HotfixId {
     BT_AUDIO,
     CAMERA_50MP,
     KEYMINT_TEE,
-    VECTOR_DEX2OAT
+    VECTOR_DEX2OAT,
+    JL10_MOUNT_HIDE
 }
 
 enum class HotfixStatus {

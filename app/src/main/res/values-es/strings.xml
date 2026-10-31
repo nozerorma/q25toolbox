@@ -816,4 +816,49 @@ Ambas se fusionaron desde ramas separadas y tienen tests unitarios; la build fus
     <string name="gms_guard_desc">Google Play services mantiene el acelerómetro (a 50 Hz) y el sensor de luz ambiental registrados en ráfagas cortas y continuas desde su biblioteca de localización (collectionlib), aunque ninguna app esté pidiendo tu posición en ese momento - un consumo constante de batería que aparece atribuido a "Google Play services".\n\nEste bloqueo revoca el permiso de reconocimiento de actividad de Play services a nivel de UID. Las apps siguen obteniendo ubicación con normalidad (fixes de red y GPS); solo desaparece el escaneo de sensores en segundo plano. Play services se reinicia al aplicar o eliminar el bloqueo.\n\nNota técnica: en esta ROM el comando a nivel de paquete (cmd appops set &lt;package&gt;) se acepta pero no se aplica nunca - solo funciona el modo a nivel de UID. El bloqueo persiste tras reiniciar y se vuelve a aplicar al arrancar.</string>
     <string name="gms_guard_manual_title">Ajustes manuales</string>
     <string name="gms_guard_manual_text">Interruptores de Ajustes &gt; Ubicación &gt; Servicios de ubicación que no se pueden definir desde aquí:\n\n• Precisión de ubicación de Google: puede quedar activada. Su coste - el escaneo de sensores - ya está bloqueado en esta pantalla. Desactivarla solo empeora las fixes en interiores.\n• Escaneo de dispositivos Bluetooth: mejor apagado si no usas balizas BLE. Escaneo costoso y sin uso habitual.\n• Escaneo de redes Wi-Fi: depende del dispositivo. Apagado ahorra batería, pero la ubicación fused pierde su mejor fuente en interiores; con recepción GPS débil déjalo activado.\n• El GPS asistido (A-GPS) es otra cosa: solo descarga datos de satélites para acelerar la primera fijación. Déjalo activado.</string>
+
+    <!-- Airplane Scheduler / Battery Meter (ported from Key2 Toolbox) -->
+    <string name="title_airplane_scheduler">Programador de modo avión</string>
+    <string name="subtitle_airplane_scheduler">Activa y desactiva el modo avión según un horario (root)</string>
+    <string name="airplane_intro">El modo avión se activa al abrirse una ventana y se desactiva al cerrarse. Solo se revierte lo que cambió el horario: si el modo avión ya estaba activo, o lo desactivaste tú a mitad de la ventana, no se toca. Las ventanas pueden cruzar la medianoche.</string>
+    <string name="airplane_state_on">El modo avión está activado</string>
+    <string name="airplane_state_off">El modo avión está desactivado</string>
+    <string name="airplane_state_unknown">Leyendo el modo avión…</string>
+    <string name="airplane_next">Próximo cambio: %1$s</string>
+    <string name="airplane_default_name">Horario %1$d</string>
+    <string name="airplane_add">Añadir horario</string>
+    <string name="airplane_from">Desde %1$s</string>
+    <string name="airplane_to">Hasta %1$s</string>
+    <string name="airplane_once">Sin días seleccionados: se ejecuta una vez, en la próxima aparición de la hora de inicio.</string>
+    <string name="airplane_repeat">Se repite los días seleccionados.</string>
+    <string name="airplane_wifi_off">Apagar también el Wi-Fi (se restaura después si estaba encendido)</string>
+    <string name="airplane_skip">Omitir siguiente / actual</string>
+    <string name="airplane_unskip">Deshacer omisión</string>
+    <string name="airplane_delete">Eliminar</string>
+    <string name="title_battery_meter">Medidor de batería</string>
+    <string name="subtitle_battery_meter">Potencia, corriente, voltaje y temperatura en vivo, con notificación opcional</string>
+    <string name="battery_meter_intro">Lecturas en vivo del medidor de la batería. Una potencia negativa es el teléfono consumiendo de la batería; positiva es energía entrando en ella. Al cargar, es lo que llega a la celda, no lo que entrega el cargador.</string>
+    <string name="battery_meter_channel">Medidor de batería</string>
+    <string name="battery_meter_charging">Cargando</string>
+    <string name="battery_meter_discharging">Descargando</string>
+    <string name="battery_meter_full">Completa</string>
+    <string name="battery_meter_level">Nivel</string>
+    <string name="battery_meter_current">Corriente</string>
+    <string name="battery_meter_voltage">Voltaje</string>
+    <string name="battery_meter_temp">Temperatura</string>
+    <string name="battery_meter_energy">Energía almacenada</string>
+    <string name="battery_meter_to_full">Tiempo hasta completar</string>
+    <string name="battery_meter_since">Cargando desde</string>
+    <string name="battery_meter_notify">Notificación en vivo</string>
+    <string name="battery_meter_ma">La corriente se reporta en mA</string>
+    <string name="battery_meter_ma_desc">Actívalo si la potencia sale 1000 veces menor o mayor de lo esperado: algunos kernels reportan miliamperios donde Android espera microamperios.</string>
+
+    <!-- John Launcher (JL10) mount hide -->
+    <string name="hotfix_jl10_title">Ocultar mounts de John Launcher (JL10)</string>
+    <string name="hotfix_jl10_desc">Oculta los bind mounts que el módulo JL10 QuickStep deja en /product/overlay, /system/etc/permissions y /system/priv-app, usando Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_missing_vfs">Requiere Hybrid Mount VFS</string>
+    <string name="hotfix_jl10_hidden">Mounts de JL10 ocultos</string>
+    <string name="hotfix_jl10_not_installed">Módulo JL10 QuickStep no instalado</string>
+    <string name="hotfix_jl10_not_needed">Los mounts de JL10 no están expuestos</string>
+    <string name="hotfix_jl10_mount_exposed">Bind mounts de JL10 expuestos en la tabla de montajes</string>
 </resources>
