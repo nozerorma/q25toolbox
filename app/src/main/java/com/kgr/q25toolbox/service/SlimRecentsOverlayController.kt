@@ -9,6 +9,8 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -55,6 +57,9 @@ object SlimRecentsOverlayController {
     /** Fixed name-strip height (dp) - icon + name + close, above the snapshot. */
     private const val CARD_HEADER_DP = 30
 
+    /** Masonry tiles at least this wide (dp) show the action buttons inline; on this device (508 dp wide) a 1-cell tile is ~165 dp and a 2-cell one ~335 dp. */
+    private const val WIDE_TILE_DP = 220
+
     // Open/close motion: a quick scale-up + fade with the Material "emphasized" curves, close to the
     // system Overview entrance. Scale is subtle because the whole window scales, not individual tiles.
     private const val OPEN_SCALE = 0.93f
@@ -93,6 +98,8 @@ object SlimRecentsOverlayController {
     // Masonry only: taskId -> the whole tile / its name strip, used by the shared-element open/close motion.
     private val cardViews = HashMap<Int, View>()
     private val headerViews = HashMap<Int, View>()
+    /** Task ids whose tile is being dismissed; see [dismissTile]. Cleared whenever the tiles are rebuilt. */
+    private val dismissing = HashSet<Int>()
     private var pendingEntrance = false
     private var menuScrim: View? = null
     private var menuCard: View? = null
@@ -145,13 +152,12 @@ object SlimRecentsOverlayController {
     /**
      * Small anchored quick-actions card, same idea as stock Overview's icon-tap
      * menu - but that one is private launcher UI (TaskMenuView), not something
-     * a third-party app can invoke, so this is our own. Lives as a couple of
+     * a third-party app can invoke, so this is our own. Holds the same actions as the inline buttons on wide Masonry tiles
+     * ([TileAction]); it is the only way to reach them from a 1x1 tile or a Slim List row, which have no room for them. Lives as a couple of
      * extra children on [root] (drawn last = on top of everything), not a
      * PopupWindow - a PopupWindow's own focus/token handling gets awkward
      * stacked inside a TYPE_ACCESSIBILITY_OVERLAY, and this needs nothing that
-     * a plain view can't already do. Currently just "App info"; "Split screen"
-     * needs its own investigation first (see conversation) before it can be
-     * added here as a second row.
+     * a plain view can't already do.
      */
     private fun showIconMenu(svc: AccessibilityService, anchor: View, task: SlimTask) {
         closeIconMenu()
@@ -183,26 +189,17 @@ object SlimRecentsOverlayController {
                 setColor(Color.argb(250, 45, 45, 45))
             }
         }
-        val appInfoRow = TextView(svc).apply {
-            text = svc.getString(R.string.recents_slim_app_info)
-            setTextColor(Color.WHITE)
-            textSize = 15f
-            setPadding(px(20), px(14), px(20), px(14))
-            isClickable = true
-            background = TypedValue().let { out ->
-                if (svc.theme.resolveAttribute(android.R.attr.selectableItemBackground, out, true)) {
-                    svc.getDrawable(out.resourceId)
-                } else null
-            }
-            setOnClickListener {
-                safeUi {
-                    closeIconMenu()
-                    openAppInfo(svc, task.packageName)
-                    hide(expandTaskId = null)
-                }
-            }
+        TileAction.entries.forEach { action ->
+            card.addView(TextView(svc).apply {
+                text = svc.getString(action.labelRes)
+                setTextColor(Color.WHITE)
+                textSize = 15f
+                setPadding(px(20), px(14), px(20), px(14))
+                isClickable = true
+                background = selectableBg(svc, borderless = false)
+                setOnClickListener { safeUi { runTileAction(svc, task, action) } }
+            })
         }
-        card.addView(appInfoRow)
 
         container.addView(
             card,
@@ -591,7 +588,7 @@ object SlimRecentsOverlayController {
     private fun buildRows(svc: AccessibilityService, list: LinearLayout, tasks: List<SlimTask>) {
         closeIconMenu()
         currentTasks = tasks
-        thumbViews.clear(); cardViews.clear(); headerViews.clear()
+        thumbViews.clear(); cardViews.clear(); headerViews.clear(); dismissing.clear()
         list.removeAllViews()
         val density = svc.resources.displayMetrics.density
         fun px(dp: Int) = (dp * density).toInt()
@@ -806,6 +803,12 @@ object SlimRecentsOverlayController {
             LinearLayout.LayoutParams(px(18), px(18)).apply { rightMargin = px(6) },
         )
         header.addView(appLabel(svc, task, 12f), LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        // Wide tiles (2 cells and up) have room for the actions inline; a 1x1 tile reaches them through the icon menu.
+        if (w >= px(WIDE_TILE_DP)) {
+            TileAction.entries.forEach {
+                header.addView(tileActionBtn(svc, task, it, headerPx, px(7)), LinearLayout.LayoutParams(headerPx, headerPx))
+            }
+        }
         header.addView(closeBtn(svc, task) { card }, LinearLayout.LayoutParams(headerPx, headerPx))
         headerViews[task.taskId] = header
         card.addView(header, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, headerPx))
@@ -847,6 +850,65 @@ object SlimRecentsOverlayController {
         ellipsize = android.text.TextUtils.TruncateAt.END
     }
 
+    /**
+     * Closes [task] and drops its view, exactly once. ViewGroup.removeView first sends ACTION_CANCEL to a view that is
+     * the current touch target, BEFORE it takes the view out of its child array. For a swiped tile that cancel re-enters
+     * the touch listener, which dismissed again: the nested removal shifted the array, and the outer removal then
+     * dropped the NEXT sibling by its stale index - a neighbour tile vanished though its task was never closed.
+     * [dismissing] makes the second entry a no-op.
+     */
+    private fun dismissTile(v: View, task: SlimTask) {
+        if (!dismissing.add(task.taskId)) return
+        runSafely { SlimRecentsController.dismissTask(task) }
+        cardViews.remove(task.taskId); headerViews.remove(task.taskId); thumbViews.remove(task.taskId)
+        (v.parent as? ViewGroup)?.removeView(v)
+    }
+
+    /** Per-task actions, offered as inline header buttons on wide Masonry tiles and as rows of the icon menu. */
+    private enum class TileAction(val iconRes: Int, val labelRes: Int) {
+        INFO(R.drawable.ic_recents_info, R.string.recents_slim_app_info),
+        SPLIT(R.drawable.ic_recents_split, R.string.gesture_action_split_screen),
+        SCREENSHOT(R.drawable.ic_recents_screenshot, R.string.gesture_action_screenshot),
+    }
+
+    private fun runTileAction(svc: AccessibilityService, task: SlimTask, action: TileAction) {
+        when (action) {
+            TileAction.INFO -> {
+                closeIconMenu()
+                openAppInfo(svc, task.packageName)
+                hide(expandTaskId = null)
+            }
+            // Both act on whatever is in front, so the task goes to the front first. Split screen: the system puts
+            // that app in the top pane and shows Overview to pick the second one.
+            TileAction.SPLIT -> inFrontThen(svc, task) { svc.performGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN) }
+            TileAction.SCREENSHOT -> inFrontThen(svc, task) { svc.performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT) }
+        }
+    }
+
+    /**
+     * Closes the overlay at once (it must not be in a screenshot), brings [task] to the front unless it already is,
+     * and runs [action] after a fixed wait: a quarter second for the overlay to be gone, or [LAUNCH_WAIT_MS] for a
+     * resumed app to be drawn. A timing heuristic, not a signal that the app is up.
+     */
+    private fun inFrontThen(svc: AccessibilityService, task: SlimTask, action: () -> Unit) {
+        closeIconMenu()
+        val alreadyFront = task.packageName == frontPackage && task.taskId == currentTasks.firstOrNull()?.taskId
+        hide(animate = false, expandTaskId = null)
+        if (!alreadyFront) runSafely { SlimRecentsController.resumeTask(task) }
+        Handler(Looper.getMainLooper()).postDelayed({ safeUi(action) }, if (alreadyFront) 250L else LAUNCH_WAIT_MS)
+    }
+
+    private fun tileActionBtn(svc: AccessibilityService, task: SlimTask, action: TileAction, size: Int, pad: Int) =
+        ImageView(svc).apply {
+            setImageResource(action.iconRes)
+            setColorFilter(Color.LTGRAY)
+            setPadding(pad, pad, pad, pad)
+            contentDescription = svc.getString(action.labelRes)
+            isClickable = true
+            background = selectableBg(svc, borderless = true)
+            setOnClickListener { safeUi { runTileAction(svc, task, action) } }
+        }
+
     private fun closeBtn(svc: AccessibilityService, task: SlimTask, rowOf: () -> View) = TextView(svc).apply {
         text = "\u2715"
         setTextColor(Color.LTGRAY)
@@ -856,10 +918,7 @@ object SlimRecentsOverlayController {
         background = selectableBg(svc, borderless = true)
         setOnClickListener {
             safeUi {
-                runSafely { SlimRecentsController.dismissTask(task) }
-                cardViews.remove(task.taskId); headerViews.remove(task.taskId); thumbViews.remove(task.taskId)
-                val v = rowOf()
-                (v.parent as? ViewGroup)?.removeView(v)
+                dismissTile(rowOf(), task)
             }
         }
     }
@@ -920,18 +979,18 @@ object SlimRecentsOverlayController {
                         var vx = 0f
                         vt?.apply { addMovement(ev); computeCurrentVelocity(1000); vx = xVelocity; recycle() }
                         vt = null
-                        if (moved) {
+                        val wasMoved = moved
+                        moved = false // before any removal: the removal itself delivers a CANCEL to this listener
+                        if (wasMoved) {
                             v.parent?.requestDisallowInterceptTouchEvent(false)
                             val w = v.width.coerceAtLeast(1)
                             if (kotlin.math.abs(v.translationX) > w * 0.4f || kotlin.math.abs(vx) > 1200f) {
-                                runSafely { SlimRecentsController.dismissTask(task) }
-                                cardViews.remove(task.taskId); headerViews.remove(task.taskId); thumbViews.remove(task.taskId)
-                                (v.parent as? ViewGroup)?.removeView(v)
+                                dismissTile(v, task)
                             } else {
                                 v.animate().translationX(0f).alpha(1f).setDuration(150).start()
                             }
                         }
-                        moved
+                        wasMoved
                     }
                     else -> false
                 }
