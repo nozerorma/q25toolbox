@@ -593,4 +593,41 @@
     <string name="gms_guard_desc">O Google Play services mantém o acelerómetro (a 50 Hz) e o sensor de luz ambiente registados em rajadas curtas e contínuas a partir da sua biblioteca de localização (collectionlib), mesmo quando nenhuma app está a pedir a tua posição nesse momento - um consumo constante de bateria que aparece atribuído a "Google Play services".\n\nEste bloqueio revoga a permissão de reconhecimento de atividade do Play services ao nível do UID. As apps continuam a obter localização normalmente (fixes de rede e GPS); só desaparece a análise de sensores em segundo plano. O Play services reinicia ao aplicar ou remover o bloqueio.\n\nNota técnica: nesta ROM o comando ao nível do pacote (cmd appops set &lt;package&gt;) é aceite mas nunca aplicado - só funciona o modo ao nível do UID. O bloqueio persiste após reinícios e é reaplicado no arranque.</string>
     <string name="gms_guard_manual_title">Ajustes manuais</string>
     <string name="gms_guard_manual_text">Interruptores em Definições &gt; Localização &gt; Serviços de localização que não podem ser definidos daqui:\n\n• Precisão de localização Google: pode ficar ativada. O seu custo - a análise de sensores - já está bloqueado neste ecrã. Desativá-la só degrada as fixes em interiores.\n• Deteção de dispositivos Bluetooth: melhor desligada salvo se usares beacons BLE. Deteção custosa e sem uso diário.\n• Deteção de redes Wi-Fi: depende do dispositivo. Desligada poupa bateria, mas a localização fused perde a sua melhor fonte em interiores; com receção GPS fraca deixa-a ligada.\n• O GPS assistido (A-GPS) é outra coisa: só descarrega dados de satélites para acelerar a primeira fixação. Deixa-o ativado.</string>
+
+    <!-- Airplane Scheduler / Battery Meter (ported from Key2 Toolbox) -->
+    <string name="title_airplane_scheduler">Agendador do modo avião</string>
+    <string name="subtitle_airplane_scheduler">Ativa e desativa o modo avião segundo um horário (root)</string>
+    <string name="airplane_intro">O modo avião liga-se quando uma janela abre e desliga-se quando fecha. Só é revertido o que o horário alterou: se o modo avião já estava ativo, ou se o desligou você a meio da janela, não é tocado. As janelas podem passar da meia-noite.</string>
+    <string name="airplane_state_on">O modo avião está ativo</string>
+    <string name="airplane_state_off">O modo avião está desativado</string>
+    <string name="airplane_state_unknown">A ler o modo avião…</string>
+    <string name="airplane_next">Próxima alteração: %1$s</string>
+    <string name="airplane_default_name">Horário %1$d</string>
+    <string name="airplane_add">Adicionar horário</string>
+    <string name="airplane_from">Das %1$s</string>
+    <string name="airplane_to">Até às %1$s</string>
+    <string name="airplane_once">Nenhum dia selecionado: executa uma vez, na próxima ocorrência da hora de início.</string>
+    <string name="airplane_repeat">Repete-se nos dias selecionados.</string>
+    <string name="airplane_wifi_off">Desligar também o Wi-Fi (reposto depois se estava ligado)</string>
+    <string name="airplane_skip">Saltar o próximo / atual</string>
+    <string name="airplane_unskip">Anular salto</string>
+    <string name="airplane_delete">Eliminar</string>
+    <string name="title_battery_meter">Medidor de bateria</string>
+    <string name="subtitle_battery_meter">Potência, corrente, tensão e temperatura em direto, com notificação opcional</string>
+    <string name="battery_meter_intro">Leituras em direto do medidor da bateria. Uma potência negativa significa que o telefone está a retirar da bateria; positiva, que entra energia nela. Durante o carregamento, é o que chega à célula, não o que o carregador fornece.</string>
+    <string name="battery_meter_channel">Medidor de bateria</string>
+    <string name="battery_meter_charging">A carregar</string>
+    <string name="battery_meter_discharging">A descarregar</string>
+    <string name="battery_meter_full">Completa</string>
+    <string name="battery_meter_level">Nível</string>
+    <string name="battery_meter_current">Corrente</string>
+    <string name="battery_meter_voltage">Tensão</string>
+    <string name="battery_meter_temp">Temperatura</string>
+    <string name="battery_meter_energy">Energia armazenada</string>
+    <string name="battery_meter_to_full">Tempo até ficar completa</string>
+    <string name="battery_meter_since">A carregar desde</string>
+    <string name="battery_meter_notify">Notificação em direto</string>
+    <string name="battery_meter_ma">A corrente é indicada em mA</string>
+    <string name="battery_meter_ma_desc">Ative se a potência parecer 1000 vezes demasiado pequena ou grande: alguns kernels indicam miliamperes onde o Android espera microamperes.</string>
+
 </resources>

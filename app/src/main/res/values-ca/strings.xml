@@ -810,4 +810,41 @@ Ambdues es van fusionar des de branques separades i tenen tests unitaris; la bui
     <string name="gms_guard_desc">Google Play services manté l\'acceleròmetre (a 50 Hz) i el sensor de llum ambient registrats en ràfagues curtes i contínues des de la seva biblioteca d\'ubicació (collectionlib), encara que cap app demani la teva posició en aquell moment - un consum constant de bateria que apareix atribuït a "Google Play services".\n\nAquest blocatge revoca el permís de reconeixement d\'activitat de Play services a nivell d\'UID. Les apps continuen obtenint ubicació amb normalitat (fixes de xarxa i GPS); només desapareix l\'escaneig de sensors en segon pla. Play services es reinicia en aplicar o eliminar el blocatge.\n\nNota tècnica: en aquesta ROM l\'ordre a nivell de paquet (cmd appops set &lt;package&gt;) s\'accepta però no s\'aplica mai - només funciona el mode a nivell d\'UID. El blocatge persisteix després de reiniciar i es torna a aplicar a l\'arrancada.</string>
     <string name="gms_guard_manual_title">Ajustos manuals</string>
     <string name="gms_guard_manual_text">Interruptors de Configuració &gt; Ubicació &gt; Serveis d\'ubicació que no es poden definir des d\'aquí:\n\n• Precisió d\'ubicació de Google: pot quedar activada. El seu cost - l\'escaneig de sensors - ja està bloquejat en aquesta pantalla. Desactivar-la només empitjora les fixes en interiors.\n• Cerca de dispositius Bluetooth: millor desactivada si no uses balises BLE. Escaneig costós i sense ús habitual.\n• Cerca de xarxes Wi-Fi: depèn del dispositiu. Desactivada estalvia bateria, però la ubicació fused perd la seva millor font en interiors; amb recepció GPS feble deixa-la activada.\n• El GPS assistit (A-GPS) és una altra cosa: només descarrega dades de satèl·lits per accelerar la primera fixa. Deixa\'l activat.</string>
+
+    <!-- Airplane Scheduler / Battery Meter (ported from Key2 Toolbox) -->
+    <string name="title_airplane_scheduler">Programador de mode avió</string>
+    <string name="subtitle_airplane_scheduler">Activa i desactiva el mode avió segons un horari (root)</string>
+    <string name="airplane_intro">El mode avió s\'activa quan s\'obre una finestra i es desactiva quan es tanca. Només es reverteix el que ha canviat l\'horari: si el mode avió ja estava activat, o l\'has desactivat tu a mig camí, no es toca. Les finestres poden creuar la mitjanit.</string>
+    <string name="airplane_state_on">El mode avió està activat</string>
+    <string name="airplane_state_off">El mode avió està desactivat</string>
+    <string name="airplane_state_unknown">Llegint el mode avió…</string>
+    <string name="airplane_next">Pròxim canvi: %1$s</string>
+    <string name="airplane_default_name">Horari %1$d</string>
+    <string name="airplane_add">Afegeix un horari</string>
+    <string name="airplane_from">Des de %1$s</string>
+    <string name="airplane_to">Fins a %1$s</string>
+    <string name="airplane_once">Sense dies seleccionats: s\'executa una vegada, a la pròxima aparició de l\'hora d\'inici.</string>
+    <string name="airplane_repeat">Es repeteix els dies seleccionats.</string>
+    <string name="airplane_wifi_off">Apaga també el Wi-Fi (es restaura després si estava encès)</string>
+    <string name="airplane_skip">Omet el següent / l\'actual</string>
+    <string name="airplane_unskip">Desfés l\'omissió</string>
+    <string name="airplane_delete">Elimina</string>
+    <string name="title_battery_meter">Mesurador de bateria</string>
+    <string name="subtitle_battery_meter">Potència, corrent, voltatge i temperatura en directe, amb notificació opcional</string>
+    <string name="battery_meter_intro">Lectures en directe del mesurador de la bateria. Una potència negativa és el telèfon consumint de la bateria; positiva és energia entrant-hi. En carregar, és el que arriba a la cel·la, no el que lliura el carregador.</string>
+    <string name="battery_meter_channel">Mesurador de bateria</string>
+    <string name="battery_meter_charging">Carregant</string>
+    <string name="battery_meter_discharging">Descarregant</string>
+    <string name="battery_meter_full">Completa</string>
+    <string name="battery_meter_level">Nivell</string>
+    <string name="battery_meter_current">Corrent</string>
+    <string name="battery_meter_voltage">Voltatge</string>
+    <string name="battery_meter_temp">Temperatura</string>
+    <string name="battery_meter_energy">Energia emmagatzemada</string>
+    <string name="battery_meter_to_full">Temps fins a completar</string>
+    <string name="battery_meter_since">Carregant des de</string>
+    <string name="battery_meter_notify">Notificació en directe</string>
+    <string name="battery_meter_ma">El corrent es reporta en mA</string>
+    <string name="battery_meter_ma_desc">Activa-ho si la potència surt 1000 vegades menor o major del que toca: alguns kernels reporten mil·liamperes on Android espera microamperes.</string>
+
 </resources>

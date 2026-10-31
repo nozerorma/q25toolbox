@@ -171,6 +171,8 @@ private fun DetailHost(screen: Screen, onNavigate: (Screen) -> Unit = {}, onBack
         Screen.CallProximitySleep -> CallProximitySleepScreen(onBack)
         Screen.ImeSuggestions -> ImeSuggestionsScreen(onBack)
         Screen.BatteryUsage -> BatteryUsageScreen(onBack)
+        Screen.BatteryMeter -> BatteryMeterScreen(onBack)
+        Screen.AirplaneScheduler -> AirplaneSchedulerScreen(onBack)
         Screen.TickerNotifications -> TickerNotificationsScreen(onBack)
         Screen.RecentsTweaks -> RecentsTweaksScreen(onBack)
         Screen.AdBlock -> AdBlockScreen(onBack)

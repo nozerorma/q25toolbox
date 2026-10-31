@@ -88,6 +88,8 @@ object SettingsBackup {
         CALL_PROXIMITY_SLEEP(R.string.title_call_proximity_sleep),
         GESTURES(R.string.title_gestures),
         IME_COMPAT(R.string.title_ime_compat),
+        AIRPLANE_SCHEDULER(R.string.title_airplane_scheduler),
+        BATTERY_METER(R.string.title_battery_meter),
     }
 
     /** Which BackupModule owns each key in the shared "q25tweaks" prefs file. */
@@ -116,6 +118,11 @@ object SettingsBackup {
         AutoFocusController.KEY_AUTO_FOCUS to BackupModule.AUTO_FOCUS,
         AutoFocusController.KEY_AUTO_FOCUS_APPS to BackupModule.AUTO_FOCUS,
         BatteryUsageController.KEY_RESET_THRESHOLD to BackupModule.BATTERY_USAGE,
+        // Airplane Scheduler: the schedules only. The "owned" radio flags and Battery Meter's charging-since
+        // stamp describe the live device state, which a restore must not overwrite.
+        com.kgr.q25toolbox.modules.AirplaneScheduler.KEY_SCHEDULES to BackupModule.AIRPLANE_SCHEDULER,
+        com.kgr.q25toolbox.modules.BatteryMeterController.KEY_ENABLED to BackupModule.BATTERY_METER,
+        com.kgr.q25toolbox.modules.BatteryMeterController.KEY_MA_UNITS to BackupModule.BATTERY_METER,
         KeyRemapController.KEY_REMAP_ENABLED to BackupModule.KEY_REMAP,
         KeyRemapController.KEY_REMAP_SOURCE to BackupModule.KEY_REMAP,
         KeyRemapController.KEY_RECENTS_KEY_EXTERNAL to BackupModule.KEY_REMAP,
@@ -264,6 +271,18 @@ object SettingsBackup {
                 if (applyPrefEntry(editor, key, q25tweaksJson.getJSONObject(key))) restoredKeys++
             }
             editor.apply()
+
+            // These two act on the system, not just on prefs: re-apply them from the restored values.
+            if (BackupModule.AIRPLANE_SCHEDULER in modules &&
+                q25tweaksJson.has(com.kgr.q25toolbox.modules.AirplaneScheduler.KEY_SCHEDULES)
+            ) {
+                runCatching { com.kgr.q25toolbox.modules.AirplaneScheduler.refresh(context) } // re-arms the alarm, settles the radios
+            }
+            if (BackupModule.BATTERY_METER in modules &&
+                q25tweaksJson.has(com.kgr.q25toolbox.modules.BatteryMeterController.KEY_ENABLED)
+            ) {
+                runCatching { com.kgr.q25toolbox.modules.BatteryMeterController.sync(context) }
+            }
         }
 
         if (BackupModule.TICKER_NOTIFICATIONS in modules) {

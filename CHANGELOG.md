@@ -4,6 +4,19 @@ All notable changes to Q25 Toolbox are documented here. This app started as
 a fork of [Key2 Toolbox](https://github.com/kgr17/Key2Toolbox) for the BlackBerry Key2 - entries
 below [1.0-beta1] are inherited history from before the fork.
 
+## [Unreleased]
+
+### Added
+
+- **Airplane Scheduler (Network).** Several schedules with days of the week, overnight windows, one-shot mode, skip-next and optional Wi-Fi off. Root instead of Shizuku (`cmd connectivity airplane-mode`), exact alarms, re-armed on boot, app update and clock change. State-based: a window end reverts only what the schedule changed. Idea from probecat/airplane-scheduler-app (GPL-3.0); no code copied. Ported from Key2 Toolbox.
+- **Battery Meter (System).** Live power, current, voltage, temperature, energy and time to full, with an optional ongoing notification and a mA/µA workaround. Idea from montafra/beam (MIT). Ported from Key2 Toolbox.
+- **Recents (Masonry, Slim List): per-task action buttons.** Wide Masonry tiles show app info, split screen and screenshot inline next to the close button; 1x1 tiles and Slim List rows reach the same actions through the icon menu.
+- Settings backup covers both new modules.
+
+### Fixed
+
+- **Recents (Masonry): swiping a tile away also removed its neighbour.** `removeView` sends ACTION_CANCEL to a view that is the current touch target before taking it out of its child array. The cancel re-entered the swipe listener, which dismissed again; the outer removal then dropped the next sibling by a stale index, so the neighbour left the grid though its task stayed open. Dismissal is now idempotent and the gesture state is cleared before any removal.
+
 ## [4.4.3] - 2026-10-21
 
 Two small cleanup fixes (ADB over TCP, lockscreen PIN daemon). versionCode 47 → 48.

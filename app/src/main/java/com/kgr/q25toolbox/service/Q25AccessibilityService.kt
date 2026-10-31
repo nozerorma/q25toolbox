@@ -417,6 +417,7 @@ class Q25AccessibilityService : AccessibilityService() {
         }
         super.onServiceConnected()
         instance = this
+        com.kgr.q25toolbox.modules.BatteryMeterController.sync(this)
         val p = getSharedPreferences(PREFS, MODE_PRIVATE)
         prefs = p
         p.registerOnSharedPreferenceChangeListener(prefListener)
@@ -1921,6 +1922,7 @@ class Q25AccessibilityService : AccessibilityService() {
         if (instance === this) instance = null
         GestureStripsController.hide()
         com.kgr.q25toolbox.modules.QrEnlargerController.hide()
+        com.kgr.q25toolbox.modules.BatteryMeterController.stop(this)
         RecentsOverlays.hide(animate = false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) callProximity?.stop()
         restoreImeBlock()
